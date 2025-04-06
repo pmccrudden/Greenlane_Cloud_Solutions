@@ -13,12 +13,14 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   const headers: Record<string, string> = {
-    "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Tenant ID from screenshot
+    "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Valid tenant ID from our database
   };
   
   if (data) {
     headers["Content-Type"] = "application/json";
   }
+  
+  console.log(`Making ${method} request to ${url} with tenant ID: ${headers["X-Tenant-ID"]}`);
   
   const res = await fetch(url, {
     method,
@@ -37,10 +39,15 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Use the same tenant ID as in apiRequest
+    const tenantId = "572c77d7-e838-44ca-8adb-7ddef5f199bb";
+    
+    console.log(`Making query to ${queryKey[0]} with tenant ID: ${tenantId}`);
+    
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
       headers: {
-        "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Tenant ID from screenshot
+        "X-Tenant-ID": tenantId, // Valid tenant ID from our database
       },
     });
 

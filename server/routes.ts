@@ -37,20 +37,30 @@ if (process.env.STRIPE_SECRET_KEY) {
 
 // Helper function to get tenant ID from request
 function getTenantId(req: Request): string | null {
+  // Always check for X-Tenant-ID header first and prioritize it if present
+  const headerTenantId = req.get("X-Tenant-ID");
+  if (headerTenantId) {
+    console.log(`Using tenant ID from header: ${headerTenantId}`);
+    return headerTenantId;
+  }
+  
+  // Fallback to hostname-based extraction if no header
   const host = req.get("host");
   if (!host) return null;
   
-  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1");
+  const isLocalhost = host.includes("localhost") || host.includes("127.0.0.1") || host.includes("replit");
   const parts = host.split(".");
   
   if (isLocalhost) {
-    // For development, extract tenant from custom header
-    return req.get("X-Tenant-ID") || null;
+    console.log("Local development detected, but no X-Tenant-ID header found");
+    return null;
   } else if (parts.length >= 3) {
     // For production, extract subdomain
+    console.log(`Using tenant ID from subdomain: ${parts[0]}`);
     return parts[0];
   }
   
+  console.log("Could not determine tenant ID from request");
   return null;
 }
 
