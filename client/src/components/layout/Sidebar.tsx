@@ -11,7 +11,8 @@ import {
   Mail,
   LogOut,
   Menu,
-  X
+  X,
+  CheckSquare
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -29,6 +30,7 @@ const navItems: SidebarNavItem[] = [
   { title: "Contacts", path: "/contacts", icon: <Users className="w-5 h-5 mr-3" /> },
   { title: "Deals", path: "/deals", icon: <DollarSign className="w-5 h-5 mr-3" /> },
   { title: "Projects", path: "/projects", icon: <ClipboardList className="w-5 h-5 mr-3" /> },
+  { title: "Tasks", path: "/tasks", icon: <CheckSquare className="w-5 h-5 mr-3" /> },
   { title: "Support Tickets", path: "/support-tickets", icon: <MessageSquare className="w-5 h-5 mr-3" /> },
   { title: "AI Analytics", path: "/ai-analytics", icon: <PieChart className="w-5 h-5 mr-3" /> },
   { title: "Digital Journey", path: "/digital-journey", icon: <Mail className="w-5 h-5 mr-3" /> },

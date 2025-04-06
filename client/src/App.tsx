@@ -19,6 +19,8 @@ import Projects from "@/pages/Projects";
 import ProjectDetail from "@/pages/ProjectDetail";
 import SupportTickets from "@/pages/SupportTickets";
 import SupportTicketDetail from "@/pages/SupportTicketDetail";
+import Tasks from "@/pages/Tasks";
+import TaskDetail from "@/pages/TaskDetail";
 import AIAnalytics from "@/pages/AIAnalytics";
 import DigitalJourney from "@/pages/DigitalJourney";
 import MainLayout from "@/components/layout/MainLayout";
@@ -107,6 +109,18 @@ function Router() {
     </MainLayout>
   );
   
+  const TasksWithLayout = () => (
+    <MainLayout>
+      <Tasks />
+    </MainLayout>
+  );
+  
+  const TaskDetailWithLayout = () => (
+    <MainLayout>
+      <TaskDetail />
+    </MainLayout>
+  );
+  
   return (
     <Switch>
       <Route path="/signin" component={SignIn} />
@@ -123,6 +137,8 @@ function Router() {
       <ProtectedRoute path="/projects" component={ProjectsWithLayout} />
       <ProtectedRoute path="/support-tickets/:id" component={SupportTicketDetailWithLayout} />
       <ProtectedRoute path="/support-tickets" component={SupportTicketsWithLayout} />
+      <ProtectedRoute path="/tasks/:id" component={TaskDetailWithLayout} />
+      <ProtectedRoute path="/tasks" component={TasksWithLayout} />
       <ProtectedRoute path="/ai-analytics" component={AIAnalyticsWithLayout} />
       <ProtectedRoute path="/digital-journey" component={DigitalJourneyWithLayout} />
       <ProtectedRoute path="/checkout" component={Checkout} />
