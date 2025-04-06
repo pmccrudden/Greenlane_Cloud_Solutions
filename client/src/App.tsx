@@ -12,6 +12,7 @@ import Dashboard from "@/pages/Dashboard";
 import Accounts from "@/pages/Accounts";
 import AccountDetail from "@/pages/AccountDetail";
 import Contacts from "@/pages/Contacts";
+import ContactDetail from "@/pages/ContactDetail";
 import Deals from "@/pages/Deals";
 import Projects from "@/pages/Projects";
 import SupportTickets from "@/pages/SupportTickets";
@@ -46,6 +47,12 @@ function Router() {
   const ContactsWithLayout = () => (
     <MainLayout>
       <Contacts />
+    </MainLayout>
+  );
+  
+  const ContactDetailWithLayout = () => (
+    <MainLayout>
+      <ContactDetail />
     </MainLayout>
   );
   
@@ -87,6 +94,7 @@ function Router() {
       <ProtectedRoute path="/dashboard" component={DashboardWithLayout} />
       <ProtectedRoute path="/accounts/:id" component={AccountDetailWithLayout} />
       <ProtectedRoute path="/accounts" component={AccountsWithLayout} />
+      <ProtectedRoute path="/contacts/:id" component={ContactDetailWithLayout} />
       <ProtectedRoute path="/contacts" component={ContactsWithLayout} />
       <ProtectedRoute path="/deals" component={DealsWithLayout} />
       <ProtectedRoute path="/projects" component={ProjectsWithLayout} />

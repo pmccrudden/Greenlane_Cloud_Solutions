@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { insertProjectSchema } from '@/lib/validationSchemas';
+import { Account } from '@shared/schema';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -33,18 +34,31 @@ const formSchema = insertProjectSchema
   .extend({
     accountId: z.coerce.number().optional(),
     startDate: z.union([
-      z.string().transform((val) => new Date(val)),
-      z.date()
-    ]).optional(),
+      z.string().refine(val => val === '' || !isNaN(Date.parse(val)), {
+        message: "Invalid start date format"
+      }).transform(val => val === '' ? undefined : new Date(val)),
+      z.date(),
+      z.undefined()
+    ]),
     endDate: z.union([
-      z.string().transform((val) => new Date(val)),
-      z.date()
-    ]).optional(),
+      z.string().refine(val => val === '' || !isNaN(Date.parse(val)), {
+        message: "Invalid end date format"
+      }).transform(val => val === '' ? undefined : new Date(val)),
+      z.date(),
+      z.undefined()
+    ]),
   })
   .refine(data => data.accountId !== undefined || data.accountName !== '', {
     message: 'Either Account ID or Account Name must be provided',
     path: ['accountId'],
-  });
+  })
+  .refine(
+    data => !data.startDate || !data.endDate || data.startDate <= data.endDate,
+    {
+      message: "End date cannot be before start date",
+      path: ["endDate"],
+    }
+  );
 
 type ProjectFormValues = z.infer<typeof formSchema>;
 
@@ -62,7 +76,7 @@ export function ProjectForm({ accountId, onSuccess, onCancel }: ProjectFormProps
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
   // Fetch accounts for dropdown
-  const { data: accounts = [] } = useQuery({
+  const { data: accounts = [] } = useQuery<Account[]>({
     queryKey: ['/api/accounts'],
     enabled: !accountId, // Only fetch accounts if no accountId is provided
   });
@@ -205,7 +219,7 @@ export function ProjectForm({ accountId, onSuccess, onCancel }: ProjectFormProps
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {accounts.map((account: any) => (
+                    {accounts.map((account) => (
                       <SelectItem key={account.id} value={account.id.toString()}>
                         {account.name}
                       </SelectItem>

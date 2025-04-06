@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { insertDealSchema } from '@/lib/validationSchemas';
+import { Account } from '@shared/schema';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -33,9 +34,12 @@ const formSchema = insertDealSchema
   .extend({
     accountId: z.coerce.number().optional(),
     closeDate: z.union([
-      z.string().transform((val) => new Date(val)),
-      z.date()
-    ]).optional(),
+      z.string().refine(val => val === '' || !isNaN(Date.parse(val)), {
+        message: "Invalid date format"
+      }).transform(val => val === '' ? undefined : new Date(val)),
+      z.date(),
+      z.undefined()
+    ]),
   })
   .refine(data => data.accountId !== undefined || data.accountName !== '', {
     message: 'Either Account ID or Account Name must be provided',
@@ -57,7 +61,7 @@ export function DealForm({ accountId, onSuccess, onCancel }: DealFormProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   // Fetch accounts for dropdown
-  const { data: accounts = [] } = useQuery({
+  const { data: accounts = [] } = useQuery<Account[]>({
     queryKey: ['/api/accounts'],
     enabled: !accountId, // Only fetch accounts if no accountId is provided
   });
@@ -224,7 +228,7 @@ export function DealForm({ accountId, onSuccess, onCancel }: DealFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {accounts.map((account: any) => (
+                    {accounts.map((account) => (
                       <SelectItem key={account.id} value={account.id.toString()}>
                         {account.name}
                       </SelectItem>

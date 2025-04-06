@@ -40,6 +40,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Search, Plus, MoreHorizontal, Users } from 'lucide-react';
+import { Link, useLocation } from 'wouter';
 
 // Contact form schema
 const contactSchema = z.object({
@@ -204,7 +205,9 @@ export default function Contacts() {
                               <span className="font-medium">{initials}</span>
                             </div>
                             <div className="ml-4">
-                              <div className="font-medium text-slate-900">{contact.firstName} {contact.lastName}</div>
+                              <Link to={`/contacts/${contact.id}`} className="font-medium text-slate-900 hover:text-primary cursor-pointer">
+                                {contact.firstName} {contact.lastName}
+                              </Link>
                             </div>
                           </div>
                         </TableCell>
@@ -236,20 +239,16 @@ export default function Contacts() {
                               <DropdownMenuItem onClick={() => handleEditContact(contact)}>
                                 Edit
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  window.location.href = `/contacts/${contact.id}`;
-                                }}
-                              >
-                                View Details
+                              <DropdownMenuItem asChild>
+                                <Link to={`/contacts/${contact.id}`}>
+                                  View Details
+                                </Link>
                               </DropdownMenuItem>
                               {contact.accountId && (
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    window.location.href = `/accounts/${contact.accountId}`;
-                                  }}
-                                >
-                                  View Account
+                                <DropdownMenuItem asChild>
+                                  <Link to={`/accounts/${contact.accountId}`}>
+                                    View Account
+                                  </Link>
                                 </DropdownMenuItem>
                               )}
                             </DropdownMenuContent>
