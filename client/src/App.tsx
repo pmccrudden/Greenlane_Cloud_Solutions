@@ -10,6 +10,7 @@ import Checkout from "@/pages/checkout";
 import PaymentSuccess from "@/pages/payment-success";
 import Dashboard from "@/pages/Dashboard";
 import Accounts from "@/pages/Accounts";
+import AccountDetail from "@/pages/AccountDetail";
 import Contacts from "@/pages/Contacts";
 import Deals from "@/pages/Deals";
 import Projects from "@/pages/Projects";
@@ -33,6 +34,12 @@ function Router() {
   const AccountsWithLayout = () => (
     <MainLayout>
       <Accounts />
+    </MainLayout>
+  );
+  
+  const AccountDetailWithLayout = () => (
+    <MainLayout>
+      <AccountDetail />
     </MainLayout>
   );
   
@@ -78,6 +85,7 @@ function Router() {
       <Route path="/signup" component={SignUp} />
       <Route path="/" component={Home} />
       <ProtectedRoute path="/dashboard" component={DashboardWithLayout} />
+      <ProtectedRoute path="/accounts/:id" component={AccountDetailWithLayout} />
       <ProtectedRoute path="/accounts" component={AccountsWithLayout} />
       <ProtectedRoute path="/contacts" component={ContactsWithLayout} />
       <ProtectedRoute path="/deals" component={DealsWithLayout} />
