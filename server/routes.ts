@@ -18,7 +18,8 @@ import {
   insertSupportTicketSchema,
   insertTicketActivitySchema,
   insertEmailTemplateSchema,
-  insertDigitalJourneySchema
+  insertDigitalJourneySchema,
+  insertAccountTaskSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -854,6 +855,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const journey = await storage.updateDigitalJourney(parseInt(req.params.id), req.body, req.tenantId!);
       res.json(journey);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // ===== Account Tasks Routes =====
+  app.get("/api/tasks", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const tasks = await storage.getAccountTasks(req.tenantId!);
+      res.json(tasks);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/tasks/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const task = await storage.getAccountTask(parseInt(req.params.id), req.tenantId!);
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
+      res.json(task);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/accounts/:accountId/tasks", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const tasks = await storage.getAccountTasksByAccount(parseInt(req.params.accountId), req.tenantId!);
+      res.json(tasks);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/tasks", requireTenant, requireAuth, validateBody(insertAccountTaskSchema), async (req, res) => {
+    try {
+      const task = await storage.createAccountTask({
+        ...req.validatedBody,
+        tenantId: req.tenantId!
+      });
+      
+      res.status(201).json(task);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/tasks/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const task = await storage.updateAccountTask(parseInt(req.params.id), req.body, req.tenantId!);
+      res.json(task);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
