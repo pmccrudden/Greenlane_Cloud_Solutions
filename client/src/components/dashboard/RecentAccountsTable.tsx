@@ -91,11 +91,12 @@ export default function RecentAccountsTable({
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="p-5 border-b flex justify-between items-center">
         <h3 className="font-medium text-slate-800">Recent Accounts</h3>
-        <Link href="/accounts">
-          <a className="text-primary-600 text-sm font-medium hover:text-primary-700">
-            View All
-          </a>
-        </Link>
+        <div 
+          className="text-primary-600 text-sm font-medium hover:text-primary-700 cursor-pointer"
+          onClick={() => window.location.href = '/accounts'}
+        >
+          View All
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200">
@@ -142,7 +143,12 @@ export default function RecentAccountsTable({
                           <span className="font-medium">{initials}</span>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-slate-900">{account.name}</div>
+                          <div 
+                            className="text-sm font-medium text-slate-900 hover:text-primary-600 hover:underline cursor-pointer"
+                            onClick={() => window.location.href = `/accounts/${account.id}`}
+                          >
+                            {account.name}
+                          </div>
                           <div className="text-sm text-slate-500">
                             {account.industry} • {account.employeeCount ? `${account.employeeCount}+ employees` : 'Unknown size'}
                           </div>
@@ -167,12 +173,18 @@ export default function RecentAccountsTable({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                       <div className="flex space-x-2">
-                        <Link href={`/accounts/${account.id}`}>
-                          <a className="text-primary-600 hover:text-primary-900">View</a>
-                        </Link>
-                        <Link href={`/accounts/${account.id}/edit`}>
-                          <a className="text-primary-600 hover:text-primary-900">Edit</a>
-                        </Link>
+                        <div 
+                          className="text-primary-600 hover:text-primary-900 cursor-pointer"
+                          onClick={() => window.location.href = `/accounts/${account.id}`}
+                        >
+                          View
+                        </div>
+                        <div 
+                          className="text-primary-600 hover:text-primary-900 cursor-pointer"
+                          onClick={() => window.location.href = `/accounts/${account.id}/edit`}
+                        >
+                          Edit
+                        </div>
                       </div>
                     </td>
                   </tr>

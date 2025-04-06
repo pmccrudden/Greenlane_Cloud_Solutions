@@ -213,7 +213,12 @@ export default function Accounts() {
                               <span className="font-medium">{initials}</span>
                             </div>
                             <div className="ml-4">
-                              <div className="font-medium text-slate-900">{account.name}</div>
+                              <div 
+                                className="font-medium text-slate-900 cursor-pointer hover:text-primary-600 hover:underline"
+                                onClick={() => window.location.href = `/accounts/${account.id}`}
+                              >
+                                {account.name}
+                              </div>
                               <div className="text-sm text-slate-500">
                                 {account.employeeCount ? `${account.employeeCount}+ employees` : 'Unknown size'}
                               </div>
