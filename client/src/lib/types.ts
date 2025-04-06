@@ -1,0 +1,171 @@
+// Types definitions matching schema.ts on the backend
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  password?: string;
+  firstName?: string;
+  lastName?: string;
+  role: string;
+  tenantId: string;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Tenant {
+  id: string;
+  companyName: string;
+  planType: string;
+  isActive: boolean;
+  domainName: string;
+  adminEmail: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Account {
+  id: number;
+  name: string;
+  industry?: string;
+  employeeCount?: number;
+  website?: string;
+  parentAccountId?: number;
+  parentAccountName?: string; // Not in DB schema, but useful for UI
+  healthScore?: number;
+  tenantId: string;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Contact {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  title?: string;
+  accountId?: number;
+  accountName?: string; // Not in DB schema, but useful for UI
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Deal {
+  id: number;
+  name: string;
+  accountId?: number;
+  accountName?: string; // Not in DB schema, but useful for UI
+  value?: number;
+  stage: string;
+  closeDate?: Date;
+  winProbability?: number;
+  healthScore?: number;
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Project {
+  id: number;
+  name: string;
+  description?: string;
+  accountId?: number;
+  accountName?: string; // Not in DB schema, but useful for UI
+  startDate?: Date;
+  endDate?: Date;
+  status: string;
+  healthScore?: number;
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface SupportTicket {
+  id: number;
+  subject: string;
+  description: string;
+  status: string;
+  priority: string;
+  source: string;
+  accountId?: number;
+  accountName?: string; // Not in DB schema, but useful for UI
+  contactName?: string; // Not in DB schema, but useful for UI
+  assignedToUserId?: number;
+  assignedToUserName?: string; // Not in DB schema, but useful for UI
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TicketActivity {
+  id: number;
+  ticketId: number;
+  userId: number;
+  userName?: string; // Not in DB schema, but useful for UI
+  action: string;
+  content?: string;
+  createdAt: Date;
+}
+
+export interface EmailTemplate {
+  id: number;
+  name: string;
+  subject: string;
+  htmlContent: string;
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface JourneyStep {
+  type: 'email' | 'task' | 'meeting' | 'wait';
+  name: string;
+  description?: string;
+  delay?: number; // Time in days after previous step
+  emailTemplateId?: number;
+  emailTemplateName?: string;
+  taskType?: string;
+  taskAssignee?: string;
+}
+
+export interface DigitalJourney {
+  id: number;
+  name: string;
+  description?: string;
+  status: string;
+  steps: JourneyStep[];
+  tenantId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface HealthScoreMetrics {
+  accountHealthScores: {
+    accountName: string;
+    score: number;
+  }[];
+  dealHealthScores: {
+    dealName: string;
+    accountName: string;
+    score: number;
+  }[];
+  projectHealthScores: {
+    projectName: string;
+    accountName: string;
+    score: number;
+  }[];
+  accountsAtRisk: {
+    accountName: string;
+    score: number;
+  }[];
+  dealWinProbabilities: {
+    dealName: string;
+    accountName: string;
+    probability: number;
+  }[];
+}
