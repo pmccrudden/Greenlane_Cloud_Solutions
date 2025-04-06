@@ -53,7 +53,8 @@ export const accounts = pgTable("accounts", {
 });
 
 export const insertAccountSchema = createInsertSchema(accounts)
-  .omit({ id: true, createdAt: true, updatedAt: true, healthScore: true });
+  .omit({ id: true, createdAt: true, updatedAt: true, healthScore: true })
+  .partial({ tenantId: true }); // Make tenantId optional for validation since it's added by the server
 
 // Contacts table
 export const contacts = pgTable("contacts", {
@@ -70,7 +71,8 @@ export const contacts = pgTable("contacts", {
 });
 
 export const insertContactSchema = createInsertSchema(contacts)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true }); // Make tenantId optional for validation since it's added by the server
 
 // Deals table
 export const deals = pgTable("deals", {
@@ -88,7 +90,8 @@ export const deals = pgTable("deals", {
 });
 
 export const insertDealSchema = createInsertSchema(deals)
-  .omit({ id: true, createdAt: true, updatedAt: true, healthScore: true, winProbability: true });
+  .omit({ id: true, createdAt: true, updatedAt: true, healthScore: true, winProbability: true })
+  .partial({ tenantId: true }); // Make tenantId optional for validation since it's added by the server
 
 // Projects table
 export const projects = pgTable("projects", {
@@ -106,7 +109,8 @@ export const projects = pgTable("projects", {
 });
 
 export const insertProjectSchema = createInsertSchema(projects)
-  .omit({ id: true, createdAt: true, updatedAt: true, healthScore: true });
+  .omit({ id: true, createdAt: true, updatedAt: true, healthScore: true })
+  .partial({ tenantId: true }); // Make tenantId optional for validation since it's added by the server
 
 // Support tickets table
 export const supportTickets = pgTable("support_tickets", {
@@ -124,7 +128,8 @@ export const supportTickets = pgTable("support_tickets", {
 });
 
 export const insertSupportTicketSchema = createInsertSchema(supportTickets)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true }); // Make tenantId optional for validation since it's added by the server
 
 // Ticket activities table
 export const ticketActivities = pgTable("ticket_activities", {
@@ -151,7 +156,8 @@ export const emailTemplates = pgTable("email_templates", {
 });
 
 export const insertEmailTemplateSchema = createInsertSchema(emailTemplates)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true }); // Make tenantId optional for validation since it's added by the server
 
 // Digital journeys table
 export const digitalJourneys = pgTable("digital_journeys", {
@@ -166,7 +172,8 @@ export const digitalJourneys = pgTable("digital_journeys", {
 });
 
 export const insertDigitalJourneySchema = createInsertSchema(digitalJourneys)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true }); // Make tenantId optional for validation since it's added by the server
 
 // Session store table for express-session
 export const sessions = pgTable("sessions", {

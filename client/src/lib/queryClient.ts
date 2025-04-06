@@ -13,7 +13,7 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   const headers: Record<string, string> = {
-    "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Tenant ID from setup
+    "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Tenant ID from screenshot
   };
   
   if (data) {
@@ -40,7 +40,7 @@ export const getQueryFn: <T>(options: {
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
       headers: {
-        "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Tenant ID from setup
+        "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Tenant ID from screenshot
       },
     });
 
