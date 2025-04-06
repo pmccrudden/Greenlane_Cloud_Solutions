@@ -315,7 +315,18 @@ export default function AccountDetail() {
                   <TableBody>
                     {contacts.map((contact) => (
                       <TableRow key={contact.id}>
-                        <TableCell className="font-medium">{contact.firstName} {contact.lastName}</TableCell>
+                        <TableCell className="font-medium">
+                          <a 
+                            href={`/contacts/${contact.id}`} 
+                            className="text-primary hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.location.href = `/contacts/${contact.id}`;
+                            }}
+                          >
+                            {contact.firstName} {contact.lastName}
+                          </a>
+                        </TableCell>
                         <TableCell>{contact.jobTitle || '—'}</TableCell>
                         <TableCell>{contact.email || '—'}</TableCell>
                         <TableCell>{contact.phone || '—'}</TableCell>

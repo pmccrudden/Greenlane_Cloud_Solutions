@@ -23,6 +23,8 @@ import { apiRequest } from '@/lib/queryClient';
 const formSchema = insertSupportTicketSchema
   .extend({
     accountId: z.coerce.number().optional(),
+    // Rename title to subject in the form submission
+    subject: z.string().min(1, 'Subject is required'),
   })
   .refine(data => data.accountId !== undefined || data.accountName !== '', {
     message: 'Either Account ID or Account Name must be provided',
@@ -53,6 +55,7 @@ export function SupportTicketForm({ accountId, onSuccess, onCancel }: SupportTic
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
+      subject: '',  // Add subject field for backend compatibility
       status: 'new',
       priority: 'medium',
       accountId: accountId,
@@ -130,7 +133,15 @@ export function SupportTicketForm({ accountId, onSuccess, onCancel }: SupportTic
             <FormItem>
               <FormLabel>Title*</FormLabel>
               <FormControl>
-                <Input placeholder="Unable to access the dashboard" {...field} />
+                <Input 
+                  placeholder="Unable to access the dashboard" 
+                  {...field} 
+                  onChange={(e) => {
+                    field.onChange(e);
+                    // Also set the subject field to match title for backend compatibility
+                    form.setValue('subject', e.target.value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

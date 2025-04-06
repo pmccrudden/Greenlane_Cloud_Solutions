@@ -32,6 +32,14 @@ import {
 const formSchema = insertProjectSchema
   .extend({
     accountId: z.coerce.number().optional(),
+    startDate: z.union([
+      z.string().transform((val) => new Date(val)),
+      z.date()
+    ]).optional(),
+    endDate: z.union([
+      z.string().transform((val) => new Date(val)),
+      z.date()
+    ]).optional(),
   })
   .refine(data => data.accountId !== undefined || data.accountName !== '', {
     message: 'Either Account ID or Account Name must be provided',
