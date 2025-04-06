@@ -60,10 +60,8 @@ export default function DigitalJourneyCard({
     <div className="bg-white rounded-lg shadow">
       <div className="p-5 border-b flex justify-between items-center">
         <h3 className="font-medium text-slate-800">Digital Journey Status</h3>
-        <Link href="/digital-journey">
-          <a className="text-primary-600 text-sm font-medium hover:text-primary-700">
-            View All
-          </a>
+        <Link href="/digital-journey" className="text-primary-600 text-sm font-medium hover:text-primary-700">
+          View All
         </Link>
       </div>
       <div className="p-5 space-y-4">
@@ -85,11 +83,9 @@ export default function DigitalJourneyCard({
           ))
         )}
         <div className="pt-3 mt-3 border-t border-slate-200">
-          <Link href="/digital-journey/new">
-            <a className="text-primary-600 hover:text-primary-800 text-sm font-medium flex items-center">
-              <PlusCircle className="w-4 h-4 mr-1" />
-              Create New Journey
-            </a>
+          <Link href="/digital-journey/new" className="text-primary-600 hover:text-primary-800 text-sm font-medium flex items-center">
+            <PlusCircle className="w-4 h-4 mr-1" />
+            Create New Journey
           </Link>
         </div>
       </div>

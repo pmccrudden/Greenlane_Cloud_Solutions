@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,21 +21,16 @@ import { useEffect, useState } from "react";
 import { apiRequest } from "@/lib/queryClient";
 import { getTenantFromUrl } from "@/lib/tenant";
 
-function Router() {
+// Protected route component
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  
-  // For simplicity, we'll just use the same routes for now, ignoring tenant detection
-  // This will help us debug the login issue
-  const isTenantDomain = false; // Temporarily disable tenant routing
   
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        console.log("Checking auth status...");
         const res = await apiRequest("GET", "/api/auth/status");
         const data = await res.json();
-        console.log("Auth status:", data);
         setIsAuthenticated(data.isAuthenticated);
       } catch (error) {
         console.error("Auth status check error:", error);
@@ -44,7 +39,7 @@ function Router() {
     };
     
     checkAuthStatus();
-  }, [location]);
+  }, []);
 
   // Show loading state while checking authentication
   if (isAuthenticated === null) {
@@ -55,34 +50,90 @@ function Router() {
     );
   }
 
-  console.log("Authentication state:", { isAuthenticated, location, isTenantDomain });
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Redirect to="/signin" />;
+  }
 
-  // Combined routes - now we'll have the same routes regardless of tenant
+  // Render the protected content if authenticated
+  return <>{children}</>;
+}
+
+function Router() {
+  const [location] = useLocation();
+  
   return (
     <Switch>
       <Route path="/signin" component={SignIn} />
       <Route path="/signup" component={SignUp} />
-      <Route path="/checkout" component={Checkout} />
-      <Route path="/payment-success" component={PaymentSuccess} />
+      <Route path="/checkout">
+        <ProtectedRoute>
+          <Checkout />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/payment-success">
+        <ProtectedRoute>
+          <PaymentSuccess />
+        </ProtectedRoute>
+      </Route>
       <Route path="/">
-        {isAuthenticated ? (
+        <Home />
+      </Route>
+      <Route path="/dashboard">
+        <ProtectedRoute>
           <MainLayout>
-            <Switch>
-              <Route path="/" component={Dashboard} />
-              <Route path="/accounts" component={Accounts} />
-              <Route path="/contacts" component={Contacts} />
-              <Route path="/deals" component={Deals} />
-              <Route path="/projects" component={Projects} />
-              <Route path="/support-tickets" component={SupportTickets} />
-              <Route path="/ai-analytics" component={AIAnalytics} />
-              <Route path="/digital-journey" component={DigitalJourney} />
-              <Route component={NotFound} />
-            </Switch>
+            <Dashboard />
           </MainLayout>
-        ) : (
-          // If on home path and not authenticated, show home or login
-          location === "/" ? <Home /> : <SignIn />
-        )}
+        </ProtectedRoute>
+      </Route>
+      <Route path="/accounts">
+        <ProtectedRoute>
+          <MainLayout>
+            <Accounts />
+          </MainLayout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/contacts">
+        <ProtectedRoute>
+          <MainLayout>
+            <Contacts />
+          </MainLayout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/deals">
+        <ProtectedRoute>
+          <MainLayout>
+            <Deals />
+          </MainLayout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/projects">
+        <ProtectedRoute>
+          <MainLayout>
+            <Projects />
+          </MainLayout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/support-tickets">
+        <ProtectedRoute>
+          <MainLayout>
+            <SupportTickets />
+          </MainLayout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/ai-analytics">
+        <ProtectedRoute>
+          <MainLayout>
+            <AIAnalytics />
+          </MainLayout>
+        </ProtectedRoute>
+      </Route>
+      <Route path="/digital-journey">
+        <ProtectedRoute>
+          <MainLayout>
+            <DigitalJourney />
+          </MainLayout>
+        </ProtectedRoute>
       </Route>
       <Route component={NotFound} />
     </Switch>
