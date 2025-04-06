@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, uuid, doublePrecision } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, uuid, doublePrecision, primaryKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // Users table
 export const users = pgTable("users", {
@@ -173,6 +174,119 @@ export const sessions = pgTable("sessions", {
   sess: json("sess").notNull(),
   expire: timestamp("expire").notNull(),
 });
+
+// Define relations
+export const usersRelations = relations(users, ({ many, one }) => ({
+  tenant: one(tenants, {
+    fields: [users.tenantId],
+    references: [tenants.id]
+  }),
+  assignedTickets: many(supportTickets),
+  ticketActivities: many(ticketActivities)
+}));
+
+export const tenantsRelations = relations(tenants, ({ many }) => ({
+  users: many(users),
+  accounts: many(accounts),
+  contacts: many(contacts),
+  deals: many(deals),
+  projects: many(projects),
+  supportTickets: many(supportTickets),
+  emailTemplates: many(emailTemplates),
+  digitalJourneys: many(digitalJourneys)
+}));
+
+export const accountsRelations = relations(accounts, ({ one, many }) => ({
+  tenant: one(tenants, {
+    fields: [accounts.tenantId],
+    references: [tenants.id]
+  }),
+  parentAccount: one(accounts, {
+    fields: [accounts.parentAccountId],
+    references: [accounts.id]
+  }),
+  childAccounts: many(accounts, {
+    relationName: "parentAccount"
+  }),
+  contacts: many(contacts),
+  deals: many(deals),
+  projects: many(projects),
+  supportTickets: many(supportTickets)
+}));
+
+export const contactsRelations = relations(contacts, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [contacts.tenantId],
+    references: [tenants.id]
+  }),
+  account: one(accounts, {
+    fields: [contacts.accountId],
+    references: [accounts.id]
+  })
+}));
+
+export const dealsRelations = relations(deals, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [deals.tenantId],
+    references: [tenants.id]
+  }),
+  account: one(accounts, {
+    fields: [deals.accountId],
+    references: [accounts.id]
+  })
+}));
+
+export const projectsRelations = relations(projects, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [projects.tenantId],
+    references: [tenants.id]
+  }),
+  account: one(accounts, {
+    fields: [projects.accountId],
+    references: [accounts.id]
+  })
+}));
+
+export const supportTicketsRelations = relations(supportTickets, ({ one, many }) => ({
+  tenant: one(tenants, {
+    fields: [supportTickets.tenantId],
+    references: [tenants.id]
+  }),
+  account: one(accounts, {
+    fields: [supportTickets.accountId],
+    references: [accounts.id]
+  }),
+  assignedTo: one(users, {
+    fields: [supportTickets.assignedToUserId],
+    references: [users.id]
+  }),
+  activities: many(ticketActivities)
+}));
+
+export const ticketActivitiesRelations = relations(ticketActivities, ({ one }) => ({
+  ticket: one(supportTickets, {
+    fields: [ticketActivities.ticketId],
+    references: [supportTickets.id]
+  }),
+  user: one(users, {
+    fields: [ticketActivities.userId],
+    references: [users.id]
+  })
+}));
+
+export const emailTemplatesRelations = relations(emailTemplates, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [emailTemplates.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+export const digitalJourneysRelations = relations(digitalJourneys, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [digitalJourneys.tenantId],
+    references: [tenants.id]
+  })
+}));
 
 // Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;
