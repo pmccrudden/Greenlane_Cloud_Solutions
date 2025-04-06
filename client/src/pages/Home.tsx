@@ -19,13 +19,11 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/signin">
-                <a className="text-slate-600 hover:text-slate-900 font-medium">Sign In</a>
+              <Link href="/signin" className="text-slate-600 hover:text-slate-900 font-medium">
+                Sign In
               </Link>
               <Link href="/signup">
-                <a>
-                  <Button>Sign Up</Button>
-                </a>
+                <Button>Sign Up</Button>
               </Link>
             </div>
           </div>
@@ -46,18 +44,14 @@ export default function Home() {
               </p>
               <div className="mt-10 flex space-x-4">
                 <Link href="/signup">
-                  <a>
-                    <Button size="lg" className="px-8 py-6 text-lg">
-                      Start Free Trial
-                    </Button>
-                  </a>
+                  <Button size="lg" className="px-8 py-6 text-lg">
+                    Start Free Trial
+                  </Button>
                 </Link>
                 <Link href="/checkout">
-                  <a>
-                    <Button size="lg" variant="outline" className="px-8 py-6 text-lg">
-                      One-time Payment
-                    </Button>
-                  </a>
+                  <Button size="lg" variant="outline" className="px-8 py-6 text-lg">
+                    One-time Payment
+                  </Button>
                 </Link>
                 <a 
                   href="#features"
@@ -143,11 +137,9 @@ export default function Home() {
               </p>
               <div className="mt-8">
                 <Link href="/signup">
-                  <a>
-                    <Button size="lg" className="bg-white text-primary-700 hover:bg-primary-50">
-                      Start Free Trial
-                    </Button>
-                  </a>
+                  <Button size="lg" className="bg-white text-primary-700 hover:bg-primary-50">
+                    Start Free Trial
+                  </Button>
                 </Link>
               </div>
             </div>

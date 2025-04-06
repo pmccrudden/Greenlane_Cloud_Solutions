@@ -118,17 +118,14 @@ export default function Sidebar({ user }: SidebarProps) {
                 <Link 
                   key={item.path} 
                   href={item.path}
+                  className={`flex items-center p-2 rounded-md ${
+                    isActive 
+                      ? 'bg-primary-700 text-white' 
+                      : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                  }`}
                 >
-                  <a 
-                    className={`flex items-center p-2 rounded-md ${
-                      isActive 
-                        ? 'bg-primary-700 text-white' 
-                        : 'text-slate-300 hover:bg-slate-700 hover:text-white'
-                    }`}
-                  >
-                    {item.icon}
-                    {item.title}
-                  </a>
+                  {item.icon}
+                  {item.title}
                 </Link>
               );
             })}
