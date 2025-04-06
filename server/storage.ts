@@ -172,8 +172,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createAccount(insertAccount: InsertAccount): Promise<Account> {
-    const [account] = await db.insert(accounts).values(insertAccount).returning();
-    return account;
+    try {
+      console.log("Creating account with data:", JSON.stringify(insertAccount, null, 2));
+      
+      // Make sure tenant ID is a string and check if it exists
+      if (!insertAccount.tenantId) {
+        throw new Error("Tenant ID is required to create an account");
+      }
+      
+      // Verify tenant exists before creating account
+      const tenant = await this.getTenant(insertAccount.tenantId);
+      if (!tenant) {
+        throw new Error(`Tenant not found with ID: ${insertAccount.tenantId}`);
+      }
+      
+      const [account] = await db
+        .insert(accounts)
+        .values(insertAccount)
+        .returning();
+      
+      console.log("Created account:", JSON.stringify(account, null, 2));
+      return account;
+    } catch (error) {
+      console.error("Error creating account:", error);
+      throw error;
+    }
   }
 
   async updateAccount(id: number, data: Partial<Account>, tenantId: string): Promise<Account> {
