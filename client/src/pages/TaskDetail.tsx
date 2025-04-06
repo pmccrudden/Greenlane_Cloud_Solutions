@@ -77,7 +77,7 @@ export default function TaskDetail() {
 
   // Fetch task details
   const { data: task, isLoading: isLoadingTask } = useQuery({
-    queryKey: [`/api/account-tasks/${id}`],
+    queryKey: [`/api/tasks/${id}`],
   });
 
   // Fetch account details if task is loaded
@@ -107,7 +107,7 @@ export default function TaskDetail() {
   // Mutation for updating a task
   const updateTaskMutation = useMutation({
     mutationFn: async (values: TaskUpdateValues) => {
-      const response = await apiRequest("PATCH", `/api/account-tasks/${id}`, values);
+      const response = await apiRequest("PATCH", `/api/tasks/${id}`, values);
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || "Failed to update task");
@@ -120,7 +120,7 @@ export default function TaskDetail() {
         description: "The task has been updated successfully.",
       });
       setIsDialogOpen(false);
-      queryClient.invalidateQueries({ queryKey: [`/api/account-tasks/${id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tasks/${id}`] });
     },
     onError: (error: Error) => {
       toast({

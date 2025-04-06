@@ -66,7 +66,7 @@ export default function Tasks() {
 
   // Fetch tasks
   const { data: tasks, isLoading: isLoadingTasks } = useQuery({
-    queryKey: ["/api/account-tasks"],
+    queryKey: ["/api/tasks"],
   });
 
   // Fetch accounts for the account dropdown
@@ -90,7 +90,7 @@ export default function Tasks() {
   // Mutation for creating a new task
   const createTaskMutation = useMutation({
     mutationFn: async (values: TaskFormValues) => {
-      const response = await apiRequest("POST", "/api/account-tasks", values);
+      const response = await apiRequest("POST", "/api/tasks", values);
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || "Failed to create task");
@@ -104,7 +104,7 @@ export default function Tasks() {
       });
       setIsDialogOpen(false);
       form.reset();
-      queryClient.invalidateQueries({ queryKey: ["/api/account-tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
     },
     onError: (error: Error) => {
       toast({
