@@ -1,23 +1,53 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { ChevronLeftIcon, Building2Icon, CalendarIcon, TagIcon, BriefcaseIcon, Users2Icon, DollarSignIcon, BarChart4Icon, PercentIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { ChevronLeftIcon, Building2Icon, CalendarIcon, TagIcon, BriefcaseIcon, Users2Icon, DollarSignIcon, BarChart4Icon, PercentIcon, UserIcon, CheckIcon, PencilIcon } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Deal, Account, Contact } from '@/lib/types';
+import { Deal, Account, User } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 export default function DealDetail() {
   const [_, setLocation] = useLocation();
   const { id } = useParams();
   const dealId = parseInt(id);
   const { toast } = useToast();
+  
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [fieldValue, setFieldValue] = useState<any>('');
+  const [isEditing, setIsEditing] = useState({
+    description: false,
+    nextSteps: false
+  });
+  const [description, setDescription] = useState('');
+  const [nextSteps, setNextSteps] = useState('');
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  
+  // The stages list
+  const stages = [
+    'prospecting',
+    'qualification',
+    'needs_analysis',
+    'value_proposition',
+    'proposal',
+    'negotiation',
+    'closing',
+    'closed_won',
+    'closed_lost'
+  ];
 
   // Fetch deal details
   const { data: deal, isLoading: isLoadingDeal, error } = useQuery<Deal>({
@@ -43,10 +73,100 @@ export default function DealDetail() {
       });
     },
   });
+  
+  // Fetch users (for deal owner)
+  const { data: users, isLoading: isLoadingUsers } = useQuery<User[]>({
+    queryKey: ['/api/users'],
+    onError: (error: any) => {
+      toast({
+        title: "Error loading users",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Fetch deal owner details
+  const { data: dealOwner, isLoading: isLoadingDealOwner } = useQuery<User>({
+    queryKey: ['/api/users', deal?.dealOwnerId],
+    enabled: !!deal?.dealOwnerId,
+    onError: (error: any) => {
+      toast({
+        title: "Error loading deal owner",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Update deal mutation
+  const updateDealMutation = useMutation({
+    mutationFn: async (updatedData: Partial<Deal>) => {
+      const res = await apiRequest('PATCH', `/api/deals/${dealId}`, updatedData);
+      return await res.json();
+    },
+    onSuccess: (updatedDeal) => {
+      queryClient.setQueryData(['/api/deals', dealId], (oldData: any) => {
+        return { ...oldData, ...updatedDeal };
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/deals'] });
+      
+      setEditingField(null);
+      setIsEditing({ ...isEditing, description: false, nextSteps: false });
+      
+      toast({
+        title: "Deal updated",
+        description: "The deal has been successfully updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error updating deal",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Set initial values for editable fields
+  useEffect(() => {
+    if (deal) {
+      setDescription(deal.description || '');
+      setNextSteps(deal.nextSteps || '');
+    }
+  }, [deal]);
 
   // Handle close button click
   const handleClose = () => {
     setLocation('/deals');
+  };
+  
+  // Start editing a field
+  const startEditing = (field: string, value: any) => {
+    setEditingField(field);
+    setFieldValue(value);
+  };
+  
+  // Save a field
+  const saveField = () => {
+    if (!editingField) return;
+    
+    const updates: Partial<Deal> = { [editingField]: fieldValue };
+    updateDealMutation.mutate(updates);
+  };
+  
+  // Save description or next steps
+  const saveTextArea = (field: 'description' | 'nextSteps') => {
+    const value = field === 'description' ? description : nextSteps;
+    updateDealMutation.mutate({ [field]: value });
+  };
+  
+  // Format value based on field type
+  const formatValue = (value: any, field: string) => {
+    if (field === 'closeDate' && value) {
+      return format(new Date(value), 'yyyy-MM-dd');
+    }
+    return value;
   };
 
   if (isLoadingDeal) {
@@ -167,6 +287,14 @@ export default function DealDetail() {
   };
 
   const stageStyling = getStageBadge(deal.stage || 'prospecting');
+  
+  // Get deal owner name
+  const getDealOwnerName = () => {
+    if (isLoadingDealOwner) return 'Loading...';
+    if (!deal.dealOwnerId) return 'Unassigned';
+    if (dealOwner) return `${dealOwner.firstName || ''} ${dealOwner.lastName || ''}`.trim() || dealOwner.username;
+    return 'Unknown';
+  };
 
   return (
     <div className="space-y-6">
@@ -192,7 +320,38 @@ export default function DealDetail() {
           <Button variant="outline" onClick={() => setLocation(`/deals/${dealId}/edit`)}>
             Edit
           </Button>
-          <Button>Update Stage</Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>Update Stage</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Update Deal Stage</DialogTitle>
+                <DialogDescription>
+                  Select the new stage for this deal
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <Select
+                  value={deal.stage}
+                  onValueChange={(value) => {
+                    updateDealMutation.mutate({ stage: value });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a stage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {stages.map((stage) => (
+                      <SelectItem key={stage} value={stage}>
+                        {formatStage(stage)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -224,21 +383,80 @@ export default function DealDetail() {
                   
                   <div className="flex items-start gap-3">
                     <DollarSignIcon className="h-5 w-5 mt-0.5 text-slate-500" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-slate-500">Value</p>
-                      <p className="text-slate-900 font-medium">
-                        {formatCurrency(deal.value)}
-                      </p>
+                      {editingField === 'value' ? (
+                        <div className="flex mt-1">
+                          <Input 
+                            type="number" 
+                            value={fieldValue} 
+                            onChange={(e) => setFieldValue(parseFloat(e.target.value))}
+                            className="w-28 mr-2"
+                          />
+                          <Button size="sm" onClick={saveField} className="mr-1">
+                            <CheckIcon className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => setEditingField(null)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <p className="text-slate-900 font-medium">
+                            {formatCurrency(deal.value)}
+                          </p>
+                          <Button variant="ghost" size="icon" onClick={() => startEditing('value', deal.value)}>
+                            <PencilIcon className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-3">
                     <CalendarIcon className="h-5 w-5 mt-0.5 text-slate-500" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-slate-500">Close Date</p>
-                      <p className="text-slate-900 font-medium">
-                        {formatDate(deal.closeDate)}
-                      </p>
+                      {editingField === 'closeDate' ? (
+                        <div className="flex mt-1">
+                          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                            <PopoverTrigger asChild>
+                              <Button variant="outline" className="justify-start text-left font-normal w-[240px]">
+                                {fieldValue ? format(new Date(fieldValue), 'PPP') : <span>Pick a date</span>}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={fieldValue ? new Date(fieldValue) : undefined}
+                                onSelect={(date) => {
+                                  setFieldValue(date);
+                                  if (date) {
+                                    setCalendarOpen(false);
+                                    setTimeout(() => {
+                                      updateDealMutation.mutate({ closeDate: date });
+                                    }, 100);
+                                  }
+                                }}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <Button size="sm" variant="ghost" onClick={() => setEditingField(null)} className="ml-2">
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <p className="text-slate-900 font-medium">
+                            {formatDate(deal.closeDate)}
+                          </p>
+                          <Button variant="ghost" size="icon" onClick={() => startEditing('closeDate', deal.closeDate)}>
+                            <PencilIcon className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -246,31 +464,121 @@ export default function DealDetail() {
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
                     <TagIcon className="h-5 w-5 mt-0.5 text-slate-500" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-slate-500">Stage</p>
-                      <p className="text-slate-900 font-medium">
-                        {formatStage(deal.stage || 'Prospecting')}
-                      </p>
+                      {editingField === 'stage' ? (
+                        <div className="flex mt-1">
+                          <Select
+                            value={fieldValue}
+                            onValueChange={(value) => {
+                              setFieldValue(value);
+                              setTimeout(() => {
+                                updateDealMutation.mutate({ stage: value });
+                              }, 100);
+                            }}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Select a stage" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {stages.map((stage) => (
+                                <SelectItem key={stage} value={stage}>
+                                  {formatStage(stage)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button size="sm" variant="ghost" onClick={() => setEditingField(null)} className="ml-2">
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <p className="text-slate-900 font-medium">
+                            {formatStage(deal.stage || 'Prospecting')}
+                          </p>
+                          <Button variant="ghost" size="icon" onClick={() => startEditing('stage', deal.stage)}>
+                            <PencilIcon className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <UserIcon className="h-5 w-5 mt-0.5 text-slate-500" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-slate-500">Deal Owner</p>
+                      {editingField === 'dealOwnerId' ? (
+                        <div className="flex mt-1">
+                          <Select
+                            value={fieldValue?.toString()}
+                            onValueChange={(value) => {
+                              setFieldValue(parseInt(value));
+                              setTimeout(() => {
+                                updateDealMutation.mutate({ dealOwnerId: parseInt(value) });
+                              }, 100);
+                            }}
+                          >
+                            <SelectTrigger className="w-[180px]">
+                              <SelectValue placeholder="Select an owner" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {users?.map((user) => (
+                                <SelectItem key={user.id} value={user.id.toString()}>
+                                  {`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button size="sm" variant="ghost" onClick={() => setEditingField(null)} className="ml-2">
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <p className="text-slate-900 font-medium">
+                            {getDealOwnerName()}
+                          </p>
+                          <Button variant="ghost" size="icon" onClick={() => startEditing('dealOwnerId', deal.dealOwnerId)}>
+                            <PencilIcon className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
                   <div className="flex items-start gap-3">
                     <PercentIcon className="h-5 w-5 mt-0.5 text-slate-500" />
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-slate-500">Win Probability</p>
-                      <p className="text-slate-900 font-medium">
-                        {deal.winProbability || 0}%
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <Users2Icon className="h-5 w-5 mt-0.5 text-slate-500" />
-                    <div>
-                      <p className="text-sm font-medium text-slate-500">Type</p>
-                      <p className="text-slate-900 font-medium">
-                        {deal.type || 'New Business'}
-                      </p>
+                      {editingField === 'winProbability' ? (
+                        <div className="flex mt-1">
+                          <Input 
+                            type="number" 
+                            value={fieldValue} 
+                            onChange={(e) => setFieldValue(parseInt(e.target.value))}
+                            min="0"
+                            max="100"
+                            className="w-28 mr-2"
+                          />
+                          <Button size="sm" onClick={saveField} className="mr-1">
+                            <CheckIcon className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => setEditingField(null)}>
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <p className="text-slate-900 font-medium">
+                            {deal.winProbability || 0}%
+                          </p>
+                          <Button variant="ghost" size="icon" onClick={() => startEditing('winProbability', deal.winProbability)}>
+                            <PencilIcon className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -279,19 +587,97 @@ export default function DealDetail() {
               <Separator />
               
               <div>
-                <h3 className="text-sm font-medium text-slate-500 mb-2">Description</h3>
-                <div className="prose prose-sm max-w-none">
-                  <p>{deal.description || 'No description provided.'}</p>
+                <div className="flex justify-between mb-2">
+                  <h3 className="text-sm font-medium text-slate-500">Description</h3>
+                  {!isEditing.description && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setIsEditing({...isEditing, description: true})}
+                    >
+                      <PencilIcon className="h-3.5 w-3.5 mr-1" /> Edit
+                    </Button>
+                  )}
                 </div>
+                {isEditing.description ? (
+                  <div className="space-y-2">
+                    <Textarea 
+                      value={description} 
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="min-h-[100px]"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        size="sm" 
+                        onClick={() => saveTextArea('description')}
+                      >
+                        Save
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => {
+                          setDescription(deal.description || '');
+                          setIsEditing({...isEditing, description: false});
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="prose prose-sm max-w-none">
+                    <p>{deal.description || 'No description provided.'}</p>
+                  </div>
+                )}
               </div>
               
               <Separator />
               
               <div>
-                <h3 className="text-sm font-medium text-slate-500 mb-2">Next Steps</h3>
-                <div className="prose prose-sm max-w-none">
-                  <p>{deal.nextSteps || 'No next steps defined.'}</p>
+                <div className="flex justify-between mb-2">
+                  <h3 className="text-sm font-medium text-slate-500">Next Steps</h3>
+                  {!isEditing.nextSteps && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setIsEditing({...isEditing, nextSteps: true})}
+                    >
+                      <PencilIcon className="h-3.5 w-3.5 mr-1" /> Edit
+                    </Button>
+                  )}
                 </div>
+                {isEditing.nextSteps ? (
+                  <div className="space-y-2">
+                    <Textarea 
+                      value={nextSteps} 
+                      onChange={(e) => setNextSteps(e.target.value)}
+                      className="min-h-[100px]"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        size="sm" 
+                        onClick={() => saveTextArea('nextSteps')}
+                      >
+                        Save
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => {
+                          setNextSteps(deal.nextSteps || '');
+                          setIsEditing({...isEditing, nextSteps: false});
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="prose prose-sm max-w-none">
+                    <p>{deal.nextSteps || 'No next steps defined.'}</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

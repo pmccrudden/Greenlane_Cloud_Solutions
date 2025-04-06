@@ -559,6 +559,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/deals/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const body = { ...req.body };
+      
+      // Convert closeDate to Date object if present
+      if (body.closeDate && typeof body.closeDate === 'string') {
+        try {
+          body.closeDate = new Date(body.closeDate);
+        } catch (e) {
+          return res.status(400).json({ message: "Invalid close date format" });
+        }
+      }
+      
+      const deal = await storage.updateDeal(parseInt(req.params.id), body, req.tenantId!);
+      res.json(deal);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.get("/api/deals/:id/win-probability", requireTenant, requireAuth, async (req, res) => {
     try {
       const winProbability = await storage.calculateDealWinProbability(parseInt(req.params.id), req.tenantId!);

@@ -65,6 +65,11 @@ export interface Deal {
   closeDate?: Date;
   winProbability?: number;
   healthScore?: number;
+  type?: string;
+  description?: string;
+  nextSteps?: string;
+  dealOwnerId?: number;
+  dealOwnerName?: string; // Not in DB schema, but useful for UI
   tenantId: string;
   createdAt: Date;
   updatedAt: Date;

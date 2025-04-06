@@ -84,6 +84,10 @@ export const deals = pgTable("deals", {
   closeDate: timestamp("close_date"),
   winProbability: integer("win_probability"),
   healthScore: integer("health_score"),
+  type: text("type"),
+  description: text("description"),
+  nextSteps: text("next_steps"),
+  dealOwnerId: integer("deal_owner_id").references(() => users.id),
   tenantId: text("tenant_id").notNull().references(() => tenants.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -189,7 +193,8 @@ export const usersRelations = relations(users, ({ many, one }) => ({
     references: [tenants.id]
   }),
   assignedTickets: many(supportTickets),
-  ticketActivities: many(ticketActivities)
+  ticketActivities: many(ticketActivities),
+  ownedDeals: many(deals, { relationName: 'dealOwner' })
 }));
 
 export const tenantsRelations = relations(tenants, ({ many }) => ({
@@ -240,6 +245,10 @@ export const dealsRelations = relations(deals, ({ one }) => ({
   account: one(accounts, {
     fields: [deals.accountId],
     references: [accounts.id]
+  }),
+  dealOwner: one(users, {
+    fields: [deals.dealOwnerId],
+    references: [users.id]
   })
 }));
 
