@@ -226,7 +226,22 @@ export default function Contacts() {
                           )}
                         </TableCell>
                         <TableCell>{contact.title || '—'}</TableCell>
-                        <TableCell>{getAccountName(contact.accountId)}</TableCell>
+                        <TableCell>
+                          {contact.accountId ? (
+                            <a 
+                              href={`/accounts/${contact.accountId}`} 
+                              className="text-blue-600 hover:text-blue-800 hover:underline"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                window.location.href = `/accounts/${contact.accountId}`;
+                              }}
+                            >
+                              {getAccountName(contact.accountId)}
+                            </a>
+                          ) : (
+                            '—'
+                          )}
+                        </TableCell>
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>

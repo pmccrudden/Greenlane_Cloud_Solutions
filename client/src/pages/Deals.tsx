@@ -239,7 +239,22 @@ export default function Deals() {
                           {deal.name}
                         </a>
                       </TableCell>
-                      <TableCell>{getAccountName(deal.accountId)}</TableCell>
+                      <TableCell>
+                        {deal.accountId ? (
+                          <a 
+                            href={`/accounts/${deal.accountId}`} 
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.location.href = `/accounts/${deal.accountId}`;
+                            }}
+                          >
+                            {getAccountName(deal.accountId)}
+                          </a>
+                        ) : (
+                          '—'
+                        )}
+                      </TableCell>
                       <TableCell>{formatCurrency(deal.value)}</TableCell>
                       <TableCell>
                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStageBadge(deal.stage)}`}>

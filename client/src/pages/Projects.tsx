@@ -228,7 +228,22 @@ export default function Projects() {
                           {project.name}
                         </a>
                       </TableCell>
-                      <TableCell>{getAccountName(project.accountId)}</TableCell>
+                      <TableCell>
+                        {project.accountId ? (
+                          <a 
+                            href={`/accounts/${project.accountId}`} 
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.location.href = `/accounts/${project.accountId}`;
+                            }}
+                          >
+                            {getAccountName(project.accountId)}
+                          </a>
+                        ) : (
+                          '—'
+                        )}
+                      </TableCell>
                       <TableCell>{formatDate(project.startDate)}</TableCell>
                       <TableCell>{formatDate(project.endDate)}</TableCell>
                       <TableCell>

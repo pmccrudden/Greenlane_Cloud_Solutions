@@ -382,7 +382,18 @@ export default function AccountDetail() {
                   <TableBody>
                     {deals.map((deal) => (
                       <TableRow key={deal.id}>
-                        <TableCell className="font-medium">{deal.name}</TableCell>
+                        <TableCell className="font-medium">
+                          <a 
+                            href={`/deals/${deal.id}`} 
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.location.href = `/deals/${deal.id}`;
+                            }}
+                          >
+                            {deal.name}
+                          </a>
+                        </TableCell>
                         <TableCell>${deal.amount?.toLocaleString() || '—'}</TableCell>
                         <TableCell>{deal.stage || '—'}</TableCell>
                         <TableCell>{deal.probability ? `${deal.probability}%` : '—'}</TableCell>
@@ -438,7 +449,18 @@ export default function AccountDetail() {
                   <TableBody>
                     {projects.map((project) => (
                       <TableRow key={project.id}>
-                        <TableCell className="font-medium">{project.name}</TableCell>
+                        <TableCell className="font-medium">
+                          <a 
+                            href={`/projects/${project.id}`} 
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.location.href = `/projects/${project.id}`;
+                            }}
+                          >
+                            {project.name}
+                          </a>
+                        </TableCell>
                         <TableCell>{project.status || '—'}</TableCell>
                         <TableCell>{project.startDate ? new Date(project.startDate).toLocaleDateString() : '—'}</TableCell>
                         <TableCell>{project.endDate ? new Date(project.endDate).toLocaleDateString() : '—'}</TableCell>
@@ -494,7 +516,18 @@ export default function AccountDetail() {
                   <TableBody>
                     {tickets.map((ticket) => (
                       <TableRow key={ticket.id}>
-                        <TableCell className="font-medium">{ticket.subject}</TableCell>
+                        <TableCell className="font-medium">
+                          <a 
+                            href={`/support-tickets/${ticket.id}`} 
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.location.href = `/support-tickets/${ticket.id}`;
+                            }}
+                          >
+                            {ticket.subject}
+                          </a>
+                        </TableCell>
                         <TableCell>
                           <Badge variant={ticket.status === 'closed' ? 'outline' : 'default'}>
                             {ticket.status === 'open' ? 'Open' : 'Closed'}

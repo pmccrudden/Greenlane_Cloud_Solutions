@@ -265,7 +265,22 @@ export default function SupportTickets() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell>{getAccountName(ticket.accountId)}</TableCell>
+                        <TableCell>
+                          {ticket.accountId ? (
+                            <a 
+                              href={`/accounts/${ticket.accountId}`} 
+                              className="text-blue-600 hover:text-blue-800 hover:underline"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                window.location.href = `/accounts/${ticket.accountId}`;
+                              }}
+                            >
+                              {getAccountName(ticket.accountId)}
+                            </a>
+                          ) : (
+                            '—'
+                          )}
+                        </TableCell>
                         <TableCell>
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityBadge(ticket.priority)}`}>
                             {ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)}
@@ -510,7 +525,22 @@ function TicketDetail({ ticket, accountName, onUpdate }: TicketDetailProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="text-sm font-medium text-slate-500">Account</h3>
-              <p>{accountName}</p>
+              <p>
+                {ticket.accountId ? (
+                  <a 
+                    href={`/accounts/${ticket.accountId}`} 
+                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = `/accounts/${ticket.accountId}`;
+                    }}
+                  >
+                    {accountName}
+                  </a>
+                ) : (
+                  accountName || '—'
+                )}
+              </p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-slate-500">Created</h3>
