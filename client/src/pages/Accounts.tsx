@@ -44,10 +44,10 @@ import { Search, Plus, MoreHorizontal, Building2 } from 'lucide-react';
 // Account form schema
 const accountSchema = z.object({
   name: z.string().min(1, 'Account name is required'),
-  industry: z.string().optional(),
-  employeeCount: z.string().optional().transform(val => val ? parseInt(val) : undefined),
+  industry: z.string().optional().transform(val => val === "none" ? undefined : val),
+  employeeCount: z.string().optional().transform(val => val && val !== "unknown" ? parseInt(val) : undefined),
   website: z.string().optional(),
-  parentAccountId: z.string().optional().transform(val => val ? parseInt(val) : undefined),
+  parentAccountId: z.string().optional().transform(val => val && val !== "none" ? parseInt(val) : undefined),
   status: z.string().default('active'),
 });
 
@@ -392,7 +392,7 @@ function AccountForm({ account, onSubmitSuccess, accounts }: AccountFormProps) {
                         <SelectValue placeholder="Select industry" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">None</SelectItem>
+                        <SelectItem value="none">None</SelectItem>
                         <SelectItem value="Technology">Technology</SelectItem>
                         <SelectItem value="Finance">Finance</SelectItem>
                         <SelectItem value="Healthcare">Healthcare</SelectItem>
@@ -421,7 +421,7 @@ function AccountForm({ account, onSubmitSuccess, accounts }: AccountFormProps) {
                         <SelectValue placeholder="Select size" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Unknown</SelectItem>
+                        <SelectItem value="unknown">Unknown</SelectItem>
                         <SelectItem value="10">1-10</SelectItem>
                         <SelectItem value="50">11-50</SelectItem>
                         <SelectItem value="200">51-200</SelectItem>
@@ -465,7 +465,7 @@ function AccountForm({ account, onSubmitSuccess, accounts }: AccountFormProps) {
                       <SelectValue placeholder="Select parent account (optional)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {accounts.map(acc => (
                         <SelectItem key={acc.id} value={acc.id.toString()}>
                           {acc.name}
