@@ -51,9 +51,9 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
         console.log("Using onSuccess callback");
         onSuccess();
       } else {
-        console.log("No onSuccess callback, redirecting to root");
+        console.log("No onSuccess callback, redirecting to dashboard");
         // Force a hard redirect to make sure we reload the page
-        window.location.href = '/';
+        window.location.href = '/dashboard';
       }
     } catch (error) {
       toast({

@@ -21,10 +21,12 @@ export default function MainLayout({ children }: MainLayoutProps) {
         
         if (data.isAuthenticated && data.user) {
           setUser(data.user);
-        } else {
-          // Redirect to login if not authenticated
-          window.location.href = "/signin";
-        }
+        } 
+        // else {
+        //   // Redirect to login if not authenticated
+        //   window.location.href = "/signin";
+        // }
+        
       } catch (error) {
         toast({
           title: "Error",
@@ -32,8 +34,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
           variant: "destructive",
         });
         
-        // Redirect to login on error
-        window.location.href = "/signin";
+        // Don't redirect to login on error
+        // window.location.href = "/signin";
       } finally {
         setIsLoading(false);
       }
