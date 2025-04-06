@@ -111,6 +111,16 @@ export default function DealDetail() {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/deals'] });
       
+      // If we're updating dealOwnerId, make sure to invalidate that query
+      if ('dealOwnerId' in updatedDeal) {
+        queryClient.invalidateQueries({ queryKey: ['/api/users', updatedDeal.dealOwnerId] });
+      }
+      
+      // If we're updating accountId, make sure to invalidate that query
+      if ('accountId' in updatedDeal) {
+        queryClient.invalidateQueries({ queryKey: ['/api/accounts', updatedDeal.accountId] });
+      }
+      
       setEditingField(null);
       setIsEditing({ ...isEditing, description: false, nextSteps: false });
       
@@ -144,7 +154,12 @@ export default function DealDetail() {
   // Start editing a field
   const startEditing = (field: string, value: any) => {
     setEditingField(field);
-    setFieldValue(value);
+    // If dealOwnerId is undefined/null/0, set it to string "0" for the Select component
+    if (field === 'dealOwnerId' && (!value || value === 0)) {
+      setFieldValue("0");
+    } else {
+      setFieldValue(value);
+    }
   };
   
   // Save a field
@@ -291,7 +306,7 @@ export default function DealDetail() {
   // Get deal owner name
   const getDealOwnerName = () => {
     if (isLoadingDealOwner) return 'Loading...';
-    if (!deal.dealOwnerId) return 'Unassigned';
+    if (!deal.dealOwnerId || deal.dealOwnerId === 0) return 'Unassigned';
     if (dealOwner) return `${dealOwner.firstName || ''} ${dealOwner.lastName || ''}`.trim() || dealOwner.username;
     return 'Unknown';
   };
@@ -512,18 +527,19 @@ export default function DealDetail() {
                       {editingField === 'dealOwnerId' ? (
                         <div className="flex mt-1">
                           <Select
-                            value={fieldValue?.toString()}
+                            value={fieldValue?.toString() || ''}
                             onValueChange={(value) => {
-                              setFieldValue(parseInt(value));
-                              setTimeout(() => {
-                                updateDealMutation.mutate({ dealOwnerId: parseInt(value) });
-                              }, 100);
+                              setFieldValue(value);
+                              // Convert value to integer or null (0) depending on the value
+                              const dealOwnerId = value === "0" ? 0 : parseInt(value);
+                              updateDealMutation.mutate({ dealOwnerId });
                             }}
                           >
                             <SelectTrigger className="w-[180px]">
                               <SelectValue placeholder="Select an owner" />
                             </SelectTrigger>
                             <SelectContent>
+                              <SelectItem value="0">Unassigned</SelectItem>
                               {users?.map((user) => (
                                 <SelectItem key={user.id} value={user.id.toString()}>
                                   {`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username}
