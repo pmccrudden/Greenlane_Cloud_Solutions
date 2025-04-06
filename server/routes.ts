@@ -180,6 +180,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ isAuthenticated: false });
     }
   });
+  
+  // Endpoint for compatibility with react-query hooks
+  app.get("/api/user", (req, res) => {
+    if (req.isAuthenticated()) {
+      res.json(req.user);
+    } else {
+      res.status(401).json({ message: "Not authenticated" });
+    }
+  });
 
   // ===== Stripe Integration =====
   if (stripe) {
@@ -361,6 +370,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/accounts", requireTenant, requireAuth, validateBody(insertAccountSchema), async (req, res) => {
     try {
+      console.log("Creating account with tenant ID:", req.tenantId);
+      console.log("User object:", req.user);
+      
+      // Use the tenant ID from the request
       const account = await storage.createAccount({
         ...req.validatedBody,
         tenantId: req.tenantId!
@@ -368,6 +381,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(account);
     } catch (error: any) {
+      console.error("Account creation error:", error);
       res.status(500).json({ message: error.message });
     }
   });
