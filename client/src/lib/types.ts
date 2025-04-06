@@ -174,3 +174,42 @@ export interface HealthScoreMetrics {
     probability: number;
   }[];
 }
+
+// AI Account Management Types
+export interface AccountAIInsight {
+  accountId: number;
+  accountName: string;
+  summary: string;
+  lastGeneratedAt: Date;
+}
+
+export interface AccountNextSteps {
+  accountId: number;
+  accountName: string;
+  recommendations: string;
+  lastGeneratedAt: Date;
+}
+
+export interface TaskPlaybookItem {
+  title: string;
+  description: string;
+  timeline: 'immediate' | 'short-term' | 'long-term';
+  effort: 'low' | 'medium' | 'high';
+  outcome: string;
+  owner: string;
+  isCheckpoint: boolean;
+  isCompleted?: boolean;
+}
+
+export interface TaskPlaybook {
+  accountId: number;
+  accountName: string;
+  tasks: TaskPlaybookItem[];
+  lastGeneratedAt: Date;
+}
+
+export interface AccountAIData {
+  insight?: AccountAIInsight;
+  nextSteps?: AccountNextSteps;
+  playbook?: TaskPlaybook;
+}

@@ -22,6 +22,7 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { generateAccountSummary, generateNextStepsRecommendations, generateTaskPlaybook } from "./anthropic";
 
 const SECRET_KEY = process.env.SECRET || "greenlanecloudsolutions-development-secret";
 
@@ -854,6 +855,187 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const journey = await storage.updateDigitalJourney(parseInt(req.params.id), req.body, req.tenantId!);
       res.json(journey);
     } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== AI Account Management Routes =====
+  app.get("/api/accounts/:id/ai/insight", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.id);
+      const account = await storage.getAccount(accountId, req.tenantId!);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      // Get related data for the account
+      const deals = await storage.getDealsByAccount(accountId, req.tenantId!);
+      const projects = await storage.getProjectsByAccount(accountId, req.tenantId!);
+      const contacts = await storage.getContactsByAccount(accountId, req.tenantId!);
+      
+      // Build the data package to send to Anthropic
+      const accountData = {
+        account,
+        deals,
+        projects,
+        contacts
+      };
+
+      // Generate summary using Anthropic
+      const summary = await generateAccountSummary(accountData);
+      
+      // Create the insight response
+      const insight = {
+        accountId,
+        accountName: account.name,
+        summary,
+        lastGeneratedAt: new Date()
+      };
+      
+      res.json(insight);
+    } catch (error: any) {
+      console.error("Error generating AI insight:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/accounts/:id/ai/next-steps", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.id);
+      const account = await storage.getAccount(accountId, req.tenantId!);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      // Get related data for the account
+      const deals = await storage.getDealsByAccount(accountId, req.tenantId!);
+      const projects = await storage.getProjectsByAccount(accountId, req.tenantId!);
+      const contacts = await storage.getContactsByAccount(accountId, req.tenantId!);
+      
+      // Build the data package to send to Anthropic
+      const accountData = {
+        account,
+        deals,
+        projects,
+        contacts
+      };
+
+      // Generate next steps using Anthropic
+      const recommendations = await generateNextStepsRecommendations(accountData);
+      
+      // Create the next steps response
+      const nextSteps = {
+        accountId,
+        accountName: account.name,
+        recommendations,
+        lastGeneratedAt: new Date()
+      };
+      
+      res.json(nextSteps);
+    } catch (error: any) {
+      console.error("Error generating next steps:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/accounts/:id/ai/playbook", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.id);
+      const account = await storage.getAccount(accountId, req.tenantId!);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      // Get related data for the account
+      const deals = await storage.getDealsByAccount(accountId, req.tenantId!);
+      const projects = await storage.getProjectsByAccount(accountId, req.tenantId!);
+      const contacts = await storage.getContactsByAccount(accountId, req.tenantId!);
+      
+      // Build the data package to send to Anthropic
+      const accountData = {
+        account,
+        deals,
+        projects,
+        contacts
+      };
+
+      // Generate task playbook using Anthropic
+      const taskPlaybookData = await generateTaskPlaybook(accountData);
+      
+      // Create the playbook response
+      const playbook = {
+        accountId,
+        accountName: account.name,
+        tasks: taskPlaybookData.tasks.map((task: any) => ({
+          ...task,
+          isCompleted: false
+        })),
+        lastGeneratedAt: new Date()
+      };
+      
+      res.json(playbook);
+    } catch (error: any) {
+      console.error("Error generating task playbook:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/accounts/:id/ai/all", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.id);
+      const account = await storage.getAccount(accountId, req.tenantId!);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      // Get related data for the account
+      const deals = await storage.getDealsByAccount(accountId, req.tenantId!);
+      const projects = await storage.getProjectsByAccount(accountId, req.tenantId!);
+      const contacts = await storage.getContactsByAccount(accountId, req.tenantId!);
+      
+      // Build the data package to send to Anthropic
+      const accountData = {
+        account,
+        deals,
+        projects,
+        contacts
+      };
+
+      // Generate all AI data in parallel
+      const [summary, recommendations, taskPlaybookData] = await Promise.all([
+        generateAccountSummary(accountData),
+        generateNextStepsRecommendations(accountData),
+        generateTaskPlaybook(accountData)
+      ]);
+      
+      // Build the comprehensive AI data response
+      const aiData = {
+        insight: {
+          accountId,
+          accountName: account.name,
+          summary,
+          lastGeneratedAt: new Date()
+        },
+        nextSteps: {
+          accountId,
+          accountName: account.name,
+          recommendations,
+          lastGeneratedAt: new Date()
+        },
+        playbook: {
+          accountId,
+          accountName: account.name,
+          tasks: taskPlaybookData.tasks.map((task: any) => ({
+            ...task,
+            isCompleted: false
+          })),
+          lastGeneratedAt: new Date()
+        }
+      };
+      
+      res.json(aiData);
+    } catch (error: any) {
+      console.error("Error generating AI account data:", error);
       res.status(500).json({ message: error.message });
     }
   });

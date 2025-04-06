@@ -1,652 +1,505 @@
-import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { useQuery } from '@tanstack/react-query';
-import { HealthScoreMetrics, Account, Deal, Project } from '@/lib/types';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { 
-  BarChart,
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import { PieChart as PieChartIcon, BarChart2, Users, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
+import { ChevronDown, Sparkles, UserCog, CalendarClock, ArrowRightCircle, ClipboardCheck, RefreshCw, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Note: We don't need to import MainLayout here as it's added in App.tsx
+import { AccountAIData, TaskPlaybookItem } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AIAnalytics() {
+  const [, setLocation] = useLocation();
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
   const { toast } = useToast();
-
-  // Fetch analytics data
-  const { data: analyticsData, isLoading: isLoadingAnalytics } = useQuery<HealthScoreMetrics>({
-    queryKey: ['/api/ai-analytics/health-scores'],
-    onError: (error) => {
-      toast({
-        title: "Error loading analytics",
-        description: error instanceof Error ? error.message : "Failed to load analytics data",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Fetch accounts for reference
-  const { data: accounts = [], isLoading: isLoadingAccounts } = useQuery<Account[]>({
-    queryKey: ['/api/accounts'],
-    onError: (error) => {
-      toast({
-        title: "Error loading accounts",
-        description: error instanceof Error ? error.message : "Failed to load accounts",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Fetch deals for reference
-  const { data: deals = [], isLoading: isLoadingDeals } = useQuery<Deal[]>({
-    queryKey: ['/api/deals'],
-    onError: (error) => {
-      toast({
-        title: "Error loading deals",
-        description: error instanceof Error ? error.message : "Failed to load deals",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Fetch projects for reference
-  const { data: projects = [], isLoading: isLoadingProjects } = useQuery<Project[]>({
-    queryKey: ['/api/projects'],
-    onError: (error) => {
-      toast({
-        title: "Error loading projects",
-        description: error instanceof Error ? error.message : "Failed to load projects",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const isLoading = isLoadingAnalytics || isLoadingAccounts || isLoadingDeals || isLoadingProjects;
-
-  // Prepare chart data for account health scores
-  const accountHealthData = analyticsData?.accountHealthScores || [];
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   
-  // Prepare data for deal win probabilities
-  const dealProbabilityData = analyticsData?.dealWinProbabilities || [];
-  
-  // Prepare data for at-risk accounts
-  const atRiskData = analyticsData?.accountsAtRisk || [];
+  // Get accounts for the dropdown
+  const { data: accounts, isLoading: accountsLoading } = useQuery({
+    queryKey: ["/api/accounts"],
+  });
 
-  // Classification mapping
-  const getHealthCategory = (score: number): string => {
-    if (score >= 80) return 'Healthy';
-    if (score >= 60) return 'Stable';
-    if (score >= 40) return 'At Risk';
-    return 'Critical';
+  // Get AI data for the selected account
+  const { 
+    data: aiData, 
+    isLoading: aiDataLoading,
+    refetch: refetchAiData
+  } = useQuery<AccountAIData>({
+    queryKey: [`/api/accounts/${selectedAccountId}/ai/all`],
+    enabled: !!selectedAccountId,
+  });
+
+  // Function to handle refresh
+  const handleRefresh = async () => {
+    if (!selectedAccountId) return;
+    
+    setRefreshing(true);
+    try {
+      await refetchAiData();
+      toast({
+        title: "AI Analysis Refreshed",
+        description: "Latest account insights have been generated",
+      });
+    } catch (error) {
+      toast({
+        title: "Refresh Failed",
+        description: "Could not generate new AI insights at this time",
+        variant: "destructive",
+      });
+    } finally {
+      setRefreshing(false);
+    }
   };
 
-  // Colors for pie chart
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+  // Function to format date
+  const formatDate = (dateString: string | Date) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    }).format(date);
+  };
 
-  // Distribution data
-  const healthDistribution = accounts.reduce((acc, account) => {
-    if (account.healthScore) {
-      const category = getHealthCategory(account.healthScore);
-      acc[category] = (acc[category] || 0) + 1;
+  // Helper to get effort color
+  const getEffortColor = (effort: string) => {
+    switch (effort) {
+      case 'low': return 'bg-green-100 text-green-800';
+      case 'medium': return 'bg-yellow-100 text-yellow-800';
+      case 'high': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
-    return acc;
-  }, {} as Record<string, number>);
+  };
 
-  const distributionData = Object.entries(healthDistribution).map(([name, value]) => ({
-    name,
-    value
-  }));
-
-  // Deal stage distribution
-  const stageDistribution = deals.reduce((acc, deal) => {
-    const stage = deal.stage.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    acc[stage] = (acc[stage] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const stageData = Object.entries(stageDistribution).map(([name, value]) => ({
-    name,
-    value
-  }));
+  // Helper to get timeline color
+  const getTimelineColor = (timeline: string) => {
+    switch (timeline) {
+      case 'immediate': return 'bg-red-100 text-red-800';
+      case 'short-term': return 'bg-yellow-100 text-yellow-800';
+      case 'long-term': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">AI Analytics</h1>
+    <>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">AI Account Analytics</h1>
+          <p className="text-muted-foreground mt-1">
+            Smart insights and recommendations powered by Anthropic Claude
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <select 
+            className="border p-2 rounded-md"
+            value={selectedAccountId || ""}
+            onChange={(e) => setSelectedAccountId(e.target.value ? parseInt(e.target.value) : null)}
+          >
+            <option value="">Select an account</option>
+            {accounts?.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.name}
+              </option>
+            ))}
+          </select>
+          <Button 
+            onClick={handleRefresh} 
+            disabled={refreshing || !selectedAccountId}
+            variant="outline"
+          >
+            {refreshing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Refreshing...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh Analysis
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList>
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <BarChart2 className="h-4 w-4" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="accounts" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            Account Health
-          </TabsTrigger>
-          <TabsTrigger value="deals" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Deal Analysis
-          </TabsTrigger>
-          <TabsTrigger value="risks" className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4" />
-            Risk Assessment
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="overview" className="pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Health Score Distribution</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="h-64 w-full animate-pulse bg-slate-100 rounded-md"></div>
-                ) : (
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={distributionData}
-                          cx="50%"
-                          cy="50%"
-                          labelLine={false}
-                          label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                          outerRadius={80}
-                          fill="#8884d8"
-                          dataKey="value"
-                        >
-                          {distributionData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <Tooltip formatter={(value) => [`${value} accounts`, 'Count']} />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Deal Stages</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="h-64 w-full animate-pulse bg-slate-100 rounded-md"></div>
-                ) : (
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={stageData}
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 20,
-                          bottom: 80,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="name" 
-                          angle={-45} 
-                          textAnchor="end"
-                          height={70}
-                        />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="value" name="Count" fill="#8884d8" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Top Win Probabilities</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="h-64 w-full animate-pulse bg-slate-100 rounded-md"></div>
-                ) : (
-                  <div className="overflow-y-auto h-64">
-                    <div className="space-y-4">
-                      {dealProbabilityData.length === 0 ? (
-                        <div className="text-center pt-10">
-                          <PieChartIcon className="h-10 w-10 mx-auto text-slate-300" />
-                          <p className="text-sm text-slate-500 mt-2">No deal probability data available</p>
-                        </div>
-                      ) : (
-                        dealProbabilityData
-                          .sort((a, b) => b.probability - a.probability)
-                          .slice(0, 10)
-                          .map((item, index) => (
-                            <div key={index} className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <div className="w-2 h-2 bg-primary-500 rounded-full mr-2"></div>
-                                <div>
-                                  <div className="text-sm font-medium">{item.dealName}</div>
-                                  <div className="text-xs text-slate-500">{item.accountName}</div>
-                                </div>
-                              </div>
-                              <div className="flex items-center">
-                                <div className="w-16 bg-slate-200 rounded-full h-1.5 mr-2">
-                                  <div 
-                                    className="bg-primary-500 h-1.5 rounded-full" 
-                                    style={{ width: `${item.probability}%` }}
-                                  ></div>
-                                </div>
-                                <span className="text-sm font-medium">{item.probability}%</span>
-                              </div>
-                            </div>
-                          ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="accounts" className="pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Account Health Scores</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="h-96 w-full animate-pulse bg-slate-100 rounded-md"></div>
-                ) : (
-                  <div className="h-96">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={accountHealthData.sort((a, b) => b.score - a.score)}
-                        layout="vertical"
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 100,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" domain={[0, 100]} />
-                        <YAxis 
-                          dataKey="accountName" 
-                          type="category" 
-                          width={80}
-                          tick={{ fontSize: 12 }}
-                        />
-                        <Tooltip />
-                        <Legend />
-                        <Bar 
-                          dataKey="score" 
-                          name="Health Score" 
-                          fill="#8884d8"
-                          radius={[0, 4, 4, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Detailed Analysis</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(6)].map((_, idx) => (
-                      <div key={idx} className="h-12 w-full animate-pulse bg-slate-100 rounded"></div>
+      {!selectedAccountId && (
+        <div className="flex flex-col items-center justify-center h-[60vh] border rounded-xl bg-slate-50">
+          <Sparkles className="w-16 h-16 text-primary mb-4" />
+          <h3 className="text-xl font-semibold mb-2">Select an account to view AI insights</h3>
+          <p className="text-muted-foreground max-w-md text-center">
+            Get AI-powered account summaries, next steps recommendations, and task playbooks
+          </p>
+        </div>
+      )}
+
+      {selectedAccountId && (aiDataLoading || !aiData) && (
+        <div className="flex flex-col items-center justify-center h-[60vh] border rounded-xl">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+          <h3 className="text-xl font-semibold">Generating AI insights...</h3>
+          <p className="text-muted-foreground">This may take a moment</p>
+        </div>
+      )}
+
+      {selectedAccountId && !aiDataLoading && aiData && (
+        <Tabs defaultValue="summary" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="summary">
+              <Sparkles className="mr-2 h-4 w-4" />
+              Account Summary
+            </TabsTrigger>
+            <TabsTrigger value="next-steps">
+              <ArrowRightCircle className="mr-2 h-4 w-4" />
+              Next Steps
+            </TabsTrigger>
+            <TabsTrigger value="playbook">
+              <ClipboardCheck className="mr-2 h-4 w-4" />
+              Task Playbook
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="summary" className="space-y-4">
+            {aiData.insight ? (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex justify-between items-center">
+                    <span>Account Summary</span>
+                    <Badge variant="outline" className="font-normal">
+                      Generated: {formatDate(aiData.insight.lastGeneratedAt)}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    AI-generated summary of {aiData.insight.accountName}'s status, activities, and health
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose max-w-none">
+                    {aiData.insight.summary.split('\n').map((paragraph, i) => (
+                      <p key={i}>{paragraph}</p>
                     ))}
                   </div>
-                ) : (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-sm font-medium text-slate-500 mb-3">Key Insights</h3>
-                      <div className="bg-slate-50 p-4 rounded-md">
-                        <div className="flex items-start space-x-2">
-                          <TrendingUp className="h-5 w-5 text-green-500 mt-0.5" />
-                          <div>
-                            <p className="font-medium">
-                              {accountHealthData.filter(a => a.score >= 80).length} accounts in excellent health
-                            </p>
-                            <p className="text-sm text-slate-600">
-                              These accounts show strong engagement and satisfaction.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-slate-50 p-4 rounded-md mt-2">
-                        <div className="flex items-start space-x-2">
-                          <TrendingDown className="h-5 w-5 text-red-500 mt-0.5" />
-                          <div>
-                            <p className="font-medium">
-                              {atRiskData.length} accounts require immediate attention
-                            </p>
-                            <p className="text-sm text-slate-600">
-                              These accounts show signs of potential churn or dissatisfaction.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-sm font-medium text-slate-500 mb-3">Recommended Actions</h3>
-                      <ul className="space-y-2">
-                        <li className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Schedule check-in calls</p>
-                          <p className="text-sm text-slate-600">
-                            For accounts with health scores below 70%.
-                          </p>
-                        </li>
-                        <li className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Review implementation status</p>
-                          <p className="text-sm text-slate-600">
-                            Ensure all accounts are fully utilizing the platform.
-                          </p>
-                        </li>
-                        <li className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Gather feedback</p>
-                          <p className="text-sm text-slate-600">
-                            Send satisfaction surveys to accounts with mixed signals.
-                          </p>
-                        </li>
-                      </ul>
-                    </div>
+                </CardContent>
+                <CardFooter className="flex justify-between border-t pt-4">
+                  <div className="text-sm text-muted-foreground">
+                    Powered by Anthropic Claude
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="deals" className="pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Deal Win Probability</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="h-96 w-full animate-pulse bg-slate-100 rounded-md"></div>
-                ) : (
-                  <div className="h-96">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={dealProbabilityData.sort((a, b) => b.probability - a.probability)}
-                        layout="vertical"
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 100,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" domain={[0, 100]} />
-                        <YAxis 
-                          dataKey="dealName" 
-                          type="category" 
-                          width={80}
-                          tick={{ fontSize: 12 }}
-                        />
-                        <Tooltip />
-                        <Legend />
-                        <Bar 
-                          dataKey="probability" 
-                          name="Win Probability" 
-                          fill="#3b82f6"
-                          radius={[0, 4, 4, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setLocation(`/accounts/${selectedAccountId}`)}
+                  >
+                    View Account Details
+                  </Button>
+                </CardFooter>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle>Account Summary</CardTitle>
+                  <CardDescription>
+                    AI-generated summary not available
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-6">
+                    <p className="text-muted-foreground">
+                      No summary data is available for this account.
+                    </p>
+                    <Button 
+                      onClick={handleRefresh} 
+                      className="mt-4"
+                      disabled={refreshing}
+                    >
+                      Generate Summary
+                    </Button>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Deal Insights</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(6)].map((_, idx) => (
-                      <div key={idx} className="h-12 w-full animate-pulse bg-slate-100 rounded"></div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="next-steps" className="space-y-4">
+            {aiData.nextSteps ? (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex justify-between items-center">
+                    <span>Recommended Next Steps</span>
+                    <Badge variant="outline" className="font-normal">
+                      Generated: {formatDate(aiData.nextSteps.lastGeneratedAt)}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    AI-recommended actions for {aiData.nextSteps.accountName} based on current status
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose max-w-none">
+                    {aiData.nextSteps.recommendations.split('\n').map((paragraph, i) => (
+                      <p key={i}>{paragraph}</p>
                     ))}
                   </div>
-                ) : (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-sm font-medium text-slate-500 mb-3">Deal Forecast</h3>
-                      <div className="bg-slate-50 p-4 rounded-md">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-xs text-slate-500">Likely to Close</p>
-                            <p className="text-2xl font-bold">
-                              {dealProbabilityData.filter(d => d.probability >= 75).length}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">At Risk</p>
-                            <p className="text-2xl font-bold">
-                              {dealProbabilityData.filter(d => d.probability < 50).length}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">Total Value</p>
-                            <p className="text-2xl font-bold">
-                              {new Intl.NumberFormat('en-US', {
-                                style: 'currency',
-                                currency: 'USD',
-                                notation: 'compact',
-                                maximumFractionDigits: 1
-                              }).format(deals.reduce((sum, deal) => sum + (deal.value || 0), 0))}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-slate-500">Avg Deal Size</p>
-                            <p className="text-2xl font-bold">
-                              {new Intl.NumberFormat('en-US', {
-                                style: 'currency',
-                                currency: 'USD',
-                                notation: 'compact',
-                                maximumFractionDigits: 1
-                              }).format(deals.length ? 
-                                deals.reduce((sum, deal) => sum + (deal.value || 0), 0) / deals.length : 
-                                0
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                </CardContent>
+                <CardFooter className="flex justify-between border-t pt-4">
+                  <div className="text-sm text-muted-foreground">
+                    Powered by Anthropic Claude
+                  </div>
+                  <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
+                    {refreshing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Refreshing...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Refresh
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle>Recommended Next Steps</CardTitle>
+                  <CardDescription>
+                    AI-recommended actions not available
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-6">
+                    <p className="text-muted-foreground">
+                      No recommendations are available for this account.
+                    </p>
+                    <Button 
+                      onClick={handleRefresh} 
+                      className="mt-4"
+                      disabled={refreshing}
+                    >
+                      Generate Recommendations
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="playbook" className="space-y-4">
+            {aiData.playbook && aiData.playbook.tasks && aiData.playbook.tasks.length > 0 ? (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex justify-between items-center">
+                    <span>Task Playbook</span>
+                    <Badge variant="outline" className="font-normal">
+                      Generated: {formatDate(aiData.playbook.lastGeneratedAt)}
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Structured action plan for {aiData.playbook.accountName} with prioritized tasks
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm font-medium">Progress</span>
+                      <span className="text-sm text-muted-foreground">
+                        {aiData.playbook.tasks.filter(t => t.isCompleted).length} / {aiData.playbook.tasks.length} tasks completed
+                      </span>
                     </div>
-                    
-                    <div>
-                      <h3 className="text-sm font-medium text-slate-500 mb-3">Top Opportunities</h3>
-                      <div className="space-y-2">
-                        {dealProbabilityData
-                          .sort((a, b) => (b.probability * (deals.find(d => d.name === b.dealName)?.value || 0)) - 
-                                        (a.probability * (deals.find(d => d.name === a.dealName)?.value || 0)))
-                          .slice(0, 3)
-                          .map((deal, index) => {
-                            const dealObj = deals.find(d => d.name === deal.dealName);
-                            const value = dealObj?.value || 0;
-                            return (
-                              <div key={index} className="bg-slate-50 p-3 rounded-md">
-                                <div className="flex justify-between">
+                    <Progress 
+                      value={(aiData.playbook.tasks.filter(t => t.isCompleted).length / aiData.playbook.tasks.length) * 100} 
+                      className="h-2"
+                    />
+                  </div>
+
+                  <Accordion type="single" collapsible className="w-full">
+                    {/* Immediate Tasks */}
+                    <AccordionItem value="immediate">
+                      <AccordionTrigger className="py-3">
+                        <div className="flex items-center">
+                          <span className="text-red-600 mr-2">●</span>
+                          <span>Immediate Tasks</span>
+                          <Badge className="ml-2" variant="secondary">
+                            {aiData.playbook.tasks.filter(t => t.timeline === 'immediate').length}
+                          </Badge>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-4 pl-2">
+                          {aiData.playbook.tasks
+                            .filter(task => task.timeline === 'immediate')
+                            .map((task: TaskPlaybookItem, index: number) => (
+                              <div key={index} className="border rounded-md p-4 bg-white">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h4 className="font-medium text-base">{task.title}</h4>
+                                  <div className="flex space-x-2">
+                                    <Badge className={getEffortColor(task.effort)}>
+                                      {task.effort} effort
+                                    </Badge>
+                                    {task.isCheckpoint && (
+                                      <Badge variant="destructive">Checkpoint</Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
+                                <div className="flex justify-between items-center text-sm">
+                                  <div className="flex items-center">
+                                    <UserCog className="h-4 w-4 mr-1 text-muted-foreground" />
+                                    <span>{task.owner}</span>
+                                  </div>
                                   <div>
-                                    <p className="font-medium">{deal.dealName}</p>
-                                    <p className="text-xs text-slate-500">{deal.accountName}</p>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="font-medium">
-                                      {new Intl.NumberFormat('en-US', {
-                                        style: 'currency',
-                                        currency: 'USD',
-                                        notation: 'compact',
-                                        maximumFractionDigits: 1
-                                      }).format(value)}
-                                    </p>
-                                    <p className="text-xs text-slate-500">{deal.probability}% probability</p>
+                                    <span className="font-medium">Outcome:</span> {task.outcome}
                                   </div>
                                 </div>
                               </div>
-                            );
-                          })}
-                      </div>
-                    </div>
+                            ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Short-term Tasks */}
+                    <AccordionItem value="short-term">
+                      <AccordionTrigger className="py-3">
+                        <div className="flex items-center">
+                          <span className="text-yellow-500 mr-2">●</span>
+                          <span>Short-term Tasks</span>
+                          <Badge className="ml-2" variant="secondary">
+                            {aiData.playbook.tasks.filter(t => t.timeline === 'short-term').length}
+                          </Badge>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-4 pl-2">
+                          {aiData.playbook.tasks
+                            .filter(task => task.timeline === 'short-term')
+                            .map((task: TaskPlaybookItem, index: number) => (
+                              <div key={index} className="border rounded-md p-4 bg-white">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h4 className="font-medium text-base">{task.title}</h4>
+                                  <div className="flex space-x-2">
+                                    <Badge className={getEffortColor(task.effort)}>
+                                      {task.effort} effort
+                                    </Badge>
+                                    {task.isCheckpoint && (
+                                      <Badge variant="destructive">Checkpoint</Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
+                                <div className="flex justify-between items-center text-sm">
+                                  <div className="flex items-center">
+                                    <UserCog className="h-4 w-4 mr-1 text-muted-foreground" />
+                                    <span>{task.owner}</span>
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Outcome:</span> {task.outcome}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Long-term Tasks */}
+                    <AccordionItem value="long-term">
+                      <AccordionTrigger className="py-3">
+                        <div className="flex items-center">
+                          <span className="text-blue-500 mr-2">●</span>
+                          <span>Long-term Tasks</span>
+                          <Badge className="ml-2" variant="secondary">
+                            {aiData.playbook.tasks.filter(t => t.timeline === 'long-term').length}
+                          </Badge>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-4 pl-2">
+                          {aiData.playbook.tasks
+                            .filter(task => task.timeline === 'long-term')
+                            .map((task: TaskPlaybookItem, index: number) => (
+                              <div key={index} className="border rounded-md p-4 bg-white">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h4 className="font-medium text-base">{task.title}</h4>
+                                  <div className="flex space-x-2">
+                                    <Badge className={getEffortColor(task.effort)}>
+                                      {task.effort} effort
+                                    </Badge>
+                                    {task.isCheckpoint && (
+                                      <Badge variant="destructive">Checkpoint</Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-3">{task.description}</p>
+                                <div className="flex justify-between items-center text-sm">
+                                  <div className="flex items-center">
+                                    <UserCog className="h-4 w-4 mr-1 text-muted-foreground" />
+                                    <span>{task.owner}</span>
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Outcome:</span> {task.outcome}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+                <CardFooter className="flex justify-between border-t pt-4">
+                  <div className="text-sm text-muted-foreground">
+                    Powered by Anthropic Claude
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="risks" className="pt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Accounts at Risk</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="h-96 w-full animate-pulse bg-slate-100 rounded-md"></div>
-                ) : (
-                  <div className="h-96">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={atRiskData.sort((a, b) => a.score - b.score)}
-                        layout="vertical"
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 100,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" domain={[0, 100]} />
-                        <YAxis 
-                          dataKey="accountName" 
-                          type="category" 
-                          width={80}
-                          tick={{ fontSize: 12 }}
-                        />
-                        <Tooltip />
-                        <Legend />
-                        <Bar 
-                          dataKey="score" 
-                          name="Health Score" 
-                          fill="#ef4444"
-                          radius={[0, 4, 4, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+                  <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
+                    {refreshing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Refreshing...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4" />
+                        Refresh
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle>Task Playbook</CardTitle>
+                  <CardDescription>
+                    Structured action plan not available
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-6">
+                    <p className="text-muted-foreground">
+                      No task playbook is available for this account.
+                    </p>
+                    <Button 
+                      onClick={handleRefresh} 
+                      className="mt-4"
+                      disabled={refreshing}
+                    >
+                      Generate Task Playbook
+                    </Button>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Risk Assessment</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="space-y-4">
-                    {[...Array(6)].map((_, idx) => (
-                      <div key={idx} className="h-12 w-full animate-pulse bg-slate-100 rounded"></div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-sm font-medium text-slate-500 mb-3">Risk Factors</h3>
-                      <div className="space-y-2">
-                        <div className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Churn Risk</p>
-                          <p className="text-sm text-slate-600">
-                            {atRiskData.length} accounts show signs of potential churn based on
-                            decreased engagement and usage metrics.
-                          </p>
-                        </div>
-                        <div className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Implementation Challenges</p>
-                          <p className="text-sm text-slate-600">
-                            Incomplete onboarding and feature adoption may be affecting 
-                            {' '}{Math.round(atRiskData.length * 0.6)} accounts.
-                          </p>
-                        </div>
-                        <div className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Support Issues</p>
-                          <p className="text-sm text-slate-600">
-                            Frequent support tickets and unresolved issues detected in
-                            {' '}{Math.round(atRiskData.length * 0.4)} at-risk accounts.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-sm font-medium text-slate-500 mb-3">Mitigation Plan</h3>
-                      <div className="space-y-2">
-                        <div className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Executive Engagement</p>
-                          <p className="text-sm text-slate-600">
-                            Schedule executive meetings with the top 3 at-risk accounts to address concerns.
-                          </p>
-                        </div>
-                        <div className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Training Sessions</p>
-                          <p className="text-sm text-slate-600">
-                            Provide additional training for accounts struggling with adoption.
-                          </p>
-                        </div>
-                        <div className="bg-slate-50 p-3 rounded-md">
-                          <p className="font-medium">Success Plan Review</p>
-                          <p className="text-sm text-slate-600">
-                            Review and update success criteria and milestones for all at-risk accounts.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
+      )}
+    </>
   );
 }
