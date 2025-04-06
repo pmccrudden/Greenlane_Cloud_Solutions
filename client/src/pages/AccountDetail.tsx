@@ -40,6 +40,10 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
+import { AddContactDialog } from '@/components/contacts/AddContactDialog';
+import { AddDealDialog } from '@/components/deals/AddDealDialog';
+import { AddProjectDialog } from '@/components/projects/AddProjectDialog';
+import { AddSupportTicketDialog } from '@/components/support/AddSupportTicketDialog';
 
 export default function AccountDetail() {
   const [, params] = useRoute<{ id: string }>('/accounts/:id');
@@ -165,10 +169,26 @@ export default function AccountDetail() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Add Contact</DropdownMenuItem>
-              <DropdownMenuItem>Add Deal</DropdownMenuItem>
-              <DropdownMenuItem>Add Project</DropdownMenuItem>
-              <DropdownMenuItem>Add Support Ticket</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <div className="cursor-pointer">
+                  <AddContactDialog accountId={accountId} trigger={<div className="w-full">Add Contact</div>} />
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <div className="cursor-pointer">
+                  <AddDealDialog accountId={accountId} trigger={<div className="w-full">Add Deal</div>} />
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <div className="cursor-pointer">
+                  <AddProjectDialog accountId={accountId} trigger={<div className="w-full">Add Project</div>} />
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <div className="cursor-pointer">
+                  <AddSupportTicketDialog accountId={accountId} trigger={<div className="w-full">Add Support Ticket</div>} />
+                </div>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -261,9 +281,7 @@ export default function AccountDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-lg">Contacts</CardTitle>
-              <Button onClick={() => console.log('Add Contact clicked')}>
-                Add Contact
-              </Button>
+              <AddContactDialog accountId={accountId} />
             </CardHeader>
             <CardContent>
               {contactsLoading ? (
@@ -280,9 +298,7 @@ export default function AccountDetail() {
                     Get started by creating your first contact for this account
                   </p>
                   <div className="mt-6">
-                    <Button onClick={() => console.log('Add Contact clicked')}>
-                      Add Contact
-                    </Button>
+                    <AddContactDialog accountId={accountId} />
                   </div>
                 </div>
               ) : (
@@ -321,9 +337,7 @@ export default function AccountDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-lg">Deals</CardTitle>
-              <Button onClick={() => console.log('Add Deal clicked')}>
-                Add Deal
-              </Button>
+              <AddDealDialog accountId={accountId} />
             </CardHeader>
             <CardContent>
               {dealsLoading ? (
@@ -340,9 +354,7 @@ export default function AccountDetail() {
                     Get started by creating your first deal for this account
                   </p>
                   <div className="mt-6">
-                    <Button onClick={() => console.log('Add Deal clicked')}>
-                      Add Deal
-                    </Button>
+                    <AddDealDialog accountId={accountId} />
                   </div>
                 </div>
               ) : (
@@ -381,9 +393,7 @@ export default function AccountDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-lg">Projects</CardTitle>
-              <Button onClick={() => console.log('Add Project clicked')}>
-                Add Project
-              </Button>
+              <AddProjectDialog accountId={accountId} />
             </CardHeader>
             <CardContent>
               {projectsLoading ? (
@@ -400,9 +410,7 @@ export default function AccountDetail() {
                     Get started by creating your first project for this account
                   </p>
                   <div className="mt-6">
-                    <Button onClick={() => console.log('Add Project clicked')}>
-                      Add Project
-                    </Button>
+                    <AddProjectDialog accountId={accountId} />
                   </div>
                 </div>
               ) : (
@@ -441,9 +449,7 @@ export default function AccountDetail() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-lg">Support Tickets</CardTitle>
-              <Button onClick={() => console.log('Add Ticket clicked')}>
-                Add Ticket
-              </Button>
+              <AddSupportTicketDialog accountId={accountId} />
             </CardHeader>
             <CardContent>
               {ticketsLoading ? (
@@ -460,9 +466,7 @@ export default function AccountDetail() {
                     Get started by creating your first support ticket for this account
                   </p>
                   <div className="mt-6">
-                    <Button onClick={() => console.log('Add Ticket clicked')}>
-                      Add Ticket
-                    </Button>
+                    <AddSupportTicketDialog accountId={accountId} />
                   </div>
                 </div>
               ) : (
