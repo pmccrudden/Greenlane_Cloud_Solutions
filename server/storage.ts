@@ -8,7 +8,8 @@ import {
   supportTickets, SupportTicket, InsertSupportTicket,
   ticketActivities, TicketActivity, InsertTicketActivity,
   emailTemplates, EmailTemplate, InsertEmailTemplate,
-  digitalJourneys, DigitalJourney, InsertDigitalJourney
+  digitalJourneys, DigitalJourney, InsertDigitalJourney,
+  accountTasks, AccountTask, InsertAccountTask
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -82,6 +83,14 @@ export interface IStorage {
   getDigitalJourney(id: number, tenantId: string): Promise<DigitalJourney | undefined>;
   createDigitalJourney(journey: InsertDigitalJourney): Promise<DigitalJourney>;
   updateDigitalJourney(id: number, data: Partial<DigitalJourney>, tenantId: string): Promise<DigitalJourney>;
+  
+  // Account Tasks methods
+  getAccountTasks(tenantId: string): Promise<AccountTask[]>;
+  getAccountTasksByAccount(accountId: number, tenantId: string): Promise<AccountTask[]>;
+  getAccountTask(id: number, tenantId: string): Promise<AccountTask | undefined>;
+  createAccountTask(task: InsertAccountTask): Promise<AccountTask>;
+  createAccountTasks(tasks: InsertAccountTask[]): Promise<AccountTask[]>;
+  updateAccountTask(id: number, data: Partial<AccountTask>, tenantId: string): Promise<AccountTask>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -563,6 +572,66 @@ export class DatabaseStorage implements IStorage {
     
     return journey;
   }
+
+  // Account Tasks methods
+  async getAccountTasks(tenantId: string): Promise<AccountTask[]> {
+    return db.select().from(accountTasks).where(eq(accountTasks.tenantId, tenantId));
+  }
+
+  async getAccountTasksByAccount(accountId: number, tenantId: string): Promise<AccountTask[]> {
+    return db
+      .select()
+      .from(accountTasks)
+      .where(and(
+        eq(accountTasks.accountId, accountId),
+        eq(accountTasks.tenantId, tenantId)
+      ));
+  }
+
+  async getAccountTask(id: number, tenantId: string): Promise<AccountTask | undefined> {
+    const [task] = await db
+      .select()
+      .from(accountTasks)
+      .where(and(
+        eq(accountTasks.id, id),
+        eq(accountTasks.tenantId, tenantId)
+      ));
+    
+    return task;
+  }
+
+  async createAccountTask(insertTask: InsertAccountTask): Promise<AccountTask> {
+    const [task] = await db.insert(accountTasks).values(insertTask).returning();
+    return task;
+  }
+
+  async createAccountTasks(tasks: InsertAccountTask[]): Promise<AccountTask[]> {
+    if (tasks.length === 0) {
+      return [];
+    }
+    
+    return db.insert(accountTasks).values(tasks).returning();
+  }
+
+  async updateAccountTask(id: number, data: Partial<AccountTask>, tenantId: string): Promise<AccountTask> {
+    const [task] = await db
+      .update(accountTasks)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(accountTasks.id, id),
+        eq(accountTasks.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!task) {
+      throw new Error(`Account task not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return task;
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -576,6 +645,7 @@ export class MemStorage implements IStorage {
   private ticketActivities: Map<number, TicketActivity>;
   private emailTemplates: Map<number, EmailTemplate>;
   private digitalJourneys: Map<number, DigitalJourney>;
+  private accountTasks: Map<number, AccountTask>;
   
   currentUserId: number;
   currentAccountId: number;
@@ -586,6 +656,7 @@ export class MemStorage implements IStorage {
   currentTicketActivityId: number;
   currentEmailTemplateId: number;
   currentDigitalJourneyId: number;
+  currentAccountTaskId: number;
 
   constructor() {
     this.users = new Map();
@@ -598,6 +669,7 @@ export class MemStorage implements IStorage {
     this.ticketActivities = new Map();
     this.emailTemplates = new Map();
     this.digitalJourneys = new Map();
+    this.accountTasks = new Map();
     
     this.currentUserId = 1;
     this.currentAccountId = 1;
@@ -608,6 +680,7 @@ export class MemStorage implements IStorage {
     this.currentTicketActivityId = 1;
     this.currentEmailTemplateId = 1;
     this.currentDigitalJourneyId = 1;
+    this.currentAccountTaskId = 1;
   }
 
   // User methods
@@ -1087,6 +1160,66 @@ export class MemStorage implements IStorage {
     
     this.digitalJourneys.set(id, updatedJourney);
     return updatedJourney;
+  }
+
+  // Account Tasks methods
+  async getAccountTasks(tenantId: string): Promise<AccountTask[]> {
+    return db.select().from(accountTasks).where(eq(accountTasks.tenantId, tenantId));
+  }
+
+  async getAccountTasksByAccount(accountId: number, tenantId: string): Promise<AccountTask[]> {
+    return db
+      .select()
+      .from(accountTasks)
+      .where(and(
+        eq(accountTasks.accountId, accountId),
+        eq(accountTasks.tenantId, tenantId)
+      ));
+  }
+
+  async getAccountTask(id: number, tenantId: string): Promise<AccountTask | undefined> {
+    const [task] = await db
+      .select()
+      .from(accountTasks)
+      .where(and(
+        eq(accountTasks.id, id),
+        eq(accountTasks.tenantId, tenantId)
+      ));
+    
+    return task;
+  }
+
+  async createAccountTask(insertTask: InsertAccountTask): Promise<AccountTask> {
+    const [task] = await db.insert(accountTasks).values(insertTask).returning();
+    return task;
+  }
+
+  async createAccountTasks(tasks: InsertAccountTask[]): Promise<AccountTask[]> {
+    if (tasks.length === 0) {
+      return [];
+    }
+    
+    return db.insert(accountTasks).values(tasks).returning();
+  }
+
+  async updateAccountTask(id: number, data: Partial<AccountTask>, tenantId: string): Promise<AccountTask> {
+    const [task] = await db
+      .update(accountTasks)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(accountTasks.id, id),
+        eq(accountTasks.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!task) {
+      throw new Error(`Account task not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return task;
   }
 }
 

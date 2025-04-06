@@ -1,0 +1,59 @@
+  // Account Tasks methods
+  async getAccountTasks(tenantId: string): Promise<AccountTask[]> {
+    return db.select().from(accountTasks).where(eq(accountTasks.tenantId, tenantId));
+  }
+
+  async getAccountTasksByAccount(accountId: number, tenantId: string): Promise<AccountTask[]> {
+    return db
+      .select()
+      .from(accountTasks)
+      .where(and(
+        eq(accountTasks.accountId, accountId),
+        eq(accountTasks.tenantId, tenantId)
+      ));
+  }
+
+  async getAccountTask(id: number, tenantId: string): Promise<AccountTask | undefined> {
+    const [task] = await db
+      .select()
+      .from(accountTasks)
+      .where(and(
+        eq(accountTasks.id, id),
+        eq(accountTasks.tenantId, tenantId)
+      ));
+    
+    return task;
+  }
+
+  async createAccountTask(insertTask: InsertAccountTask): Promise<AccountTask> {
+    const [task] = await db.insert(accountTasks).values(insertTask).returning();
+    return task;
+  }
+
+  async createAccountTasks(tasks: InsertAccountTask[]): Promise<AccountTask[]> {
+    if (tasks.length === 0) {
+      return [];
+    }
+    
+    return db.insert(accountTasks).values(tasks).returning();
+  }
+
+  async updateAccountTask(id: number, data: Partial<AccountTask>, tenantId: string): Promise<AccountTask> {
+    const [task] = await db
+      .update(accountTasks)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(accountTasks.id, id),
+        eq(accountTasks.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!task) {
+      throw new Error(`Account task not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return task;
+  }

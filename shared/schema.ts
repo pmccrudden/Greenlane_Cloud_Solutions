@@ -334,3 +334,39 @@ export type EmailTemplate = typeof emailTemplates.$inferSelect;
 
 export type InsertDigitalJourney = z.infer<typeof insertDigitalJourneySchema>;
 export type DigitalJourney = typeof digitalJourneys.$inferSelect;
+
+// Account Tasks table for storing AI-generated tasks
+export const accountTasks = pgTable("account_tasks", {
+  id: serial("id").primaryKey(),
+  accountId: integer("account_id").notNull().references(() => accounts.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  timeline: text("timeline").notNull(), // immediate, short-term, long-term
+  effort: text("effort").notNull(), // low, medium, high
+  outcome: text("outcome"),
+  owner: text("owner"),
+  dueDate: timestamp("due_date"),
+  priority: text("priority").default("medium").notNull(), // low, medium, high
+  status: text("status").default("pending").notNull(), // pending, in-progress, completed
+  isCheckpoint: boolean("is_checkpoint").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+});
+
+export const insertAccountTaskSchema = createInsertSchema(accountTasks)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export const accountTasksRelations = relations(accountTasks, ({ one }) => ({
+  account: one(accounts, {
+    fields: [accountTasks.accountId],
+    references: [accounts.id]
+  }),
+  tenant: one(tenants, {
+    fields: [accountTasks.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+export type InsertAccountTask = z.infer<typeof insertAccountTaskSchema>;
+export type AccountTask = typeof accountTasks.$inferSelect;
