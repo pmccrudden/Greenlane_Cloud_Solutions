@@ -12,9 +12,17 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  const headers: Record<string, string> = {
+    "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Tenant ID from setup
+  };
+  
+  if (data) {
+    headers["Content-Type"] = "application/json";
+  }
+  
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -31,6 +39,9 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
+      headers: {
+        "X-Tenant-ID": "572c77d7-e838-44ca-8adb-7ddef5f199bb", // Tenant ID from setup
+      },
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
