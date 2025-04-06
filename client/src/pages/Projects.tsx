@@ -216,7 +216,18 @@ export default function Projects() {
                 <TableBody>
                   {filteredProjects.map((project) => (
                     <TableRow key={project.id}>
-                      <TableCell className="font-medium">{project.name}</TableCell>
+                      <TableCell className="font-medium">
+                        <a 
+                          href={`/projects/${project.id}`} 
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = `/projects/${project.id}`;
+                          }}
+                        >
+                          {project.name}
+                        </a>
+                      </TableCell>
                       <TableCell>{getAccountName(project.accountId)}</TableCell>
                       <TableCell>{formatDate(project.startDate)}</TableCell>
                       <TableCell>{formatDate(project.endDate)}</TableCell>

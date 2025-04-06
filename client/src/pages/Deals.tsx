@@ -227,7 +227,18 @@ export default function Deals() {
                 <TableBody>
                   {filteredDeals.map((deal) => (
                     <TableRow key={deal.id}>
-                      <TableCell className="font-medium">{deal.name}</TableCell>
+                      <TableCell className="font-medium">
+                        <a 
+                          href={`/deals/${deal.id}`} 
+                          className="text-blue-600 hover:text-blue-800 hover:underline"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = `/deals/${deal.id}`;
+                          }}
+                        >
+                          {deal.name}
+                        </a>
+                      </TableCell>
                       <TableCell>{getAccountName(deal.accountId)}</TableCell>
                       <TableCell>{formatCurrency(deal.value)}</TableCell>
                       <TableCell>

@@ -516,8 +516,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/deals", requireTenant, requireAuth, validateBody(insertDealSchema), async (req, res) => {
     try {
+      // Parse the date fields if they exist
+      const validatedBody = { ...req.validatedBody };
+      
+      // Convert closeDate to Date object if present
+      if (validatedBody.closeDate && typeof validatedBody.closeDate === 'string') {
+        try {
+          validatedBody.closeDate = new Date(validatedBody.closeDate);
+        } catch (e) {
+          return res.status(400).json({ message: "Invalid close date format" });
+        }
+      }
+      
       const deal = await storage.createDeal({
-        ...req.validatedBody,
+        ...validatedBody,
         tenantId: req.tenantId!
       });
       
@@ -529,7 +541,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/deals/:id", requireTenant, requireAuth, async (req, res) => {
     try {
-      const deal = await storage.updateDeal(parseInt(req.params.id), req.body, req.tenantId!);
+      const body = { ...req.body };
+      
+      // Convert closeDate to Date object if present
+      if (body.closeDate && typeof body.closeDate === 'string') {
+        try {
+          body.closeDate = new Date(body.closeDate);
+        } catch (e) {
+          return res.status(400).json({ message: "Invalid close date format" });
+        }
+      }
+      
+      const deal = await storage.updateDeal(parseInt(req.params.id), body, req.tenantId!);
       res.json(deal);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -579,8 +602,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/projects", requireTenant, requireAuth, validateBody(insertProjectSchema), async (req, res) => {
     try {
+      // Parse the date fields if they exist
+      const validatedBody = { ...req.validatedBody };
+      
+      // Convert startDate to Date object if present
+      if (validatedBody.startDate && typeof validatedBody.startDate === 'string') {
+        try {
+          validatedBody.startDate = new Date(validatedBody.startDate);
+        } catch (e) {
+          return res.status(400).json({ message: "Invalid start date format" });
+        }
+      }
+      
+      // Convert endDate to Date object if present
+      if (validatedBody.endDate && typeof validatedBody.endDate === 'string') {
+        try {
+          validatedBody.endDate = new Date(validatedBody.endDate);
+        } catch (e) {
+          return res.status(400).json({ message: "Invalid end date format" });
+        }
+      }
+      
       const project = await storage.createProject({
-        ...req.validatedBody,
+        ...validatedBody,
         tenantId: req.tenantId!
       });
       
@@ -592,7 +636,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/projects/:id", requireTenant, requireAuth, async (req, res) => {
     try {
-      const project = await storage.updateProject(parseInt(req.params.id), req.body, req.tenantId!);
+      const body = { ...req.body };
+      
+      // Convert startDate to Date object if present
+      if (body.startDate && typeof body.startDate === 'string') {
+        try {
+          body.startDate = new Date(body.startDate);
+        } catch (e) {
+          return res.status(400).json({ message: "Invalid start date format" });
+        }
+      }
+      
+      // Convert endDate to Date object if present
+      if (body.endDate && typeof body.endDate === 'string') {
+        try {
+          body.endDate = new Date(body.endDate);
+        } catch (e) {
+          return res.status(400).json({ message: "Invalid end date format" });
+        }
+      }
+      
+      const project = await storage.updateProject(parseInt(req.params.id), body, req.tenantId!);
       res.json(project);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
