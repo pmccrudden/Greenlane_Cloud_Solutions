@@ -142,9 +142,14 @@ export default function SupportTicketsCard({
                     {priorityIcon}
                   </div>
                   <div className="ml-3 flex-1">
-                    <p className="text-sm font-medium text-slate-900">{ticket.subject}</p>
+                    <Link href={`/support-tickets/${ticket.id}`}>
+                      <a className="text-sm font-medium text-slate-900 hover:text-primary-600 hover:underline cursor-pointer">{ticket.subject}</a>
+                    </Link>
                     <div className="flex justify-between">
-                      <p className="text-sm text-slate-500">{ticket.accountName} • {ticket.contactName}</p>
+                      <Link href={`/accounts/${ticket.accountId}`}>
+                        <a className="text-sm text-slate-500 hover:text-primary-600 hover:underline cursor-pointer">{ticket.accountName}</a>
+                      </Link>
+                      <span className="text-sm text-slate-500"> • {ticket.contactName}</span>
                       <p className="text-sm text-slate-500">{formatTime(ticket.createdAt)}</p>
                     </div>
                     <div className="mt-2 text-sm text-slate-700 line-clamp-2">

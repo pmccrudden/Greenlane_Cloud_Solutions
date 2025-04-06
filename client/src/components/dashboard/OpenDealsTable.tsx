@@ -126,12 +126,16 @@ export default function OpenDealsTable({
               deals.map((deal) => (
                 <tr key={deal.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-slate-900">{deal.name}</div>
+                    <Link href={`/deals/${deal.id}`}>
+                      <a className="text-sm font-medium text-slate-900 hover:text-primary-600 hover:underline cursor-pointer">{deal.name}</a>
+                    </Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-slate-900">
-                      {deal.accountName}
-                    </div>
+                    <Link href={`/accounts/${deal.accountId}`}>
+                      <a className="text-sm text-slate-900 hover:text-primary-600 hover:underline cursor-pointer">
+                        {deal.accountName}
+                      </a>
+                    </Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                     {formatCurrency(deal.value)}

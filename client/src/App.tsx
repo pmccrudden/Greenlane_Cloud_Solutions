@@ -14,8 +14,11 @@ import AccountDetail from "@/pages/AccountDetail";
 import Contacts from "@/pages/Contacts";
 import ContactDetail from "@/pages/ContactDetail";
 import Deals from "@/pages/Deals";
+import DealDetail from "@/pages/DealDetail";
 import Projects from "@/pages/Projects";
+import ProjectDetail from "@/pages/ProjectDetail";
 import SupportTickets from "@/pages/SupportTickets";
+import SupportTicketDetail from "@/pages/SupportTicketDetail";
 import AIAnalytics from "@/pages/AIAnalytics";
 import DigitalJourney from "@/pages/DigitalJourney";
 import MainLayout from "@/components/layout/MainLayout";
@@ -62,15 +65,33 @@ function Router() {
     </MainLayout>
   );
   
+  const DealDetailWithLayout = () => (
+    <MainLayout>
+      <DealDetail />
+    </MainLayout>
+  );
+  
   const ProjectsWithLayout = () => (
     <MainLayout>
       <Projects />
     </MainLayout>
   );
   
+  const ProjectDetailWithLayout = () => (
+    <MainLayout>
+      <ProjectDetail />
+    </MainLayout>
+  );
+  
   const SupportTicketsWithLayout = () => (
     <MainLayout>
       <SupportTickets />
+    </MainLayout>
+  );
+  
+  const SupportTicketDetailWithLayout = () => (
+    <MainLayout>
+      <SupportTicketDetail />
     </MainLayout>
   );
   
@@ -96,8 +117,11 @@ function Router() {
       <ProtectedRoute path="/accounts" component={AccountsWithLayout} />
       <ProtectedRoute path="/contacts/:id" component={ContactDetailWithLayout} />
       <ProtectedRoute path="/contacts" component={ContactsWithLayout} />
+      <ProtectedRoute path="/deals/:id" component={DealDetailWithLayout} />
       <ProtectedRoute path="/deals" component={DealsWithLayout} />
+      <ProtectedRoute path="/projects/:id" component={ProjectDetailWithLayout} />
       <ProtectedRoute path="/projects" component={ProjectsWithLayout} />
+      <ProtectedRoute path="/support-tickets/:id" component={SupportTicketDetailWithLayout} />
       <ProtectedRoute path="/support-tickets" component={SupportTicketsWithLayout} />
       <ProtectedRoute path="/ai-analytics" component={AIAnalyticsWithLayout} />
       <ProtectedRoute path="/digital-journey" component={DigitalJourneyWithLayout} />
