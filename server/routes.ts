@@ -371,7 +371,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/accounts", requireTenant, requireAuth, validateBody(insertAccountSchema), async (req, res) => {
     try {
       console.log("Creating account with tenant ID:", req.tenantId);
+      console.log("Validated body:", JSON.stringify(req.validatedBody, null, 2));
       console.log("User object:", req.user);
+      
+      // Verify tenant exists before creating account
+      const tenant = await storage.getTenant(req.tenantId!);
+      if (!tenant) {
+        console.error(`Tenant not found with ID: ${req.tenantId}`);
+        return res.status(400).json({ message: `Tenant not found with ID: ${req.tenantId}` });
+      }
       
       // Use the tenant ID from the request
       const account = await storage.createAccount({
@@ -379,10 +387,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tenantId: req.tenantId!
       });
       
+      console.log("Account created successfully:", JSON.stringify(account, null, 2));
       res.status(201).json(account);
     } catch (error: any) {
       console.error("Account creation error:", error);
-      res.status(500).json({ message: error.message });
+      // Send a more detailed error response
+      res.status(500).json({ 
+        message: error.message,
+        stack: process.env.NODE_ENV === 'production' ? 'Not available in production' : error.stack,
+        details: error.toString()
+      });
     }
   });
 
