@@ -9,15 +9,15 @@ import { User } from './types';
  * @returns User object if successful
  */
 export async function signIn(username: string, password: string): Promise<User> {
-  const response = await apiRequest('POST', '/api/auth/login', { username, password });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to sign in');
+  try {
+    const response = await apiRequest('POST', '/api/auth/login', { username, password });
+    const data = await response.json();
+    console.log("Login response:", data); // Debug
+    return data.user;
+  } catch (error) {
+    console.error("Login error:", error); // Debug
+    throw error;
   }
-  
-  const data = await response.json();
-  return data.user;
 }
 
 /**
@@ -43,6 +43,7 @@ export async function checkAuth(): Promise<{ isAuthenticated: boolean; user?: Us
     const data = await response.json();
     return data;
   } catch (error) {
+    console.error("Auth check error:", error); // Debug
     return { isAuthenticated: false };
   }
 }
