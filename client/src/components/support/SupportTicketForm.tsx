@@ -25,6 +25,8 @@ const formSchema = insertSupportTicketSchema
     accountId: z.coerce.number().optional(),
     // Rename title to subject in the form submission
     subject: z.string().min(1, 'Subject is required'),
+    // Add source field (required in schema)
+    source: z.string().default('manual'),
   })
   .refine(data => data.accountId !== undefined || data.accountName !== '', {
     message: 'Either Account ID or Account Name must be provided',
@@ -58,6 +60,7 @@ export function SupportTicketForm({ accountId, onSuccess, onCancel }: SupportTic
       subject: '',  // Add subject field for backend compatibility
       status: 'new',
       priority: 'medium',
+      source: 'manual', // Required field from schema
       accountId: accountId,
       accountName: '',
       description: '',

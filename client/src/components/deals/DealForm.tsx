@@ -71,7 +71,7 @@ export function DealForm({ accountId, onSuccess, onCancel }: DealFormProps) {
       stage: '',
       accountId: accountId,
       accountName: '',
-      closeDate: '',
+      closeDate: undefined,
       description: '',
     },
   });
@@ -118,11 +118,7 @@ export function DealForm({ accountId, onSuccess, onCancel }: DealFormProps) {
   // Handle date selection
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
-    if (date) {
-      form.setValue('closeDate', date.toISOString());
-    } else {
-      form.setValue('closeDate', '');
-    }
+    form.setValue('closeDate', date);
   };
 
   // Form submission handler

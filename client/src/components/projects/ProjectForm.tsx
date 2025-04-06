@@ -75,8 +75,8 @@ export function ProjectForm({ accountId, onSuccess, onCancel }: ProjectFormProps
       status: '',
       accountId: accountId,
       accountName: '',
-      startDate: '',
-      endDate: '',
+      startDate: undefined,
+      endDate: undefined,
       description: '',
     },
   });
@@ -124,21 +124,13 @@ export function ProjectForm({ accountId, onSuccess, onCancel }: ProjectFormProps
   // Handle start date selection
   const handleStartDateSelect = (date: Date | undefined) => {
     setStartDate(date);
-    if (date) {
-      form.setValue('startDate', date.toISOString());
-    } else {
-      form.setValue('startDate', '');
-    }
+    form.setValue('startDate', date);
   };
 
   // Handle end date selection
   const handleEndDateSelect = (date: Date | undefined) => {
     setEndDate(date);
-    if (date) {
-      form.setValue('endDate', date.toISOString());
-    } else {
-      form.setValue('endDate', '');
-    }
+    form.setValue('endDate', date);
   };
 
   // Form submission handler
