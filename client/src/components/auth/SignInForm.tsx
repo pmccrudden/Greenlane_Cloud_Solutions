@@ -45,10 +45,14 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
         description: "You've been successfully signed in",
       });
       
+      console.log("Login successful, redirecting...");
+      
       if (onSuccess) {
+        console.log("Using onSuccess callback");
         onSuccess();
       } else {
-        // Redirect to dashboard
+        console.log("No onSuccess callback, redirecting to root");
+        // Force a hard redirect to make sure we reload the page
         window.location.href = '/';
       }
     } catch (error) {

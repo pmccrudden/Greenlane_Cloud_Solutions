@@ -24,15 +24,21 @@ import { getTenantFromUrl } from "@/lib/tenant";
 function Router() {
   const [location] = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const isTenantDomain = getTenantFromUrl() !== null;
+  
+  // For simplicity, we'll just use the same routes for now, ignoring tenant detection
+  // This will help us debug the login issue
+  const isTenantDomain = false; // Temporarily disable tenant routing
   
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
+        console.log("Checking auth status...");
         const res = await apiRequest("GET", "/api/auth/status");
         const data = await res.json();
+        console.log("Auth status:", data);
         setIsAuthenticated(data.isAuthenticated);
       } catch (error) {
+        console.error("Auth status check error:", error);
         setIsAuthenticated(false);
       }
     };
@@ -49,24 +55,15 @@ function Router() {
     );
   }
 
-  // Public marketing site routes
-  if (!isTenantDomain) {
-    return (
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/signin" component={SignIn} />
-        <Route path="/signup" component={SignUp} />
-        <Route path="/checkout" component={Checkout} />
-        <Route path="/payment-success" component={PaymentSuccess} />
-        <Route component={NotFound} />
-      </Switch>
-    );
-  }
+  console.log("Authentication state:", { isAuthenticated, location, isTenantDomain });
 
-  // Tenant-specific routes
+  // Combined routes - now we'll have the same routes regardless of tenant
   return (
     <Switch>
       <Route path="/signin" component={SignIn} />
+      <Route path="/signup" component={SignUp} />
+      <Route path="/checkout" component={Checkout} />
+      <Route path="/payment-success" component={PaymentSuccess} />
       <Route path="/">
         {isAuthenticated ? (
           <MainLayout>
@@ -83,8 +80,8 @@ function Router() {
             </Switch>
           </MainLayout>
         ) : (
-          // Redirect to signin if not authenticated
-          <SignIn />
+          // If on home path and not authenticated, show home or login
+          location === "/" ? <Home /> : <SignIn />
         )}
       </Route>
       <Route component={NotFound} />

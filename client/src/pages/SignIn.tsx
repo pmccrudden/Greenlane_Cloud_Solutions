@@ -24,8 +24,9 @@ export default function SignIn() {
   }, [isTenant]);
   
   const handleSuccessfulSignIn = () => {
-    // Redirect to dashboard
-    setLocation('/');
+    console.log("handleSuccessfulSignIn called, redirecting to /");
+    // Redirect to dashboard using a hard redirect
+    window.location.href = '/';
   };
   
   return (
