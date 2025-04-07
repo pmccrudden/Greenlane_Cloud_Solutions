@@ -90,3 +90,18 @@ export function setTenantHeader(headers: Record<string, string> = {}): Record<st
   
   return headers;
 }
+
+/**
+ * Hook to get headers with tenant ID for API requests
+ * @returns Headers object with tenant ID if applicable
+ */
+export function useTenantHeaders(): Record<string, string> {
+  const tenantId = getTenantFromUrl();
+  const headers: Record<string, string> = {};
+  
+  if (tenantId) {
+    headers['X-Tenant-ID'] = tenantId;
+  }
+  
+  return headers;
+}

@@ -23,6 +23,8 @@ import Tasks from "@/pages/Tasks";
 import TaskDetail from "@/pages/TaskDetail";
 import AIAnalytics from "@/pages/AIAnalytics";
 import DigitalJourney from "@/pages/DigitalJourney";
+import Reports from "@/pages/Reports";
+import Dashboards from "@/pages/Dashboards";
 import MainLayout from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "./lib/protected-route";
 import { getTenantFromUrl } from "@/lib/tenant";
@@ -121,6 +123,18 @@ function Router() {
     </MainLayout>
   );
   
+  const ReportsWithLayout = () => (
+    <MainLayout>
+      <Reports />
+    </MainLayout>
+  );
+  
+  const DashboardsWithLayout = () => (
+    <MainLayout>
+      <Dashboards />
+    </MainLayout>
+  );
+  
   return (
     <Switch>
       <Route path="/signin" component={SignIn} />
@@ -141,6 +155,8 @@ function Router() {
       <ProtectedRoute path="/tasks" component={TasksWithLayout} />
       <ProtectedRoute path="/ai-analytics" component={AIAnalyticsWithLayout} />
       <ProtectedRoute path="/digital-journey" component={DigitalJourneyWithLayout} />
+      <ProtectedRoute path="/reports" component={ReportsWithLayout} />
+      <ProtectedRoute path="/dashboards" component={DashboardsWithLayout} />
       <ProtectedRoute path="/checkout" component={Checkout} />
       <ProtectedRoute path="/payment-success" component={PaymentSuccess} />
       <Route component={NotFound} />
