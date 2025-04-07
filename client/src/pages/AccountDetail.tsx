@@ -744,8 +744,22 @@ export default function AccountDetail() {
                   </CardHeader>
                   <CardContent>
                     <div className="prose max-w-none">
-                      {aiData.insight.summary.split('\n').map((paragraph, i) => (
-                        <p key={i}>{paragraph}</p>
+                      {aiData.insight.summary.split('\n').filter(para => para.trim() !== '').map((paragraph, i) => (
+                        <div key={i} className={`mb-3 ${i === 0 ? 'text-lg font-medium text-primary-700' : ''}`}>
+                          {paragraph.trim().startsWith("•") ? (
+                            <div className="flex">
+                              <span className="text-primary mr-2">•</span>
+                              <span>{paragraph.trim().substring(1)}</span>
+                            </div>
+                          ) : paragraph.trim().startsWith("-") ? (
+                            <div className="flex">
+                              <span className="text-primary mr-2">•</span>
+                              <span>{paragraph.trim().substring(1)}</span>
+                            </div>
+                          ) : (
+                            paragraph
+                          )}
+                        </div>
                       ))}
                     </div>
                   </CardContent>
@@ -794,8 +808,26 @@ export default function AccountDetail() {
                   <CardContent>
                     {aiData.nextSteps ? (
                       <div className="prose max-w-none">
-                        {aiData.nextSteps.recommendations.split('\n').map((paragraph, i) => (
-                          <p key={i}>{paragraph}</p>
+                        {aiData.nextSteps.recommendations.split('\n').filter(para => para.trim() !== '').map((paragraph, i) => (
+                          <div key={i} className="mb-3">
+                            {paragraph.trim().startsWith("•") ? (
+                              <div className="flex items-start">
+                                <span className="text-primary mr-2 mt-1">•</span>
+                                <span>{paragraph.trim().substring(1)}</span>
+                              </div>
+                            ) : paragraph.trim().startsWith("-") ? (
+                              <div className="flex items-start">
+                                <ArrowRightCircle className="h-4 w-4 text-primary mr-2 flex-shrink-0 mt-1" />
+                                <span>{paragraph.trim().substring(1)}</span>
+                              </div>
+                            ) : paragraph.trim().startsWith("Priority") || paragraph.trim().startsWith("High Priority") ? (
+                              <div className="font-semibold text-primary-700 mb-2 mt-3">{paragraph}</div>
+                            ) : i === 0 ? (
+                              <div className="text-lg font-medium mb-4">{paragraph}</div>
+                            ) : (
+                              <p>{paragraph}</p>
+                            )}
+                          </div>
                         ))}
                       </div>
                     ) : (
@@ -1079,27 +1111,46 @@ export default function AccountDetail() {
                                 </CardHeader>
                                 <CardContent className="pb-3">
                                   <div className="space-y-4">
-                                    <div>
-                                      <div className="flex justify-between mb-1">
-                                        <span className="text-sm">Current Win Probability</span>
-                                        <span className="text-sm font-medium">{deal.currentWinProbability}%</span>
+                                    <div className="grid grid-cols-2 gap-4">
+                                      <div className="bg-slate-50 p-3 rounded-lg">
+                                        <div className="flex justify-between mb-1">
+                                          <span className="text-sm">Current Win Probability</span>
+                                          <span className="text-sm font-medium">{deal.currentWinProbability}%</span>
+                                        </div>
+                                        <Progress 
+                                          value={deal.currentWinProbability} 
+                                          className={`h-2 ${
+                                            deal.currentWinProbability > 70 ? "[&>div]:bg-green-500" :
+                                            deal.currentWinProbability > 40 ? "[&>div]:bg-yellow-500" : "[&>div]:bg-red-500"
+                                          }`}
+                                        />
                                       </div>
-                                      <Progress value={deal.currentWinProbability} className="h-2 bg-gray-100" />
-                                    </div>
-                                    
-                                    <div>
-                                      <div className="flex justify-between mb-1">
-                                        <span className="text-sm">Predicted Win Probability</span>
-                                        <span className="text-sm font-medium">{deal.predictedWinProbability}%</span>
+                                      
+                                      <div className="bg-slate-50 p-3 rounded-lg">
+                                        <div className="flex justify-between mb-1">
+                                          <span className="text-sm">Predicted Win Probability</span>
+                                          <span className="text-sm font-medium">{deal.predictedWinProbability}%</span>
+                                        </div>
+                                        <Progress 
+                                          value={deal.predictedWinProbability} 
+                                          className={`h-2 ${
+                                            deal.predictedWinProbability > 70 ? "[&>div]:bg-green-500" :
+                                            deal.predictedWinProbability > 40 ? "[&>div]:bg-yellow-500" : "[&>div]:bg-red-500"
+                                          }`}
+                                        />
+                                        {deal.predictedWinProbability !== deal.currentWinProbability && (
+                                          <div className="mt-1 flex items-center justify-end">
+                                            <Badge className={
+                                              deal.predictedWinProbability > deal.currentWinProbability 
+                                                ? "bg-green-100 text-green-800" 
+                                                : "bg-red-100 text-red-800"
+                                            }>
+                                              {deal.predictedWinProbability > deal.currentWinProbability ? "+" : ""}
+                                              {deal.predictedWinProbability - deal.currentWinProbability}%
+                                            </Badge>
+                                          </div>
+                                        )}
                                       </div>
-                                      <Progress 
-                                        value={deal.predictedWinProbability} 
-                                        className={`h-2 ${
-                                          deal.predictedWinProbability > deal.currentWinProbability 
-                                            ? "bg-green-100" 
-                                            : "bg-red-100"
-                                        }`} 
-                                      />
                                     </div>
                                     
                                     <div className="space-y-2">
@@ -1215,21 +1266,33 @@ export default function AccountDetail() {
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-4">
-                          {aiData.predictions.growthPotential.opportunities.map((opportunity: GrowthOpportunity, index: number) => (
-                            <div key={index} className="border rounded-lg p-4">
-                              <div className="flex justify-between items-start mb-2">
-                                <h3 className="font-medium">{opportunity.title}</h3>
-                                <Badge variant="outline">
-                                  ${opportunity.potentialValue.toLocaleString()}
-                                </Badge>
+                          {aiData.predictions.growthPotential.opportunities.length > 0 ? (
+                            aiData.predictions.growthPotential.opportunities.map((opportunity: GrowthOpportunity, index: number) => (
+                              <div key={index} className="border rounded-lg p-4 transition-all hover:shadow-md">
+                                <div className="flex justify-between items-start mb-2">
+                                  <h3 className="font-medium text-primary-700">{opportunity.title}</h3>
+                                  <Badge className="bg-green-100 text-green-800">
+                                    ${opportunity.potentialValue.toLocaleString()}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-3">{opportunity.description}</p>
+                                <div className="flex items-center justify-between text-sm mt-4">
+                                  <div className="flex items-center px-2 py-1 bg-slate-50 rounded-md">
+                                    <BarChart3 className="h-3.5 w-3.5 text-slate-500 mr-1.5" />
+                                    <span>{Math.round(opportunity.probability * 100)}% probability</span>
+                                  </div>
+                                  <div className="flex items-center px-2 py-1 bg-slate-50 rounded-md">
+                                    <CalendarClock className="h-3.5 w-3.5 text-slate-500 mr-1.5" />
+                                    <span>{opportunity.timeframe}</span>
+                                  </div>
+                                </div>
                               </div>
-                              <p className="text-sm text-muted-foreground mb-3">{opportunity.description}</p>
-                              <div className="flex justify-between text-sm">
-                                <span>Probability: {opportunity.probability * 100}%</span>
-                                <span>Timeframe: {opportunity.timeframe}</span>
-                              </div>
+                            ))
+                          ) : (
+                            <div className="text-center py-6 text-muted-foreground">
+                              No growth opportunities identified
                             </div>
-                          ))}
+                          )}
                         </div>
                       </CardContent>
                     </Card>
