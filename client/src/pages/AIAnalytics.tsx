@@ -190,16 +190,8 @@ export default function AIAnalytics() {
       )}
 
       {selectedAccountId && !aiDataLoading && aiData && (
-        <Tabs defaultValue="summary" className="w-full">
+        <Tabs defaultValue="playbook" className="w-full">
           <TabsList className="mb-6">
-            <TabsTrigger value="summary">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Account Summary
-            </TabsTrigger>
-            <TabsTrigger value="next-steps">
-              <ArrowRightCircle className="mr-2 h-4 w-4" />
-              Next Steps
-            </TabsTrigger>
             <TabsTrigger value="playbook">
               <ClipboardCheck className="mr-2 h-4 w-4" />
               Task Playbook
@@ -210,131 +202,7 @@ export default function AIAnalytics() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="summary" className="space-y-4">
-            {aiData.insight ? (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex justify-between items-center">
-                    <span>Account Summary</span>
-                    <Badge variant="outline" className="font-normal">
-                      Generated: {formatDate(aiData.insight.lastGeneratedAt)}
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription>
-                    AI-generated summary of {aiData.insight.accountName}'s status, activities, and health
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="prose max-w-none">
-                    {aiData.insight.summary.split('\n').map((paragraph, i) => (
-                      <p key={i}>{paragraph}</p>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between border-t pt-4">
-                  <div className="text-sm text-muted-foreground">
-                    Powered by Anthropic Claude
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setLocation(`/accounts/${selectedAccountId}`)}
-                  >
-                    View Account Details
-                  </Button>
-                </CardFooter>
-              </Card>
-            ) : (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle>Account Summary</CardTitle>
-                  <CardDescription>
-                    AI-generated summary not available
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-6">
-                    <p className="text-muted-foreground">
-                      No summary data is available for this account.
-                    </p>
-                    <Button 
-                      onClick={handleRefresh} 
-                      className="mt-4"
-                      disabled={refreshing}
-                    >
-                      Generate Summary
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
 
-          <TabsContent value="next-steps" className="space-y-4">
-            {aiData.nextSteps ? (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex justify-between items-center">
-                    <span>Recommended Next Steps</span>
-                    <Badge variant="outline" className="font-normal">
-                      Generated: {formatDate(aiData.nextSteps.lastGeneratedAt)}
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription>
-                    AI-recommended actions for {aiData.nextSteps.accountName} based on current status
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="prose max-w-none">
-                    {aiData.nextSteps.recommendations.split('\n').map((paragraph, i) => (
-                      <p key={i}>{paragraph}</p>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between border-t pt-4">
-                  <div className="text-sm text-muted-foreground">
-                    Powered by Anthropic Claude
-                  </div>
-                  <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
-                    {refreshing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Refreshing...
-                      </>
-                    ) : (
-                      <>
-                        <RefreshCw className="mr-2 h-4 w-4" />
-                        Refresh
-                      </>
-                    )}
-                  </Button>
-                </CardFooter>
-              </Card>
-            ) : (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle>Recommended Next Steps</CardTitle>
-                  <CardDescription>
-                    AI-recommended actions not available
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-6">
-                    <p className="text-muted-foreground">
-                      No recommendations are available for this account.
-                    </p>
-                    <Button 
-                      onClick={handleRefresh} 
-                      className="mt-4"
-                      disabled={refreshing}
-                    >
-                      Generate Recommendations
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
 
           <TabsContent value="playbook" className="space-y-4">
             {aiData.playbook && aiData.playbook.tasks && aiData.playbook.tasks.length > 0 ? (
