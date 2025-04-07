@@ -21,9 +21,15 @@ const createReportSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
   description: z.string().optional(),
   type: z.string().min(1, "Please select a report type"),
-  dataSource: z.string().min(1, "Please select a data source"),
+  primaryDataSource: z.string().min(1, "Please select a primary data source"),
+  secondaryDataSource: z.string().optional(),
+  joinType: z.enum(["none", "inner", "left", "right"]).default("none"),
+  joinCondition: z.string().optional(),
   columns: z.string().min(1, "Please specify at least one column"),
   filters: z.string().optional(),
+  aggregations: z.string().optional(),
+  groupBy: z.string().optional(),
+  sortBy: z.string().optional(),
   isDefault: z.boolean().default(false),
   isShared: z.boolean().default(true),
 });
@@ -31,7 +37,8 @@ const createReportSchema = z.object({
 function Reports() {
   const [isCreatingReport, setIsCreatingReport] = useState(false);
   const { toast } = useToast();
-  const tenantHeaders = setTenantHeader();
+  // Use the known tenant ID for development
+  const tenantHeaders = { 'X-Tenant-ID': '572c77d7-e838-44ca-8adb-7ddef5f199bb' };
   
   const { data: reports, isLoading, refetch } = useQuery<ReportDefinition[]>({
     queryKey: ["/api/reports"],
@@ -48,9 +55,15 @@ function Reports() {
       name: "",
       description: "",
       type: "",
-      dataSource: "",
+      primaryDataSource: "",
+      secondaryDataSource: "",
+      joinType: "none",
+      joinCondition: "",
       columns: "",
       filters: "",
+      aggregations: "",
+      groupBy: "",
+      sortBy: "",
       isDefault: false,
       isShared: true,
     },
@@ -58,6 +71,26 @@ function Reports() {
 
   const handleCreateReport = async (values: z.infer<typeof createReportSchema>) => {
     try {
+      // Format the advanced config based on our inputs
+      const config = {
+        dataSources: {
+          primary: values.primaryDataSource,
+          secondary: values.secondaryDataSource || null,
+          joinType: values.joinType,
+          joinCondition: values.joinCondition || null,
+        },
+        display: {
+          visualization: values.type,
+        },
+        processing: {
+          columns: values.columns.split(",").map(col => col.trim()),
+          filters: values.filters ? values.filters.split(",").map(filter => filter.trim()) : [],
+          aggregations: values.aggregations ? values.aggregations.split(",").map(agg => agg.trim()) : [],
+          groupBy: values.groupBy ? values.groupBy.split(",").map(group => group.trim()) : [],
+          sortBy: values.sortBy ? values.sortBy.split(",").map(sort => sort.trim()) : [],
+        }
+      };
+
       const res = await fetch("/api/reports", {
         method: "POST",
         headers: {
@@ -65,12 +98,12 @@ function Reports() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...values,
-          config: {
-            dataSource: values.dataSource,
-            columns: values.columns.split(",").map(col => col.trim()),
-            filters: values.filters ? values.filters.split(",").map(filter => filter.trim()) : [],
-          }
+          name: values.name,
+          description: values.description || "",
+          isDefault: values.isDefault,
+          isShared: values.isShared,
+          config,
+          visualization: values.type, // For backwards compatibility
         }),
       });
 
@@ -192,17 +225,17 @@ function Reports() {
                     />
                     <FormField
                       control={form.control}
-                      name="dataSource"
+                      name="primaryDataSource"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Data Source</FormLabel>
+                          <FormLabel>Primary Data Source</FormLabel>
                           <Select 
                             onValueChange={field.onChange} 
                             defaultValue={field.value}
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Select a data source" />
+                                <SelectValue placeholder="Select primary source" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -219,6 +252,79 @@ function Reports() {
                       )}
                     />
                   </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="secondaryDataSource"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Secondary Data Source (Optional)</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select secondary source" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="none">None</SelectItem>
+                              <SelectItem value="accounts">Accounts</SelectItem>
+                              <SelectItem value="contacts">Contacts</SelectItem>
+                              <SelectItem value="deals">Deals</SelectItem>
+                              <SelectItem value="tasks">Tasks</SelectItem>
+                              <SelectItem value="projects">Projects</SelectItem>
+                              <SelectItem value="support_tickets">Support Tickets</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="joinType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Join Type</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select join type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="none">None</SelectItem>
+                              <SelectItem value="inner">Inner Join</SelectItem>
+                              <SelectItem value="left">Left Join</SelectItem>
+                              <SelectItem value="right">Right Join</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="joinCondition"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Join Condition (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="accounts.id=deals.accountId" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
                   <FormField
                     control={form.control}
                     name="columns"
@@ -226,12 +332,13 @@ function Reports() {
                       <FormItem>
                         <FormLabel>Columns</FormLabel>
                         <FormControl>
-                          <Input placeholder="name, industry, location, revenue" {...field} />
+                          <Input placeholder="accounts.name, accounts.industry, deals.value" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                  
                   <FormField
                     control={form.control}
                     name="filters"
@@ -239,7 +346,50 @@ function Reports() {
                       <FormItem>
                         <FormLabel>Filters (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="industry=technology, revenue>1000000" {...field} />
+                          <Input placeholder="accounts.industry=technology, deals.value>1000000" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="aggregations"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Aggregations (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="SUM(deals.value), AVG(deals.winProbability)" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="groupBy"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Group By (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="accounts.industry, MONTH(deals.createdAt)" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="sortBy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sort By (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="deals.value DESC, accounts.name ASC" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

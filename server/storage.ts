@@ -682,6 +682,129 @@ export class DatabaseStorage implements IStorage {
     
     return task;
   }
+
+  // Report Definition methods
+  async getReportDefinitions(tenantId: string): Promise<ReportDefinition[]> {
+    return db
+      .select()
+      .from(reportDefinitions)
+      .where(eq(reportDefinitions.tenantId, tenantId));
+  }
+
+  async getReportDefinition(id: number, tenantId: string): Promise<ReportDefinition | undefined> {
+    const [report] = await db
+      .select()
+      .from(reportDefinitions)
+      .where(and(eq(reportDefinitions.id, id), eq(reportDefinitions.tenantId, tenantId)));
+    return report;
+  }
+
+  async createReportDefinition(report: InsertReportDefinition): Promise<ReportDefinition> {
+    const [newReport] = await db
+      .insert(reportDefinitions)
+      .values(report)
+      .returning();
+    return newReport;
+  }
+
+  async updateReportDefinition(id: number, data: Partial<ReportDefinition>, tenantId: string): Promise<ReportDefinition> {
+    const [updatedReport] = await db
+      .update(reportDefinitions)
+      .set(data)
+      .where(and(eq(reportDefinitions.id, id), eq(reportDefinitions.tenantId, tenantId)))
+      .returning();
+    return updatedReport;
+  }
+
+  // Dashboard Definition methods
+  async getDashboardDefinitions(tenantId: string): Promise<DashboardDefinition[]> {
+    return db
+      .select()
+      .from(dashboardDefinitions)
+      .where(eq(dashboardDefinitions.tenantId, tenantId));
+  }
+
+  async getDashboardDefinition(id: number, tenantId: string): Promise<DashboardDefinition | undefined> {
+    const [dashboard] = await db
+      .select()
+      .from(dashboardDefinitions)
+      .where(and(eq(dashboardDefinitions.id, id), eq(dashboardDefinitions.tenantId, tenantId)));
+    return dashboard;
+  }
+
+  async createDashboardDefinition(dashboard: InsertDashboardDefinition): Promise<DashboardDefinition> {
+    const [newDashboard] = await db
+      .insert(dashboardDefinitions)
+      .values(dashboard)
+      .returning();
+    return newDashboard;
+  }
+
+  async updateDashboardDefinition(id: number, data: Partial<DashboardDefinition>, tenantId: string): Promise<DashboardDefinition> {
+    const [updatedDashboard] = await db
+      .update(dashboardDefinitions)
+      .set(data)
+      .where(and(eq(dashboardDefinitions.id, id), eq(dashboardDefinitions.tenantId, tenantId)))
+      .returning();
+    return updatedDashboard;
+  }
+
+  // Dashboard Widget methods
+  async getDashboardWidgets(dashboardId: number): Promise<DashboardWidget[]> {
+    return db
+      .select()
+      .from(dashboardWidgets)
+      .where(eq(dashboardWidgets.dashboardId, dashboardId));
+  }
+
+  async createDashboardWidget(widget: InsertDashboardWidget): Promise<DashboardWidget> {
+    const [newWidget] = await db
+      .insert(dashboardWidgets)
+      .values(widget)
+      .returning();
+    return newWidget;
+  }
+
+  async updateDashboardWidget(id: number, data: Partial<DashboardWidget>, tenantId: string): Promise<DashboardWidget> {
+    const [updatedWidget] = await db
+      .update(dashboardWidgets)
+      .set(data)
+      .where(eq(dashboardWidgets.id, id))
+      .returning();
+    return updatedWidget;
+  }
+
+  // User Dashboard Preference methods
+  async getUserDashboardPreferences(userId: number, tenantId: string): Promise<UserDashboardPreference[]> {
+    return db
+      .select()
+      .from(userDashboardPreferences)
+      .where(and(eq(userDashboardPreferences.userId, userId), eq(userDashboardPreferences.tenantId, tenantId)));
+  }
+
+  async createUserDashboardPreference(preference: InsertUserDashboardPreference): Promise<UserDashboardPreference> {
+    const [newPreference] = await db
+      .insert(userDashboardPreferences)
+      .values(preference)
+      .returning();
+    return newPreference;
+  }
+
+  // Saved Report Filter methods
+  async getSavedReportFilters(userId: number, tenantId: string): Promise<SavedReportFilter[]> {
+    return db
+      .select()
+      .from(savedReportFilters)
+      .where(and(eq(savedReportFilters.userId, userId), eq(savedReportFilters.tenantId, tenantId)));
+  }
+
+  async createSavedReportFilter(filter: InsertSavedReportFilter): Promise<SavedReportFilter> {
+    const [newFilter] = await db
+      .insert(savedReportFilters)
+      .values(filter)
+      .returning();
+    return newFilter;
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -1266,6 +1389,185 @@ export class MemStorage implements IStorage {
     
     this.accountTasks.set(id, updatedTask);
     return updatedTask;
+  }
+  
+  // Report Definition methods
+  private reportDefinitions: Map<number, ReportDefinition> = new Map();
+  private currentReportDefinitionId: number = 1;
+  
+  async getReportDefinitions(tenantId: string): Promise<ReportDefinition[]> {
+    return Array.from(this.reportDefinitions.values()).filter(
+      (report) => report.tenantId === tenantId
+    );
+  }
+
+  async getReportDefinition(id: number, tenantId: string): Promise<ReportDefinition | undefined> {
+    const report = this.reportDefinitions.get(id);
+    if (report && report.tenantId === tenantId) {
+      return report;
+    }
+    return undefined;
+  }
+
+  async createReportDefinition(report: InsertReportDefinition): Promise<ReportDefinition> {
+    const id = this.currentReportDefinitionId++;
+    const now = new Date();
+    const newReport: ReportDefinition = {
+      ...report,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.reportDefinitions.set(id, newReport);
+    return newReport;
+  }
+
+  async updateReportDefinition(id: number, data: Partial<ReportDefinition>, tenantId: string): Promise<ReportDefinition> {
+    const report = await this.getReportDefinition(id, tenantId);
+    if (!report) {
+      throw new Error(`Report definition not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedReport: ReportDefinition = {
+      ...report,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.reportDefinitions.set(id, updatedReport);
+    return updatedReport;
+  }
+
+  // Dashboard Definition methods
+  private dashboardDefinitions: Map<number, DashboardDefinition> = new Map();
+  private currentDashboardDefinitionId: number = 1;
+  
+  async getDashboardDefinitions(tenantId: string): Promise<DashboardDefinition[]> {
+    return Array.from(this.dashboardDefinitions.values()).filter(
+      (dashboard) => dashboard.tenantId === tenantId
+    );
+  }
+
+  async getDashboardDefinition(id: number, tenantId: string): Promise<DashboardDefinition | undefined> {
+    const dashboard = this.dashboardDefinitions.get(id);
+    if (dashboard && dashboard.tenantId === tenantId) {
+      return dashboard;
+    }
+    return undefined;
+  }
+
+  async createDashboardDefinition(dashboard: InsertDashboardDefinition): Promise<DashboardDefinition> {
+    const id = this.currentDashboardDefinitionId++;
+    const now = new Date();
+    const newDashboard: DashboardDefinition = {
+      ...dashboard,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.dashboardDefinitions.set(id, newDashboard);
+    return newDashboard;
+  }
+
+  async updateDashboardDefinition(id: number, data: Partial<DashboardDefinition>, tenantId: string): Promise<DashboardDefinition> {
+    const dashboard = await this.getDashboardDefinition(id, tenantId);
+    if (!dashboard) {
+      throw new Error(`Dashboard definition not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedDashboard: DashboardDefinition = {
+      ...dashboard,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.dashboardDefinitions.set(id, updatedDashboard);
+    return updatedDashboard;
+  }
+
+  // Dashboard Widget methods
+  private dashboardWidgets: Map<number, DashboardWidget> = new Map();
+  private currentDashboardWidgetId: number = 1;
+  
+  async getDashboardWidgets(dashboardId: number): Promise<DashboardWidget[]> {
+    return Array.from(this.dashboardWidgets.values()).filter(
+      (widget) => widget.dashboardId === dashboardId
+    );
+  }
+
+  async createDashboardWidget(widget: InsertDashboardWidget): Promise<DashboardWidget> {
+    const id = this.currentDashboardWidgetId++;
+    const now = new Date();
+    const newWidget: DashboardWidget = {
+      ...widget,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.dashboardWidgets.set(id, newWidget);
+    return newWidget;
+  }
+
+  async updateDashboardWidget(id: number, data: Partial<DashboardWidget>, tenantId: string): Promise<DashboardWidget> {
+    const widget = this.dashboardWidgets.get(id);
+    if (!widget) {
+      throw new Error(`Dashboard widget not found with id: ${id}`);
+    }
+    
+    const updatedWidget: DashboardWidget = {
+      ...widget,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.dashboardWidgets.set(id, updatedWidget);
+    return updatedWidget;
+  }
+
+  // User Dashboard Preference methods
+  private userDashboardPreferences: Map<number, UserDashboardPreference> = new Map();
+  private currentUserDashboardPreferenceId: number = 1;
+  
+  async getUserDashboardPreferences(userId: number, tenantId: string): Promise<UserDashboardPreference[]> {
+    return Array.from(this.userDashboardPreferences.values()).filter(
+      (pref) => pref.userId === userId && pref.tenantId === tenantId
+    );
+  }
+
+  async createUserDashboardPreference(preference: InsertUserDashboardPreference): Promise<UserDashboardPreference> {
+    const id = this.currentUserDashboardPreferenceId++;
+    const now = new Date();
+    const newPreference: UserDashboardPreference = {
+      ...preference,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.userDashboardPreferences.set(id, newPreference);
+    return newPreference;
+  }
+
+  // Saved Report Filter methods
+  private savedReportFilters: Map<number, SavedReportFilter> = new Map();
+  private currentSavedReportFilterId: number = 1;
+  
+  async getSavedReportFilters(userId: number, tenantId: string): Promise<SavedReportFilter[]> {
+    return Array.from(this.savedReportFilters.values()).filter(
+      (filter) => filter.userId === userId && filter.tenantId === tenantId
+    );
+  }
+
+  async createSavedReportFilter(filter: InsertSavedReportFilter): Promise<SavedReportFilter> {
+    const id = this.currentSavedReportFilterId++;
+    const now = new Date();
+    const newFilter: SavedReportFilter = {
+      ...filter,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.savedReportFilters.set(id, newFilter);
+    return newFilter;
   }
 }
 
