@@ -743,24 +743,89 @@ export default function AccountDetail() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="prose max-w-none">
-                      {aiData.insight.summary.split('\n').filter(para => para.trim() !== '').map((paragraph, i) => (
-                        <div key={i} className={`mb-3 ${i === 0 ? 'text-lg font-medium text-primary-700' : ''}`}>
-                          {paragraph.trim().startsWith("•") ? (
-                            <div className="flex">
-                              <span className="text-primary mr-2">•</span>
-                              <span>{paragraph.trim().substring(1)}</span>
+                    <div className="space-y-6">
+                      {/* Overview Card */}
+                      <Card className="border shadow-sm">
+                        <CardHeader className="pb-2 bg-slate-50">
+                          <CardTitle className="text-base flex items-center">
+                            <Building2 className="h-4 w-4 mr-2 text-primary" />
+                            Account Overview
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-4">
+                          {aiData.insight.summary.split('\n')
+                            .filter(para => para.trim() !== '')
+                            .slice(0, 1)
+                            .map((paragraph, i) => (
+                              <p key={i} className="text-base mb-3">{paragraph}</p>
+                            ))}
+                          
+                          {/* Key Stats Grid */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                            <div className="bg-slate-50 rounded-md p-3 text-center">
+                              <p className="text-sm text-muted-foreground">Health Score</p>
+                              <p className="text-xl font-bold mt-1">{account.healthScore || "—"}%</p>
                             </div>
-                          ) : paragraph.trim().startsWith("-") ? (
-                            <div className="flex">
-                              <span className="text-primary mr-2">•</span>
-                              <span>{paragraph.trim().substring(1)}</span>
+                            <div className="bg-slate-50 rounded-md p-3 text-center">
+                              <p className="text-sm text-muted-foreground">Open Deals</p>
+                              <p className="text-xl font-bold mt-1">{deals.length}</p>
                             </div>
-                          ) : (
-                            paragraph
-                          )}
-                        </div>
-                      ))}
+                            <div className="bg-slate-50 rounded-md p-3 text-center">
+                              <p className="text-sm text-muted-foreground">Active Projects</p>
+                              <p className="text-xl font-bold mt-1">{projects.length}</p>
+                            </div>
+                            <div className="bg-slate-50 rounded-md p-3 text-center">
+                              <p className="text-sm text-muted-foreground">Support Tickets</p>
+                              <p className="text-xl font-bold mt-1">{tickets.length}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      {/* Key Points Card */}
+                      <Card className="border shadow-sm">
+                        <CardHeader className="pb-2 bg-slate-50">
+                          <CardTitle className="text-base flex items-center">
+                            <CheckCircle2 className="h-4 w-4 mr-2 text-primary" />
+                            Key Highlights
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-4">
+                          <div className="grid grid-cols-1 gap-3">
+                            {aiData.insight.summary.split('\n')
+                              .filter(para => para.trim() !== '' && 
+                                (para.trim().startsWith("•") || para.trim().startsWith("-")))
+                              .map((point, i) => (
+                                <div key={i} className="flex items-start bg-slate-50 p-3 rounded-md">
+                                  <span className="text-primary mr-2 flex-shrink-0 mt-0.5">•</span>
+                                  <span>{point.trim().startsWith("•") ? point.trim().substring(1) : 
+                                        point.trim().startsWith("-") ? point.trim().substring(1) : 
+                                        point}</span>
+                                </div>
+                              ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                      
+                      {/* Additional Details Card */}
+                      <Card className="border shadow-sm">
+                        <CardHeader className="pb-2 bg-slate-50">
+                          <CardTitle className="text-base flex items-center">
+                            <BarChart3 className="h-4 w-4 mr-2 text-primary" />
+                            Account Analysis
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="pt-4">
+                          {aiData.insight.summary.split('\n')
+                            .filter(para => para.trim() !== '' && 
+                              !para.trim().startsWith("•") && 
+                              !para.trim().startsWith("-"))
+                            .slice(1) // Skip the first paragraph since we already used it
+                            .map((paragraph, i) => (
+                              <p key={i} className="text-sm mb-3">{paragraph}</p>
+                            ))}
+                        </CardContent>
+                      </Card>
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-between border-t pt-4">
@@ -807,28 +872,108 @@ export default function AccountDetail() {
                   </CardHeader>
                   <CardContent>
                     {aiData.nextSteps ? (
-                      <div className="prose max-w-none">
-                        {aiData.nextSteps.recommendations.split('\n').filter(para => para.trim() !== '').map((paragraph, i) => (
-                          <div key={i} className="mb-3">
-                            {paragraph.trim().startsWith("•") ? (
-                              <div className="flex items-start">
-                                <span className="text-primary mr-2 mt-1">•</span>
-                                <span>{paragraph.trim().substring(1)}</span>
-                              </div>
-                            ) : paragraph.trim().startsWith("-") ? (
-                              <div className="flex items-start">
-                                <ArrowRightCircle className="h-4 w-4 text-primary mr-2 flex-shrink-0 mt-1" />
-                                <span>{paragraph.trim().substring(1)}</span>
-                              </div>
-                            ) : paragraph.trim().startsWith("Priority") || paragraph.trim().startsWith("High Priority") ? (
-                              <div className="font-semibold text-primary-700 mb-2 mt-3">{paragraph}</div>
-                            ) : i === 0 ? (
-                              <div className="text-lg font-medium mb-4">{paragraph}</div>
-                            ) : (
-                              <p>{paragraph}</p>
-                            )}
-                          </div>
-                        ))}
+                      <div className="space-y-6">
+                        {/* Overview Card */}
+                        <Card className="border shadow-sm">
+                          <CardHeader className="pb-2 bg-slate-50">
+                            <CardTitle className="text-base flex items-center">
+                              <ArrowRightCircle className="h-4 w-4 mr-2 text-primary" />
+                              Action Overview
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="pt-4">
+                            {aiData.nextSteps.recommendations.split('\n')
+                              .filter(para => para.trim() !== '')
+                              .slice(0, 1) // Get the first paragraph as overview
+                              .map((paragraph, i) => (
+                                <p key={i} className="text-base">{paragraph}</p>
+                              ))}
+                          </CardContent>
+                        </Card>
+                        
+                        {/* Priority Actions Card */}
+                        <Card className="border shadow-sm">
+                          <CardHeader className="pb-2 bg-slate-50">
+                            <CardTitle className="text-base flex items-center">
+                              <AlertTriangle className="h-4 w-4 mr-2 text-red-500" />
+                              Priority Actions
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="pt-4">
+                            <div className="grid grid-cols-1 gap-3">
+                              {aiData.nextSteps.recommendations.split('\n')
+                                .filter(para => para.trim() !== '' && 
+                                  (para.trim().startsWith("•") || para.trim().startsWith("-")))
+                                .slice(0, 3) // Get the top 3 priority items
+                                .map((action, i) => (
+                                  <div key={i} className="flex items-start p-3 bg-red-50 border border-red-100 rounded-md">
+                                    <div className="bg-red-100 p-1 rounded-full mr-3 flex-shrink-0 mt-0.5">
+                                      <ArrowRightCircle className="h-4 w-4 text-red-600" />
+                                    </div>
+                                    <div>
+                                      <p className="font-medium text-red-800">
+                                        {action.trim().startsWith("•") ? action.trim().substring(1) : 
+                                         action.trim().startsWith("-") ? action.trim().substring(1) : 
+                                         action}
+                                      </p>
+                                      <p className="text-xs text-red-600 mt-1">High priority • Take action soon</p>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                        
+                        {/* All Recommendations Card */}
+                        <Card className="border shadow-sm">
+                          <CardHeader className="pb-2 bg-slate-50">
+                            <CardTitle className="text-base flex items-center">
+                              <CheckCircle2 className="h-4 w-4 mr-2 text-primary" />
+                              All Recommendations
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="pt-4">
+                            <div className="space-y-3">
+                              {aiData.nextSteps.recommendations.split('\n')
+                                .filter(para => para.trim() !== '' && 
+                                  (para.trim().startsWith("•") || para.trim().startsWith("-")))
+                                .map((action, i) => (
+                                  <div key={i} className="p-3 bg-slate-50 rounded-md">
+                                    <div className="flex">
+                                      <div className={`p-1 rounded-full mr-3 flex-shrink-0 
+                                        ${i < 3 ? 'bg-red-100' : i < 6 ? 'bg-yellow-100' : 'bg-green-100'}`}>
+                                        <ArrowRightCircle className={`h-4 w-4 
+                                          ${i < 3 ? 'text-red-600' : i < 6 ? 'text-yellow-600' : 'text-green-600'}`} />
+                                      </div>
+                                      <div>
+                                        <p className="font-medium">
+                                          {action.trim().startsWith("•") ? action.trim().substring(1) : 
+                                           action.trim().startsWith("-") ? action.trim().substring(1) : 
+                                           action}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                          {i < 3 ? 'High priority' : i < 6 ? 'Medium priority' : 'Normal priority'}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              
+                              {/* Other content paragraphs */}
+                              {aiData.nextSteps.recommendations.split('\n')
+                                .filter(para => para.trim() !== '' && 
+                                  !para.trim().startsWith("•") && 
+                                  !para.trim().startsWith("-") &&
+                                  !(para.trim().startsWith("Priority") || para.trim().startsWith("High Priority")) &&
+                                  para !== aiData.nextSteps.recommendations.split('\n')
+                                    .filter(para => para.trim() !== '')[0]
+                                )
+                                .map((paragraph, i) => (
+                                  <p key={i} className="text-sm p-3">{paragraph}</p>
+                                ))}
+                            </div>
+                          </CardContent>
+                        </Card>
                       </div>
                     ) : (
                       <div className="text-center py-6">
