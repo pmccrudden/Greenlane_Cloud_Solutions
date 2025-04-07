@@ -56,7 +56,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Calendar as DayPickerCalendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 
 import { useToast } from "@/hooks/use-toast";
@@ -206,19 +206,22 @@ export default function Tasks() {
   
   // Handle saving a field
   const handleSaveField = (task: AccountTask, field: keyof AccountTask) => {
-    // Skip update if the value hasn't changed
-    if (task[field] === tempEditValue) {
+    // Keep a local reference to the current tempEditValue
+    const valueToSave = tempEditValue;
+    
+    // Skip update if the value hasn't changed or is null
+    if (task[field] === valueToSave || valueToSave === null) {
       handleCancelEdit();
       return;
     }
     
-    // Save the change
+    // Save the change - make sure we're using our local reference
     updateTaskMutation.mutate({ 
       id: task.id, 
-      data: { [field]: tempEditValue } 
+      data: { [field]: valueToSave } 
     });
     
-    // Reset edit state
+    // Reset edit state immediately to allow clicking on another field
     handleCancelEdit();
   };
   
@@ -428,7 +431,7 @@ export default function Tasks() {
                             </FormControl>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
-                            <CalendarComponent
+                            <DayPickerCalendar
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
@@ -807,11 +810,10 @@ export default function Tasks() {
                         </div>
                       ) : (
                         <div 
-                          className="flex items-center justify-between cursor-pointer" 
+                          className="flex items-center cursor-pointer" 
                           onClick={() => handleStartEditing(task, 'status')}
                         >
                           {getStatusBadge(task.status)}
-                          <Pencil className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100" />
                         </div>
                       )}
                     </TableCell>
@@ -837,11 +839,10 @@ export default function Tasks() {
                         </div>
                       ) : (
                         <div 
-                          className="flex items-center justify-between cursor-pointer" 
+                          className="flex items-center cursor-pointer" 
                           onClick={() => handleStartEditing(task, 'priority')}
                         >
                           {getPriorityBadge(task.priority)}
-                          <Pencil className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100" />
                         </div>
                       )}
                     </TableCell>
@@ -862,7 +863,7 @@ export default function Tasks() {
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
-                              <CalendarComponent
+                              <DayPickerCalendar
                                 mode="single"
                                 selected={tempEditValue ? new Date(tempEditValue) : undefined}
                                 onSelect={(date: Date | undefined) => {
@@ -878,11 +879,10 @@ export default function Tasks() {
                         </div>
                       ) : (
                         <div 
-                          className="flex items-center justify-between cursor-pointer" 
+                          className="flex items-center cursor-pointer" 
                           onClick={() => handleStartEditing(task, 'dueDate')}
                         >
                           <span>{task.dueDate ? format(new Date(task.dueDate), "PP") : "—"}</span>
-                          <Pencil className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100" />
                         </div>
                       )}
                     </TableCell>
