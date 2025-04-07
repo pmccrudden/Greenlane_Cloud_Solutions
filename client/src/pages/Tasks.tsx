@@ -115,9 +115,23 @@ export default function Tasks() {
     },
   });
 
+  // Define the API submission type that accepts string for dueDate
+  interface ApiTaskSubmission {
+    title: string;
+    accountId: number;
+    description?: string;
+    dueDate?: string;
+    priority: string;
+    status: string;
+    owner?: string;
+    timeline: string;
+    effort: string;
+    outcome?: string;
+  };
+
   // Mutation for creating a new task
   const createTaskMutation = useMutation({
-    mutationFn: async (values: TaskFormValues) => {
+    mutationFn: async (values: ApiTaskSubmission) => {
       const response = await apiRequest("POST", "/api/tasks", values);
       if (!response.ok) {
         const error = await response.json();
@@ -145,7 +159,18 @@ export default function Tasks() {
 
   // Handle form submission
   const onSubmit = (values: TaskFormValues) => {
-    createTaskMutation.mutate(values);
+    // Prepare the data for submission 
+    // Create a new object without the dueDate property initially
+    const { dueDate, ...restValues } = values;
+    
+    // Create the formatted values object with all properties except dueDate
+    const formattedValues: ApiTaskSubmission = {
+      ...restValues,
+      // Conditionally add dueDate as ISO string if it exists
+      ...(dueDate ? { dueDate: dueDate.toISOString() } : {})
+    };
+    
+    createTaskMutation.mutate(formattedValues);
   };
 
   // Mutation for updating a task
@@ -207,12 +232,17 @@ export default function Tasks() {
   // Handle saving a field
   const handleSaveField = (task: AccountTask, field: keyof AccountTask) => {
     // Keep a local reference to the current tempEditValue
-    const valueToSave = tempEditValue;
+    let valueToSave = tempEditValue;
     
     // Skip update if the value hasn't changed or is null
     if (task[field] === valueToSave || valueToSave === null) {
       handleCancelEdit();
       return;
+    }
+    
+    // Format date values properly if the field is dueDate
+    if (field === 'dueDate' && valueToSave instanceof Date) {
+      valueToSave = valueToSave.toISOString();
     }
     
     // Save the change - make sure we're using our local reference
