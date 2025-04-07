@@ -371,7 +371,8 @@ export const reportDefinitions = pgTable("report_definitions", {
 });
 
 export const insertReportDefinitionSchema = createInsertSchema(reportDefinitions)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true, createdById: true }); // Make tenantId and createdById optional for validation since they're added by the server
 
 export const reportDefinitionsRelations = relations(reportDefinitions, ({ one }) => ({
   createdBy: one(users, {
@@ -399,7 +400,8 @@ export const dashboardDefinitions = pgTable("dashboard_definitions", {
 });
 
 export const insertDashboardDefinitionSchema = createInsertSchema(dashboardDefinitions)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true, createdById: true }); // Make tenantId and createdById optional for validation since they're added by the server
 
 export const dashboardDefinitionsRelations = relations(dashboardDefinitions, ({ one, many }) => ({
   createdBy: one(users, {
@@ -428,7 +430,8 @@ export const dashboardWidgets = pgTable("dashboard_widgets", {
 });
 
 export const insertDashboardWidgetSchema = createInsertSchema(dashboardWidgets)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true }); // Make tenantId optional for validation since it's added by the server
 
 export const dashboardWidgetsRelations = relations(dashboardWidgets, ({ one }) => ({
   dashboard: one(dashboardDefinitions, {
@@ -459,7 +462,8 @@ export const userDashboardPreferences = pgTable("user_dashboard_preferences", {
 });
 
 export const insertUserDashboardPreferenceSchema = createInsertSchema(userDashboardPreferences)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true, userId: true }); // Make tenantId and userId optional for validation since they're added by the server
 
 export const userDashboardPreferencesRelations = relations(userDashboardPreferences, ({ one }) => ({
   user: one(users, {
@@ -490,7 +494,8 @@ export const savedReportFilters = pgTable("saved_report_filters", {
 });
 
 export const insertSavedReportFilterSchema = createInsertSchema(savedReportFilters)
-  .omit({ id: true, createdAt: true, updatedAt: true });
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true, userId: true }); // Make tenantId and userId optional for validation since they're added by the server
 
 export const savedReportFiltersRelations = relations(savedReportFilters, ({ one }) => ({
   report: one(reportDefinitions, {
