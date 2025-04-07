@@ -19,7 +19,12 @@ import {
   insertTicketActivitySchema,
   insertEmailTemplateSchema,
   insertDigitalJourneySchema,
-  insertAccountTaskSchema
+  insertAccountTaskSchema,
+  insertReportDefinitionSchema,
+  insertDashboardDefinitionSchema,
+  insertDashboardWidgetSchema,
+  insertUserDashboardPreferenceSchema,
+  insertSavedReportFilterSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -1169,6 +1174,186 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(predictiveAnalytics);
     } catch (error: any) {
       console.error("Error generating predictive analytics:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== Report Definition Routes =====
+  app.get("/api/reports", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const reports = await storage.getReportDefinitions(req.tenantId!);
+      res.json(reports);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/reports/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const report = await storage.getReportDefinition(parseInt(req.params.id), req.tenantId!);
+      if (!report) {
+        return res.status(404).json({ message: "Report not found" });
+      }
+      res.json(report);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/reports", requireTenant, requireAuth, validateBody(insertReportDefinitionSchema), async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const report = await storage.createReportDefinition({
+        ...req.validatedBody,
+        tenantId: req.tenantId!,
+        createdById: userId
+      });
+      res.status(201).json(report);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/reports/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const report = await storage.updateReportDefinition(parseInt(req.params.id), req.body, req.tenantId!);
+      res.json(report);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== Dashboard Definition Routes =====
+  app.get("/api/dashboards", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const dashboards = await storage.getDashboardDefinitions(req.tenantId!);
+      res.json(dashboards);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/dashboards/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const dashboard = await storage.getDashboardDefinition(parseInt(req.params.id), req.tenantId!);
+      if (!dashboard) {
+        return res.status(404).json({ message: "Dashboard not found" });
+      }
+
+      // Get associated widgets
+      const widgets = await storage.getDashboardWidgets(parseInt(req.params.id));
+      
+      res.json({
+        ...dashboard,
+        widgets
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/dashboards", requireTenant, requireAuth, validateBody(insertDashboardDefinitionSchema), async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const dashboard = await storage.createDashboardDefinition({
+        ...req.validatedBody,
+        tenantId: req.tenantId!,
+        createdById: userId
+      });
+      res.status(201).json(dashboard);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/dashboards/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const dashboard = await storage.updateDashboardDefinition(parseInt(req.params.id), req.body, req.tenantId!);
+      res.json(dashboard);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== Dashboard Widget Routes =====
+  app.post("/api/dashboards/:dashboardId/widgets", requireTenant, requireAuth, validateBody(insertDashboardWidgetSchema), async (req, res) => {
+    try {
+      const dashboardId = parseInt(req.params.dashboardId);
+      
+      // Verify dashboard exists and belongs to tenant
+      const dashboard = await storage.getDashboardDefinition(dashboardId, req.tenantId!);
+      if (!dashboard) {
+        return res.status(404).json({ message: "Dashboard not found" });
+      }
+      
+      const widget = await storage.createDashboardWidget({
+        ...req.validatedBody,
+        dashboardId,
+        tenantId: req.tenantId!
+      });
+      
+      res.status(201).json(widget);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/dashboards/:dashboardId/widgets/:widgetId", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const widgetId = parseInt(req.params.widgetId);
+      const widget = await storage.updateDashboardWidget(widgetId, req.body, req.tenantId!);
+      res.json(widget);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== User Dashboard Preferences Routes =====
+  app.get("/api/user/dashboard-preferences", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const preferences = await storage.getUserDashboardPreferences(userId, req.tenantId!);
+      res.json(preferences);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/user/dashboard-preferences", requireTenant, requireAuth, validateBody(insertUserDashboardPreferenceSchema), async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const preference = await storage.createUserDashboardPreference({
+        ...req.validatedBody,
+        userId,
+        tenantId: req.tenantId!
+      });
+      res.status(201).json(preference);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== Saved Report Filters Routes =====
+  app.get("/api/user/saved-filters", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const filters = await storage.getSavedReportFilters(userId, req.tenantId!);
+      res.json(filters);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/user/saved-filters", requireTenant, requireAuth, validateBody(insertSavedReportFilterSchema), async (req, res) => {
+    try {
+      const userId = (req.user as any).id;
+      const filter = await storage.createSavedReportFilter({
+        ...req.validatedBody,
+        userId,
+        tenantId: req.tenantId!
+      });
+      res.status(201).json(filter);
+    } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });

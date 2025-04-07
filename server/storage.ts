@@ -9,7 +9,12 @@ import {
   ticketActivities, TicketActivity, InsertTicketActivity,
   emailTemplates, EmailTemplate, InsertEmailTemplate,
   digitalJourneys, DigitalJourney, InsertDigitalJourney,
-  accountTasks, AccountTask, InsertAccountTask
+  accountTasks, AccountTask, InsertAccountTask,
+  reportDefinitions, ReportDefinition, InsertReportDefinition,
+  dashboardDefinitions, DashboardDefinition, InsertDashboardDefinition,
+  dashboardWidgets, DashboardWidget, InsertDashboardWidget,
+  userDashboardPreferences, UserDashboardPreference, InsertUserDashboardPreference,
+  savedReportFilters, SavedReportFilter, InsertSavedReportFilter
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -97,6 +102,31 @@ export interface IStorage {
   createAccountTask(task: InsertAccountTask): Promise<AccountTask>;
   createAccountTasks(tasks: InsertAccountTask[]): Promise<AccountTask[]>;
   updateAccountTask(id: number, data: Partial<AccountTask>, tenantId: string): Promise<AccountTask>;
+  
+  // Report Definition methods
+  getReportDefinitions(tenantId: string): Promise<ReportDefinition[]>;
+  getReportDefinition(id: number, tenantId: string): Promise<ReportDefinition | undefined>;
+  createReportDefinition(report: InsertReportDefinition): Promise<ReportDefinition>;
+  updateReportDefinition(id: number, data: Partial<ReportDefinition>, tenantId: string): Promise<ReportDefinition>;
+  
+  // Dashboard Definition methods
+  getDashboardDefinitions(tenantId: string): Promise<DashboardDefinition[]>;
+  getDashboardDefinition(id: number, tenantId: string): Promise<DashboardDefinition | undefined>;
+  createDashboardDefinition(dashboard: InsertDashboardDefinition): Promise<DashboardDefinition>;
+  updateDashboardDefinition(id: number, data: Partial<DashboardDefinition>, tenantId: string): Promise<DashboardDefinition>;
+  
+  // Dashboard Widget methods
+  getDashboardWidgets(dashboardId: number): Promise<DashboardWidget[]>;
+  createDashboardWidget(widget: InsertDashboardWidget): Promise<DashboardWidget>;
+  updateDashboardWidget(id: number, data: Partial<DashboardWidget>, tenantId: string): Promise<DashboardWidget>;
+  
+  // User Dashboard Preferences methods
+  getUserDashboardPreferences(userId: number, tenantId: string): Promise<UserDashboardPreference[]>;
+  createUserDashboardPreference(preference: InsertUserDashboardPreference): Promise<UserDashboardPreference>;
+  
+  // Saved Report Filters methods
+  getSavedReportFilters(userId: number, tenantId: string): Promise<SavedReportFilter[]>;
+  createSavedReportFilter(filter: InsertSavedReportFilter): Promise<SavedReportFilter>;
   
   // Session store
   sessionStore: session.Store;

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, json, uuid, doublePrecision, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, json, uuid, doublePrecision, primaryKey, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -186,27 +186,7 @@ export const sessions = pgTable("sessions", {
   expire: timestamp("expire").notNull(),
 });
 
-// Define relations
-export const usersRelations = relations(users, ({ many, one }) => ({
-  tenant: one(tenants, {
-    fields: [users.tenantId],
-    references: [tenants.id]
-  }),
-  assignedTickets: many(supportTickets),
-  ticketActivities: many(ticketActivities),
-  ownedDeals: many(deals, { relationName: 'dealOwner' })
-}));
-
-export const tenantsRelations = relations(tenants, ({ many }) => ({
-  users: many(users),
-  accounts: many(accounts),
-  contacts: many(contacts),
-  deals: many(deals),
-  projects: many(projects),
-  supportTickets: many(supportTickets),
-  emailTemplates: many(emailTemplates),
-  digitalJourneys: many(digitalJourneys)
-}));
+// Define relations moved to the end of the file
 
 export const accountsRelations = relations(accounts, ({ one, many }) => ({
   tenant: one(tenants, {
@@ -370,3 +350,210 @@ export const accountTasksRelations = relations(accountTasks, ({ one }) => ({
 
 export type InsertAccountTask = z.infer<typeof insertAccountTaskSchema>;
 export type AccountTask = typeof accountTasks.$inferSelect;
+
+// Custom Report Definitions table
+export const reportDefinitions = pgTable("report_definitions", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  dataSource: text("data_source").notNull(), // accounts, contacts, deals, projects, support_tickets, tasks
+  query: jsonb("query").notNull(), // JSON structure defining the query parameters, filters, etc.
+  columns: jsonb("columns").notNull(), // Array of column definitions
+  filters: jsonb("filters"), // User-defined filters
+  sorting: jsonb("sorting"), // Sorting configuration
+  visualization: text("visualization").default("table").notNull(), // table, bar, line, pie, etc.
+  visualizationConfig: jsonb("visualization_config"), // Configuration for the visualization type
+  isShared: boolean("is_shared").default(false).notNull(), // Whether this report is shared among tenant users
+  createdById: integer("created_by_id").notNull().references(() => users.id),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertReportDefinitionSchema = createInsertSchema(reportDefinitions)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export const reportDefinitionsRelations = relations(reportDefinitions, ({ one }) => ({
+  createdBy: one(users, {
+    fields: [reportDefinitions.createdById],
+    references: [users.id]
+  }),
+  tenant: one(tenants, {
+    fields: [reportDefinitions.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+// Dashboard Definitions table
+export const dashboardDefinitions = pgTable("dashboard_definitions", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  layout: jsonb("layout").notNull(), // JSON structure defining the layout grid
+  isDefault: boolean("is_default").default(false).notNull(),
+  isShared: boolean("is_shared").default(false).notNull(),
+  createdById: integer("created_by_id").notNull().references(() => users.id),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertDashboardDefinitionSchema = createInsertSchema(dashboardDefinitions)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export const dashboardDefinitionsRelations = relations(dashboardDefinitions, ({ one, many }) => ({
+  createdBy: one(users, {
+    fields: [dashboardDefinitions.createdById],
+    references: [users.id]
+  }),
+  tenant: one(tenants, {
+    fields: [dashboardDefinitions.tenantId],
+    references: [tenants.id]
+  }),
+  widgets: many(dashboardWidgets, { relationName: 'dashboard' })
+}));
+
+// Dashboard Widgets table
+export const dashboardWidgets = pgTable("dashboard_widgets", {
+  id: serial("id").primaryKey(),
+  dashboardId: integer("dashboard_id").notNull().references(() => dashboardDefinitions.id, { onDelete: 'cascade' }),
+  reportId: integer("report_id").references(() => reportDefinitions.id),
+  widgetType: text("widget_type").notNull(), // report, metric, custom
+  title: text("title").notNull(),
+  config: jsonb("config").notNull(), // Configuration specific to the widget type
+  position: json("position").notNull(), // x, y, width, height in the dashboard grid
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertDashboardWidgetSchema = createInsertSchema(dashboardWidgets)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export const dashboardWidgetsRelations = relations(dashboardWidgets, ({ one }) => ({
+  dashboard: one(dashboardDefinitions, {
+    fields: [dashboardWidgets.dashboardId],
+    references: [dashboardDefinitions.id]
+  }),
+  report: one(reportDefinitions, {
+    fields: [dashboardWidgets.reportId],
+    references: [reportDefinitions.id]
+  }),
+  tenant: one(tenants, {
+    fields: [dashboardWidgets.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+// User Dashboard Preferences table
+export const userDashboardPreferences = pgTable("user_dashboard_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  dashboardId: integer("dashboard_id").notNull().references(() => dashboardDefinitions.id, { onDelete: 'cascade' }),
+  isDefault: boolean("is_default").default(false).notNull(),
+  isStarred: boolean("is_starred").default(false).notNull(),
+  customLayout: jsonb("custom_layout"), // Optional custom layout that overrides the dashboard's default layout
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertUserDashboardPreferenceSchema = createInsertSchema(userDashboardPreferences)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export const userDashboardPreferencesRelations = relations(userDashboardPreferences, ({ one }) => ({
+  user: one(users, {
+    fields: [userDashboardPreferences.userId],
+    references: [users.id]
+  }),
+  dashboard: one(dashboardDefinitions, {
+    fields: [userDashboardPreferences.dashboardId],
+    references: [dashboardDefinitions.id]
+  }),
+  tenant: one(tenants, {
+    fields: [userDashboardPreferences.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+// Saved Report Filters table
+export const savedReportFilters = pgTable("saved_report_filters", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  reportId: integer("report_id").notNull().references(() => reportDefinitions.id, { onDelete: 'cascade' }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  filters: jsonb("filters").notNull(), // Saved filter configuration
+  isDefault: boolean("is_default").default(false).notNull(),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertSavedReportFilterSchema = createInsertSchema(savedReportFilters)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export const savedReportFiltersRelations = relations(savedReportFilters, ({ one }) => ({
+  report: one(reportDefinitions, {
+    fields: [savedReportFilters.reportId],
+    references: [reportDefinitions.id]
+  }),
+  user: one(users, {
+    fields: [savedReportFilters.userId],
+    references: [users.id]
+  }),
+  tenant: one(tenants, {
+    fields: [savedReportFilters.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+// Complete relation definitions will be added at the end
+
+// Export types for new tables
+export type InsertReportDefinition = z.infer<typeof insertReportDefinitionSchema>;
+export type ReportDefinition = typeof reportDefinitions.$inferSelect;
+
+export type InsertDashboardDefinition = z.infer<typeof insertDashboardDefinitionSchema>;
+export type DashboardDefinition = typeof dashboardDefinitions.$inferSelect;
+
+export type InsertDashboardWidget = z.infer<typeof insertDashboardWidgetSchema>;
+export type DashboardWidget = typeof dashboardWidgets.$inferSelect;
+
+export type InsertUserDashboardPreference = z.infer<typeof insertUserDashboardPreferenceSchema>;
+export type UserDashboardPreference = typeof userDashboardPreferences.$inferSelect;
+
+export type InsertSavedReportFilter = z.infer<typeof insertSavedReportFilterSchema>;
+export type SavedReportFilter = typeof savedReportFilters.$inferSelect;
+
+// Define complete relations after all tables and relations exist
+// Update usersRelations to include dashboard relations
+export const usersRelations = relations(users, ({ many, one }) => ({
+  tenant: one(tenants, {
+    fields: [users.tenantId],
+    references: [tenants.id]
+  }),
+  assignedTickets: many(supportTickets),
+  ticketActivities: many(ticketActivities),
+  ownedDeals: many(deals, { relationName: 'dealOwner' }),
+  createdReports: many(reportDefinitions, { relationName: 'createdBy' }),
+  createdDashboards: many(dashboardDefinitions, { relationName: 'createdBy' }),
+  dashboardPreferences: many(userDashboardPreferences),
+  savedFilters: many(savedReportFilters)
+}));
+
+// Update tenantRelations to include dashboard relations
+export const tenantsRelations = relations(tenants, ({ many }) => ({
+  users: many(users),
+  accounts: many(accounts),
+  contacts: many(contacts),
+  deals: many(deals),
+  projects: many(projects),
+  supportTickets: many(supportTickets),
+  emailTemplates: many(emailTemplates),
+  digitalJourneys: many(digitalJourneys),
+  reportDefinitions: many(reportDefinitions),
+  dashboardDefinitions: many(dashboardDefinitions),
+  dashboardWidgets: many(dashboardWidgets),
+  userDashboardPreferences: many(userDashboardPreferences),
+  savedReportFilters: many(savedReportFilters)
+}));

@@ -15,7 +15,7 @@ export function ProtectedRoute({ path, component: Component }: ProtectedRoutePro
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('/api/user');
+        const res = await fetch('/api/auth/status');
         
         if (res.status === 200) {
           setIsAuthenticated(true);
@@ -23,6 +23,7 @@ export function ProtectedRoute({ path, component: Component }: ProtectedRoutePro
           setLocation('/signin');
         }
       } catch (error) {
+        console.error('Auth check error:', error);
         setLocation('/signin');
       } finally {
         setIsLoading(false);
