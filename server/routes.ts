@@ -909,6 +909,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: error.message });
     }
   });
+  
+  // Endpoint to convert AI-generated playbook tasks to account tasks
+  app.post("/api/accounts/:accountId/convert-playbook-tasks", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.accountId);
+      const { tasks } = req.body;
+      
+      if (!Array.isArray(tasks) || tasks.length === 0) {
+        return res.status(400).json({ message: "No tasks provided for conversion" });
+      }
+      
+      // Prepare tasks for creation with account and tenant IDs
+      const tasksToCreate = tasks.map(task => ({
+        ...task,
+        accountId,
+        tenantId: req.tenantId!,
+        // Set default due date if not provided (14 days from now for non-immediate tasks)
+        dueDate: task.dueDate || (task.timeline === 'immediate' ? new Date() : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000))
+      }));
+      
+      // Use the bulk creation method
+      const createdTasks = await storage.createAccountTasks(tasksToCreate);
+      
+      res.status(201).json(createdTasks);
+    } catch (error: any) {
+      console.error("Error converting playbook tasks:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
 
   app.put("/api/tasks/:id", requireTenant, requireAuth, async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRoute } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
-import { queryClient } from "@/lib/queryClient";
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from '@/hooks/use-toast';
 import { 
   Account, 
@@ -158,6 +158,49 @@ export default function AccountDetail() {
     } finally {
       setRefreshing(false);
     }
+  };
+
+  // Mutation for converting AI tasks to account tasks
+  const convertTasksMutation = useMutation({
+    mutationFn: async () => {
+      if (!accountId || !aiData?.playbook?.tasks) {
+        throw new Error("No tasks found to convert");
+      }
+      
+      const response = await apiRequest(
+        "POST", 
+        `/api/accounts/${accountId}/convert-playbook-tasks`,
+        { tasks: aiData.playbook.tasks }
+      );
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to convert tasks");
+      }
+      
+      return await response.json();
+    },
+    onSuccess: () => {
+      // Invalidate tasks cache to refresh any task-related views
+      queryClient.invalidateQueries({ queryKey: [`/api/accounts/${accountId}/tasks`] });
+      
+      toast({
+        title: "Tasks Created",
+        description: `${aiData?.playbook?.tasks?.length || 0} tasks have been added to your task list`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Conversion Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Function to handle converting tasks
+  const handleConvertTasks = () => {
+    convertTasksMutation.mutate();
   };
 
   // Function to format date
@@ -929,9 +972,17 @@ export default function AccountDetail() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        disabled={refreshing}
+                        disabled={refreshing || convertTasksMutation.isPending}
+                        onClick={handleConvertTasks}
                       >
-                        Convert All to Tasks
+                        {convertTasksMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-3 w-3 mr-2 animate-spin" />
+                            Converting...
+                          </>
+                        ) : (
+                          "Convert All to Tasks"
+                        )}
                       </Button>
                     </CardFooter>
                   )}
