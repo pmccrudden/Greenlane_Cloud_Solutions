@@ -3,7 +3,19 @@ import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from '@/hooks/use-toast';
-import { Account, Contact, Deal, Project, SupportTicket, AccountAIData, PredictiveAnalytics, TaskPlaybookItem } from '@/lib/types';
+import { 
+  Account, 
+  Contact, 
+  Deal, 
+  Project, 
+  SupportTicket, 
+  AccountAIData, 
+  PredictiveAnalytics, 
+  TaskPlaybookItem,
+  DealPrediction,
+  GrowthOpportunity,
+  ProjectRisk
+} from '@/lib/types';
 import { 
   Card, 
   CardContent, 
@@ -32,7 +44,9 @@ import {
   Loader2,
   BarChart3,
   DollarSign,
-  AlertTriangle
+  AlertTriangle,
+  UserCog,
+  CalendarClock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -1091,7 +1105,7 @@ export default function AccountDetail() {
                                     <div className="space-y-2">
                                       <h4 className="text-sm font-medium">Key Factors</h4>
                                       <ul className="text-sm space-y-1">
-                                        {deal.factors.map((factor, idx) => (
+                                        {deal.factors.map((factor: string, idx: number) => (
                                           <li key={idx} className="flex items-start">
                                             <span className="text-primary mr-2">•</span>
                                             <span>{factor}</span>
@@ -1103,7 +1117,7 @@ export default function AccountDetail() {
                                     <div className="space-y-2">
                                       <h4 className="text-sm font-medium">Suggested Actions</h4>
                                       <ul className="text-sm space-y-1">
-                                        {deal.suggestedActions.map((action, idx) => (
+                                        {deal.suggestedActions.map((action: string, idx: number) => (
                                           <li key={idx} className="flex items-start">
                                             <ArrowRightCircle className="h-4 w-4 text-primary mr-2 flex-shrink-0 mt-0.5" />
                                             <span>{action}</span>
@@ -1245,7 +1259,7 @@ export default function AccountDetail() {
                               <div>
                                 <h4 className="text-sm font-medium mb-1">Risk Factors</h4>
                                 <ul className="text-sm space-y-1">
-                                  {aiData.predictions.riskAssessment.accountRisk.factors.map((factor, idx) => (
+                                  {aiData.predictions.riskAssessment.accountRisk.factors.map((factor: string, idx: number) => (
                                     <li key={idx} className="flex items-start">
                                       <span className="text-yellow-500 mr-2">•</span>
                                       <span>{factor}</span>
@@ -1257,7 +1271,7 @@ export default function AccountDetail() {
                               <div>
                                 <h4 className="text-sm font-medium mb-1">Mitigation Strategies</h4>
                                 <ul className="text-sm space-y-1">
-                                  {aiData.predictions.riskAssessment.accountRisk.mitigations.map((strategy, idx) => (
+                                  {aiData.predictions.riskAssessment.accountRisk.mitigations.map((strategy: string, idx: number) => (
                                     <li key={idx} className="flex items-start">
                                       <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                                       <span>{strategy}</span>
@@ -1290,7 +1304,7 @@ export default function AccountDetail() {
                                       <div>
                                         <h5 className="text-sm font-medium mb-1">Risk Factors</h5>
                                         <ul className="text-sm space-y-1">
-                                          {project.factors.map((factor, idx) => (
+                                          {project.factors.map((factor: string, idx: number) => (
                                             <li key={idx} className="flex items-start">
                                               <span className="text-yellow-500 mr-2">•</span>
                                               <span>{factor}</span>
@@ -1302,7 +1316,7 @@ export default function AccountDetail() {
                                       <div>
                                         <h5 className="text-sm font-medium mb-1">Mitigation Strategies</h5>
                                         <ul className="text-sm space-y-1">
-                                          {project.mitigations.map((strategy, idx) => (
+                                          {project.mitigations.map((strategy: string, idx: number) => (
                                             <li key={idx} className="flex items-start">
                                               <CheckCircle2 className="h-4 w-4 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
                                               <span>{strategy}</span>
@@ -1358,7 +1372,7 @@ export default function AccountDetail() {
                             <div>
                               <h3 className="text-sm font-medium mb-2">Key Factors</h3>
                               <ul className="space-y-1 text-sm">
-                                {aiData.predictions.relationshipHealth.factors.map((factor, idx) => (
+                                {aiData.predictions.relationshipHealth.factors.map((factor: string, idx: number) => (
                                   <li key={idx} className="flex items-start">
                                     <span className="text-primary mr-2">•</span>
                                     <span>{factor}</span>
@@ -1370,7 +1384,7 @@ export default function AccountDetail() {
                             <div>
                               <h3 className="text-sm font-medium mb-2">Recommendations</h3>
                               <ul className="space-y-1 text-sm">
-                                {aiData.predictions.relationshipHealth.recommendations.map((rec, idx) => (
+                                {aiData.predictions.relationshipHealth.recommendations.map((rec: string, idx: number) => (
                                   <li key={idx} className="flex items-start">
                                     <ArrowRightCircle className="h-4 w-4 text-primary mr-2 flex-shrink-0 mt-0.5" />
                                     <span>{rec}</span>
