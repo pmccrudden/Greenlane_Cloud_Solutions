@@ -1,7 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Filter, Search, Check, Clock, Calendar, AlertTriangle } from "lucide-react";
+import { 
+  Plus, 
+  Filter, 
+  Search, 
+  Check, 
+  Clock, 
+  Calendar, 
+  AlertTriangle,
+  ChevronUp,
+  ChevronDown,
+  Pencil,
+  Save,
+  X,
+  ArrowUpDown
+} from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -30,6 +44,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -63,14 +85,22 @@ export default function Tasks() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
+  
+  // Sorting state
+  const [sortField, setSortField] = useState<string>("dueDate");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  
+  // Inline editing state
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
+  const [editedValues, setEditedValues] = useState<Partial<AccountTask>>({});
 
   // Fetch tasks
-  const { data: tasks, isLoading: isLoadingTasks } = useQuery({
+  const { data: tasks = [], isLoading: isLoadingTasks } = useQuery<AccountTask[]>({
     queryKey: ["/api/tasks"],
   });
 
   // Fetch accounts for the account dropdown
-  const { data: accounts, isLoading: isLoadingAccounts } = useQuery({
+  const { data: accounts = [], isLoading: isLoadingAccounts } = useQuery<Account[]>({
     queryKey: ["/api/accounts"],
   });
 
@@ -120,20 +150,128 @@ export default function Tasks() {
     createTaskMutation.mutate(values);
   };
 
+  // Mutation for updating a task
+  const updateTaskMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number, data: Partial<AccountTask> }) => {
+      const response = await apiRequest("PATCH", `/api/tasks/${id}`, data);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update task");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Task updated",
+        description: "The task has been updated successfully.",
+      });
+      setEditingTaskId(null);
+      setEditedValues({});
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to update task",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle saving edited task
+  const handleSaveTask = (id: number) => {
+    if (Object.keys(editedValues).length === 0) {
+      setEditingTaskId(null);
+      return;
+    }
+    
+    updateTaskMutation.mutate({ id, data: editedValues });
+  };
+  
+  // Handle starting to edit a task
+  const handleStartEditing = (task: AccountTask) => {
+    setEditingTaskId(task.id);
+    setEditedValues({});
+  };
+  
+  // Handle canceling edit
+  const handleCancelEdit = () => {
+    setEditingTaskId(null);
+    setEditedValues({});
+  };
+  
+  // Handle edit field change
+  const handleEditChange = (field: keyof AccountTask, value: any) => {
+    setEditedValues(prev => ({ ...prev, [field]: value }));
+  };
+  
+  // Toggle sort direction or set new sort field
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+  
+  // Helper for sort direction indicator
+  const getSortIndicator = (field: string) => {
+    if (sortField !== field) return <ArrowUpDown className="ml-1 h-4 w-4" />;
+    return sortDirection === "asc" 
+      ? <ChevronUp className="ml-1 h-4 w-4" /> 
+      : <ChevronDown className="ml-1 h-4 w-4" />;
+  };
+
   // Filter tasks based on search term and filters
-  const filteredTasks = tasks
-    ? tasks.filter((task: AccountTask) => {
-        const matchesSearch = 
-          !searchTerm || 
-          task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()));
-        
-        const matchesStatus = !statusFilter || task.status === statusFilter;
-        const matchesPriority = !priorityFilter || task.priority === priorityFilter;
-        
-        return matchesSearch && matchesStatus && matchesPriority;
-      })
-    : [];
+  const filteredTasks = tasks.filter((task: AccountTask) => {
+    const matchesSearch = 
+      !searchTerm || 
+      task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (task.description && task.description.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesStatus = !statusFilter || task.status === statusFilter;
+    const matchesPriority = !priorityFilter || task.priority === priorityFilter;
+    
+    return matchesSearch && matchesStatus && matchesPriority;
+  });
+    
+  // Sort the filtered tasks
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    let aValue = a[sortField as keyof AccountTask];
+    let bValue = b[sortField as keyof AccountTask];
+    
+    // Handle nulls and undefined values
+    if (aValue === null || aValue === undefined) aValue = "";
+    if (bValue === null || bValue === undefined) bValue = "";
+    
+    // Handle date comparison
+    if (sortField === "dueDate") {
+      // If either value is falsy, handle sorting of empty values
+      if (!aValue) return sortDirection === "asc" ? 1 : -1;
+      if (!bValue) return sortDirection === "asc" ? -1 : 1;
+      
+      // Convert to date objects safely
+      const aDate = new Date(String(aValue));
+      const bDate = new Date(String(bValue));
+      
+      return sortDirection === "asc" 
+        ? aDate.getTime() - bDate.getTime()
+        : bDate.getTime() - aDate.getTime();
+    }
+    
+    // Handle string comparison
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return sortDirection === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
+    }
+    
+    // Handle number comparison
+    return sortDirection === "asc" 
+      ? Number(aValue) - Number(bValue)
+      : Number(bValue) - Number(aValue);
+  });
 
   // Get account name by ID
   const getAccountName = (accountId: number) => {
@@ -505,61 +643,199 @@ export default function Tasks() {
       </div>
 
       {isLoadingTasks ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <CardHeader className="p-4">
-                <Skeleton className="h-6 w-3/4" />
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                  <div className="flex justify-between pt-2">
-                    <Skeleton className="h-5 w-16" />
-                    <Skeleton className="h-5 w-16" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : filteredTasks.length === 0 ? (
+        <Card>
+          <div className="p-4">
+            <Skeleton className="h-8 w-full mb-4" />
+            <Skeleton className="h-[400px] w-full" />
+          </div>
+        </Card>
+      ) : sortedTasks.length === 0 ? (
         <Card className="p-8 text-center">
           <p className="text-lg text-muted-foreground">No tasks found. Create a new task to get started.</p>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredTasks.map((task: AccountTask) => (
-            <Link key={task.id} href={`/tasks/${task.id}`}>
-              <Card className="overflow-hidden cursor-pointer transition-all hover:shadow-md">
-                <CardHeader className="p-4 pb-2">
-                  <CardTitle className="text-xl line-clamp-1">{task.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <div className="mb-2">
-                    <span className="text-sm text-muted-foreground">Account: </span>
-                    <span className="text-sm font-medium">{getAccountName(task.accountId)}</span>
-                  </div>
-                  {task.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                      {task.description}
-                    </p>
-                  )}
-                  <div className="flex justify-between items-center mt-2">
-                    <div>{getStatusBadge(task.status)}</div>
-                    <div>{getPriorityBadge(task.priority)}</div>
-                  </div>
-                  {task.dueDate && (
-                    <div className="mt-3 text-xs text-muted-foreground">
-                      Due: {format(new Date(task.dueDate), "PPP")}
+        <Card className="border shadow-sm">
+          <div className="relative overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-1/5 cursor-pointer" onClick={() => handleSort("title")}>
+                    <div className="flex items-center">
+                      Task {getSortIndicator("title")}
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
+                  </TableHead>
+                  <TableHead className="w-1/6 cursor-pointer" onClick={() => handleSort("accountId")}>
+                    <div className="flex items-center">
+                      Account {getSortIndicator("accountId")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="w-1/6 cursor-pointer" onClick={() => handleSort("status")}>
+                    <div className="flex items-center">
+                      Status {getSortIndicator("status")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="w-1/6 cursor-pointer" onClick={() => handleSort("priority")}>
+                    <div className="flex items-center">
+                      Priority {getSortIndicator("priority")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="w-1/6 cursor-pointer" onClick={() => handleSort("dueDate")}>
+                    <div className="flex items-center">
+                      Due Date {getSortIndicator("dueDate")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="w-1/6 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedTasks.map((task: AccountTask) => (
+                  <TableRow key={task.id} className="hover:bg-muted/50">
+                    <TableCell>
+                      {editingTaskId === task.id ? (
+                        <Input 
+                          value={editedValues.title ?? task.title} 
+                          onChange={(e) => handleEditChange("title", e.target.value)}
+                          className="w-full max-w-[200px]"
+                        />
+                      ) : (
+                        <Link href={`/tasks/${task.id}`} className="font-medium hover:underline">
+                          {task.title}
+                        </Link>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingTaskId === task.id ? (
+                        <Select
+                          value={(editedValues.accountId ?? task.accountId).toString()}
+                          onValueChange={(value) => handleEditChange("accountId", parseInt(value, 10))}
+                        >
+                          <SelectTrigger className="h-8 w-[180px]">
+                            <SelectValue placeholder="Select account" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {accounts?.map((account: Account) => (
+                              <SelectItem key={account.id} value={account.id.toString()}>
+                                {account.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Link 
+                          href={`/accounts/${task.accountId}`} 
+                          className="text-primary hover:underline"
+                        >
+                          {getAccountName(task.accountId)}
+                        </Link>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingTaskId === task.id ? (
+                        <Select
+                          value={editedValues.status ?? task.status}
+                          onValueChange={(value) => handleEditChange("status", value)}
+                        >
+                          <SelectTrigger className="h-8 w-[120px]">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="in-progress">In Progress</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        getStatusBadge(task.status)
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingTaskId === task.id ? (
+                        <Select
+                          value={editedValues.priority ?? task.priority}
+                          onValueChange={(value) => handleEditChange("priority", value)}
+                        >
+                          <SelectTrigger className="h-8 w-[120px]">
+                            <SelectValue placeholder="Select priority" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="high">High</SelectItem>
+                            <SelectItem value="medium">Medium</SelectItem>
+                            <SelectItem value="low">Low</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        getPriorityBadge(task.priority)
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {editingTaskId === task.id ? (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              className="h-8 w-[130px] justify-start text-left font-normal"
+                            >
+                              {editedValues.dueDate ? 
+                                format(new Date(editedValues.dueDate), "PP") : 
+                                task.dueDate ? 
+                                  format(new Date(task.dueDate), "PP") : 
+                                  <span className="text-muted-foreground">Pick a date</span>
+                              }
+                              <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <CalendarComponent
+                              mode="single"
+                              selected={editedValues.dueDate ? new Date(editedValues.dueDate) : task.dueDate ? new Date(task.dueDate) : undefined}
+                              onSelect={(date: Date | undefined) => date && handleEditChange("dueDate", date)}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        task.dueDate ? format(new Date(task.dueDate), "PP") : "—"
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {editingTaskId === task.id ? (
+                        <div className="flex justify-end space-x-2">
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            onClick={handleCancelEdit}
+                            disabled={updateTaskMutation.isPending}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost" 
+                            onClick={() => handleSaveTask(task.id)}
+                            disabled={updateTaskMutation.isPending}
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-end space-x-2">
+                          <Button size="sm" variant="ghost" onClick={() => handleStartEditing(task)}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Link href={`/tasks/${task.id}`}>
+                            <Button size="sm" variant="ghost">
+                              <ArrowUpDown className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </Card>
       )}
     </div>
   );
