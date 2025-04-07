@@ -90,9 +90,7 @@ export default function Tasks() {
   const [sortField, setSortField] = useState<string>("dueDate");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   
-  // Inline editing state
-  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
-  const [editedValues, setEditedValues] = useState<Partial<AccountTask>>({});
+  // State for inline editing is handled by editingField and tempEditValue
 
   // Fetch tasks
   const { data: tasks = [], isLoading: isLoadingTasks } = useQuery<AccountTask[]>({
@@ -155,18 +153,25 @@ export default function Tasks() {
     mutationFn: async ({ id, data }: { id: number, data: Partial<AccountTask> }) => {
       const response = await apiRequest("PATCH", `/api/tasks/${id}`, data);
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to update task");
+        // Handle non-OK response without trying to parse JSON
+        throw new Error(`Failed to update task: HTTP ${response.status}`);
       }
-      return response.json();
+      
+      try {
+        return await response.json();
+      } catch (e) {
+        console.error("Error parsing response:", e);
+        throw new Error("Failed to parse server response");
+      }
     },
     onSuccess: () => {
       toast({
         title: "Task updated",
         description: "The task has been updated successfully.",
       });
-      setEditingTaskId(null);
-      setEditedValues({});
+      // Reset editing state
+      setEditingField({ taskId: null, field: null });
+      setTempEditValue(null);
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
     },
     onError: (error: Error) => {
@@ -178,31 +183,43 @@ export default function Tasks() {
     },
   });
 
-  // Handle saving edited task
-  const handleSaveTask = (id: number) => {
-    if (Object.keys(editedValues).length === 0) {
-      setEditingTaskId(null);
-      return;
-    }
-    
-    updateTaskMutation.mutate({ id, data: editedValues });
-  };
+  // State for field being edited
+  const [editingField, setEditingField] = useState<{ taskId: number | null, field: string | null }>({
+    taskId: null,
+    field: null
+  });
   
-  // Handle starting to edit a task
-  const handleStartEditing = (task: AccountTask) => {
-    setEditingTaskId(task.id);
-    setEditedValues({});
+  // Temporary edit value
+  const [tempEditValue, setTempEditValue] = useState<any>(null);
+  
+  // Handle starting to edit a field
+  const handleStartEditing = (task: AccountTask, field: keyof AccountTask) => {
+    setEditingField({ taskId: task.id, field });
+    setTempEditValue(task[field]);
   };
   
   // Handle canceling edit
   const handleCancelEdit = () => {
-    setEditingTaskId(null);
-    setEditedValues({});
+    setEditingField({ taskId: null, field: null });
+    setTempEditValue(null);
   };
   
-  // Handle edit field change
-  const handleEditChange = (field: keyof AccountTask, value: any) => {
-    setEditedValues(prev => ({ ...prev, [field]: value }));
+  // Handle saving a field
+  const handleSaveField = (task: AccountTask, field: keyof AccountTask) => {
+    // Skip update if the value hasn't changed
+    if (task[field] === tempEditValue) {
+      handleCancelEdit();
+      return;
+    }
+    
+    // Save the change
+    updateTaskMutation.mutate({ 
+      id: task.id, 
+      data: { [field]: tempEditValue } 
+    });
+    
+    // Reset edit state
+    handleCancelEdit();
   };
   
   // Toggle sort direction or set new sort field
@@ -689,146 +706,194 @@ export default function Tasks() {
               </TableHeader>
               <TableBody>
                 {sortedTasks.map((task: AccountTask) => (
-                  <TableRow key={task.id} className="hover:bg-muted/50">
+                  <TableRow key={task.id} className="hover:bg-muted/50 group">
                     <TableCell>
-                      {editingTaskId === task.id ? (
-                        <Input 
-                          value={editedValues.title ?? task.title} 
-                          onChange={(e) => handleEditChange("title", e.target.value)}
-                          className="w-full max-w-[200px]"
-                        />
+                      {editingField.taskId === task.id && editingField.field === 'title' ? (
+                        <div className="flex gap-2">
+                          <Input 
+                            value={tempEditValue}
+                            onChange={(e) => setTempEditValue(e.target.value)}
+                            autoFocus
+                            className="w-full max-w-[200px]"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleSaveField(task, 'title');
+                              if (e.key === 'Escape') handleCancelEdit();
+                            }}
+                          />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleSaveField(task, 'title')}
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        </div>
                       ) : (
-                        <Link href={`/tasks/${task.id}`} className="font-medium hover:underline">
-                          {task.title}
-                        </Link>
+                        <div className="flex items-center justify-between">
+                          <Link href={`/tasks/${task.id}`} className="font-medium hover:underline">
+                            {task.title}
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleStartEditing(task, 'title')}
+                            className="opacity-0 group-hover:opacity-100 h-8 w-8 p-0"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                     <TableCell>
-                      {editingTaskId === task.id ? (
-                        <Select
-                          value={(editedValues.accountId ?? task.accountId).toString()}
-                          onValueChange={(value) => handleEditChange("accountId", parseInt(value, 10))}
-                        >
-                          <SelectTrigger className="h-8 w-[180px]">
-                            <SelectValue placeholder="Select account" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {accounts?.map((account: Account) => (
-                              <SelectItem key={account.id} value={account.id.toString()}>
-                                {account.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      {editingField.taskId === task.id && editingField.field === 'accountId' ? (
+                        <div className="flex gap-2">
+                          <Select 
+                            value={tempEditValue?.toString()} 
+                            onValueChange={(value) => {
+                              setTempEditValue(parseInt(value, 10));
+                              handleSaveField(task, 'accountId');
+                            }}
+                          >
+                            <SelectTrigger className="h-8 w-[180px]">
+                              <SelectValue placeholder="Select account" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {accounts?.map((account: Account) => (
+                                <SelectItem key={account.id} value={account.id.toString()}>
+                                  {account.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       ) : (
-                        <Link 
-                          href={`/accounts/${task.accountId}`} 
-                          className="text-primary hover:underline"
-                        >
-                          {getAccountName(task.accountId)}
-                        </Link>
+                        <div className="flex items-center justify-between">
+                          <Link 
+                            href={`/accounts/${task.accountId}`} 
+                            className="text-primary hover:underline"
+                          >
+                            {getAccountName(task.accountId)}
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleStartEditing(task, 'accountId')}
+                            className="opacity-0 group-hover:opacity-100 h-8 w-8 p-0"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </div>
                       )}
                     </TableCell>
                     <TableCell>
-                      {editingTaskId === task.id ? (
-                        <Select
-                          value={editedValues.status ?? task.status}
-                          onValueChange={(value) => handleEditChange("status", value)}
-                        >
-                          <SelectTrigger className="h-8 w-[120px]">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="in-progress">In Progress</SelectItem>
-                            <SelectItem value="completed">Completed</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      {editingField.taskId === task.id && editingField.field === 'status' ? (
+                        <div className="flex gap-2">
+                          <Select 
+                            value={tempEditValue} 
+                            onValueChange={(value) => {
+                              setTempEditValue(value);
+                              handleSaveField(task, 'status');
+                            }}
+                          >
+                            <SelectTrigger className="h-8 w-[120px]">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="in-progress">In Progress</SelectItem>
+                              <SelectItem value="completed">Completed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       ) : (
-                        getStatusBadge(task.status)
+                        <div 
+                          className="flex items-center justify-between cursor-pointer" 
+                          onClick={() => handleStartEditing(task, 'status')}
+                        >
+                          {getStatusBadge(task.status)}
+                          <Pencil className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100" />
+                        </div>
                       )}
                     </TableCell>
                     <TableCell>
-                      {editingTaskId === task.id ? (
-                        <Select
-                          value={editedValues.priority ?? task.priority}
-                          onValueChange={(value) => handleEditChange("priority", value)}
-                        >
-                          <SelectTrigger className="h-8 w-[120px]">
-                            <SelectValue placeholder="Select priority" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="high">High</SelectItem>
-                            <SelectItem value="medium">Medium</SelectItem>
-                            <SelectItem value="low">Low</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      {editingField.taskId === task.id && editingField.field === 'priority' ? (
+                        <div className="flex gap-2">
+                          <Select 
+                            value={tempEditValue} 
+                            onValueChange={(value) => {
+                              setTempEditValue(value);
+                              handleSaveField(task, 'priority');
+                            }}
+                          >
+                            <SelectTrigger className="h-8 w-[120px]">
+                              <SelectValue placeholder="Select priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="high">High</SelectItem>
+                              <SelectItem value="medium">Medium</SelectItem>
+                              <SelectItem value="low">Low</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       ) : (
-                        getPriorityBadge(task.priority)
+                        <div 
+                          className="flex items-center justify-between cursor-pointer" 
+                          onClick={() => handleStartEditing(task, 'priority')}
+                        >
+                          {getPriorityBadge(task.priority)}
+                          <Pencil className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100" />
+                        </div>
                       )}
                     </TableCell>
                     <TableCell>
-                      {editingTaskId === task.id ? (
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button 
-                              variant="outline" 
-                              className="h-8 w-[130px] justify-start text-left font-normal"
-                            >
-                              {editedValues.dueDate ? 
-                                format(new Date(editedValues.dueDate), "PP") : 
-                                task.dueDate ? 
-                                  format(new Date(task.dueDate), "PP") : 
+                      {editingField.taskId === task.id && editingField.field === 'dueDate' ? (
+                        <div className="flex gap-2">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                className="h-8 w-[130px] justify-start text-left font-normal"
+                              >
+                                {tempEditValue ? 
+                                  format(new Date(tempEditValue), "PP") : 
                                   <span className="text-muted-foreground">Pick a date</span>
-                              }
-                              <Calendar className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <CalendarComponent
-                              mode="single"
-                              selected={editedValues.dueDate ? new Date(editedValues.dueDate) : task.dueDate ? new Date(task.dueDate) : undefined}
-                              onSelect={(date: Date | undefined) => date && handleEditChange("dueDate", date)}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
+                                }
+                                <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <CalendarComponent
+                                mode="single"
+                                selected={tempEditValue ? new Date(tempEditValue) : undefined}
+                                onSelect={(date: Date | undefined) => {
+                                  if (date) {
+                                    setTempEditValue(date);
+                                    handleSaveField(task, 'dueDate');
+                                  }
+                                }}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
                       ) : (
-                        task.dueDate ? format(new Date(task.dueDate), "PP") : "—"
+                        <div 
+                          className="flex items-center justify-between cursor-pointer" 
+                          onClick={() => handleStartEditing(task, 'dueDate')}
+                        >
+                          <span>{task.dueDate ? format(new Date(task.dueDate), "PP") : "—"}</span>
+                          <Pencil className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100" />
+                        </div>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      {editingTaskId === task.id ? (
-                        <div className="flex justify-end space-x-2">
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            onClick={handleCancelEdit}
-                            disabled={updateTaskMutation.isPending}
-                          >
-                            <X className="h-4 w-4" />
+                      <div className="flex justify-end space-x-2">
+                        <Link href={`/tasks/${task.id}`}>
+                          <Button size="sm" variant="ghost">
+                            <ArrowUpDown className="h-4 w-4" />
                           </Button>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            onClick={() => handleSaveTask(task.id)}
-                            disabled={updateTaskMutation.isPending}
-                          >
-                            <Save className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex justify-end space-x-2">
-                          <Button size="sm" variant="ghost" onClick={() => handleStartEditing(task)}>
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Link href={`/tasks/${task.id}`}>
-                            <Button size="sm" variant="ghost">
-                              <ArrowUpDown className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                        </div>
-                      )}
+                        </Link>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
