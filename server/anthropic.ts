@@ -129,3 +129,102 @@ export async function generateTaskPlaybook(accountData: any): Promise<any> {
     throw new Error(`Failed to generate task playbook: ${error.message}`);
   }
 }
+
+// Generate predictive analytics for accounts, deals, and future opportunities
+export async function generatePredictiveAnalytics(accountData: any): Promise<any> {
+  try {
+    const prompt = `
+    Based on the following account data, generate predictive analytics and forecasts:
+    ${JSON.stringify(accountData, null, 2)}
+
+    Analyze the data and provide the following:
+    1. Deal win probability predictions for each active deal, with confidence level
+    2. Revenue forecast for the next 3 months based on current deals
+    3. Account growth potential over the next 6 months
+    4. Risk assessment for each project and the account overall
+    5. Identification of potential cross-sell/upsell opportunities
+    6. Churn risk prediction and preventive measures
+    7. Relationship health trajectory prediction
+
+    Format your response as a structured JSON object with these sections:
+    {
+      "dealPredictions": [
+        {
+          "dealId": number,
+          "dealName": string,
+          "currentWinProbability": number,
+          "predictedWinProbability": number,
+          "confidence": number,
+          "factors": string[],
+          "suggestedActions": string[]
+        }
+      ],
+      "revenueForecast": {
+        "next30Days": { "amount": number, "confidence": number },
+        "next60Days": { "amount": number, "confidence": number },
+        "next90Days": { "amount": number, "confidence": number }
+      },
+      "growthPotential": {
+        "score": number,
+        "opportunities": [
+          {
+            "title": string,
+            "description": string,
+            "potentialValue": number,
+            "probability": number,
+            "timeframe": string
+          }
+        ]
+      },
+      "riskAssessment": {
+        "accountRisk": {
+          "score": number,
+          "factors": string[],
+          "mitigations": string[]
+        },
+        "projectRisks": [
+          {
+            "projectId": number,
+            "projectName": string,
+            "riskScore": number,
+            "factors": string[],
+            "mitigations": string[]
+          }
+        ]
+      },
+      "relationshipHealth": {
+        "currentScore": number,
+        "projectedScore": number,
+        "factors": string[],
+        "recommendations": string[]
+      }
+    }
+
+    Make reasonable predictions based on the data provided. The confidence level should reflect how certain you are about each prediction.
+    `;
+
+    const message = await anthropic.messages.create({
+      max_tokens: 3500,
+      messages: [{ role: 'user', content: prompt }],
+      model: 'claude-3-7-sonnet-20250219',
+    });
+
+    // Parse the JSON response from Anthropic
+    if (message.content[0].type === 'text') {
+      const responseText = message.content[0].text;
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      
+      if (!jsonMatch) {
+        throw new Error("Failed to parse response as JSON");
+      }
+      
+      const predictiveAnalytics = JSON.parse(jsonMatch[0]);
+      return predictiveAnalytics;
+    }
+    
+    throw new Error("Failed to get text response from API");
+  } catch (error: any) {
+    console.error("Failed to generate predictive analytics:", error);
+    throw new Error(`Failed to generate predictive analytics: ${error.message}`);
+  }
+}

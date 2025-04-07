@@ -23,7 +23,12 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { generateAccountSummary, generateNextStepsRecommendations, generateTaskPlaybook } from "./anthropic";
+import { 
+  generateAccountSummary, 
+  generateNextStepsRecommendations, 
+  generateTaskPlaybook,
+  generatePredictiveAnalytics 
+} from "./anthropic";
 
 const SECRET_KEY = process.env.SECRET || "greenlanecloudsolutions-development-secret";
 
@@ -1091,6 +1096,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(aiData);
     } catch (error: any) {
       console.error("Error generating AI account data:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== AI Predictive Analytics Route =====
+  app.get("/api/accounts/:id/ai/predict", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const accountId = parseInt(req.params.id);
+      const account = await storage.getAccount(accountId, req.tenantId!);
+      if (!account) {
+        return res.status(404).json({ message: "Account not found" });
+      }
+
+      // Get related data for the account
+      const deals = await storage.getDealsByAccount(accountId, req.tenantId!);
+      const projects = await storage.getProjectsByAccount(accountId, req.tenantId!);
+      const contacts = await storage.getContactsByAccount(accountId, req.tenantId!);
+      
+      // Build the data package to send to Anthropic
+      const accountData = {
+        account,
+        deals,
+        projects,
+        contacts
+      };
+
+      // Generate predictive analytics using Anthropic
+      const predictions = await generatePredictiveAnalytics(accountData);
+      
+      // Add generated timestamp
+      const predictiveAnalytics = {
+        ...predictions,
+        accountId,
+        accountName: account.name,
+        lastGeneratedAt: new Date()
+      };
+      
+      res.json(predictiveAnalytics);
+    } catch (error: any) {
+      console.error("Error generating predictive analytics:", error);
       res.status(500).json({ message: error.message });
     }
   });

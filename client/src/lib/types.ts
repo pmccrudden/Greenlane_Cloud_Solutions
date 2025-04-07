@@ -208,8 +208,76 @@ export interface TaskPlaybook {
   lastGeneratedAt: Date;
 }
 
+// Predictive Analytics Types
+export interface DealPrediction {
+  dealId: number;
+  dealName: string;
+  currentWinProbability: number;
+  predictedWinProbability: number;
+  confidence: number;
+  factors: string[];
+  suggestedActions: string[];
+}
+
+export interface RevenueForecast {
+  next30Days: { amount: number; confidence: number };
+  next60Days: { amount: number; confidence: number };
+  next90Days: { amount: number; confidence: number };
+}
+
+export interface GrowthOpportunity {
+  title: string;
+  description: string;
+  potentialValue: number;
+  probability: number;
+  timeframe: string;
+}
+
+export interface GrowthPotential {
+  score: number;
+  opportunities: GrowthOpportunity[];
+}
+
+export interface AccountRisk {
+  score: number;
+  factors: string[];
+  mitigations: string[];
+}
+
+export interface ProjectRisk {
+  projectId: number;
+  projectName: string;
+  riskScore: number;
+  factors: string[];
+  mitigations: string[];
+}
+
+export interface RiskAssessment {
+  accountRisk: AccountRisk;
+  projectRisks: ProjectRisk[];
+}
+
+export interface RelationshipHealth {
+  currentScore: number;
+  projectedScore: number;
+  factors: string[];
+  recommendations: string[];
+}
+
+export interface PredictiveAnalytics {
+  accountId: number;
+  accountName: string;
+  dealPredictions: DealPrediction[];
+  revenueForecast: RevenueForecast;
+  growthPotential: GrowthPotential;
+  riskAssessment: RiskAssessment;
+  relationshipHealth: RelationshipHealth;
+  lastGeneratedAt: Date;
+}
+
 export interface AccountAIData {
   insight?: AccountAIInsight;
   nextSteps?: AccountNextSteps;
   playbook?: TaskPlaybook;
+  predictions?: PredictiveAnalytics;
 }
