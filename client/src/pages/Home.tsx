@@ -12,8 +12,9 @@ export default function Home() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center">
-                <svg className="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20.33 3.67a4 4 0 0 0-5.66 0L12 6.33 9.33 3.67a4 4 0 1 0-5.66 5.66L12 17.66l8.33-8.33a4 4 0 0 0 0-5.66z"/>
+                <svg className="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="16" x2="12" y2="8" />
+                  <line x1="8" y1="20" x2="16" y2="12" />
                 </svg>
                 <span className="ml-2 font-bold text-xl text-slate-800">GreenLane</span>
               </div>
@@ -159,8 +160,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="md:flex md:items-center md:justify-between">
             <div className="flex items-center">
-              <svg className="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.33 3.67a4 4 0 0 0-5.66 0L12 6.33 9.33 3.67a4 4 0 1 0-5.66 5.66L12 17.66l8.33-8.33a4 4 0 0 0 0-5.66z"/>
+              <svg className="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="16" x2="12" y2="8" />
+                <line x1="8" y1="20" x2="16" y2="12" />
               </svg>
               <span className="ml-2 font-bold text-xl text-white">GreenLane</span>
             </div>

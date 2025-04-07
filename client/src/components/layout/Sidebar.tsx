@@ -93,8 +93,9 @@ export default function Sidebar({ user }: SidebarProps) {
       >
         <div className="flex items-center justify-between p-4 border-b border-slate-700">
           <div className="flex items-center space-x-2">
-            <svg className="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.33 3.67a4 4 0 0 0-5.66 0L12 6.33 9.33 3.67a4 4 0 1 0-5.66 5.66L12 17.66l8.33-8.33a4 4 0 0 0 0-5.66z"/>
+            <svg className="h-8 w-8 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="16" x2="12" y2="8" />
+              <line x1="8" y1="20" x2="16" y2="12" />
             </svg>
             <span className="font-semibold text-lg tracking-wider">GreenLane</span>
           </div>
