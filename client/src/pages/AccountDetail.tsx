@@ -71,14 +71,287 @@ import { AddContactDialog } from '@/components/contacts/AddContactDialog';
 import { AddDealDialog } from '@/components/deals/AddDealDialog';
 import { AddProjectDialog } from '@/components/projects/AddProjectDialog';
 import { AddSupportTicketDialog } from '@/components/support/AddSupportTicketDialog';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from '@/components/ui/dialog';
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+// Account form schema - for form inputs (using string values)
+const accountSchema = z.object({
+  name: z.string().min(1, 'Account name is required'),
+  industry: z.string().optional(),
+  employeeCount: z.string().optional(),
+  website: z.string().optional(),
+  parentAccountId: z.string().optional(),
+  status: z.string().default('active'),
+});
+
+type AccountFormValues = z.infer<typeof accountSchema>;
+
+interface AccountFormProps {
+  account: Account;
+  onSubmitSuccess: () => void;
+  accounts: Account[];
+}
+
+function AccountForm({ account, onSubmitSuccess, accounts }: AccountFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<AccountFormValues>({
+    resolver: zodResolver(accountSchema),
+    defaultValues: {
+      name: account?.name || '',
+      industry: account?.industry || '',
+      employeeCount: account?.employeeCount ? String(account.employeeCount) : '',
+      website: account?.website || '',
+      parentAccountId: account?.parentAccountId ? String(account.parentAccountId) : '',
+      status: account?.status || 'active',
+    },
+  });
+
+  async function onSubmit(values: AccountFormValues) {
+    setIsSubmitting(true);
+    try {
+      // Prepare payload with correct types
+      const payload = {
+        ...values,
+        // Process special values with transforms
+        industry: values.industry === "none" ? undefined : values.industry,
+        // Convert string values to numbers where needed
+        employeeCount: values.employeeCount && values.employeeCount !== "unknown" 
+          ? parseInt(values.employeeCount) 
+          : undefined,
+        parentAccountId: values.parentAccountId && values.parentAccountId !== "none" 
+          ? parseInt(values.parentAccountId) 
+          : undefined,
+      };
+      
+      // Update existing account
+      await apiRequest('PUT', `/api/accounts/${account.id}`, payload);
+      toast({
+        title: "Account updated",
+        description: "The account has been updated successfully",
+      });
+      
+      // Invalidate accounts query to refresh list
+      queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/accounts/${account.id}`] });
+      onSubmitSuccess();
+    } catch (error) {
+      toast({
+        title: "Failed to update account",
+        description: error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>Edit Account</DialogTitle>
+        <DialogDescription>
+          Update the account details below
+        </DialogDescription>
+      </DialogHeader>
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="E.g., Acme Corporation" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="industry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Industry</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select industry" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="Technology">Technology</SelectItem>
+                        <SelectItem value="Finance">Finance</SelectItem>
+                        <SelectItem value="Healthcare">Healthcare</SelectItem>
+                        <SelectItem value="Retail">Retail</SelectItem>
+                        <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="Education">Education</SelectItem>
+                        <SelectItem value="Energy">Energy</SelectItem>
+                        <SelectItem value="Automotive">Automotive</SelectItem>
+                        <SelectItem value="Real Estate">Real Estate</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="employeeCount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Employee Count</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select employee count" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unknown">Unknown</SelectItem>
+                        <SelectItem value="10">1-10</SelectItem>
+                        <SelectItem value="50">11-50</SelectItem>
+                        <SelectItem value="200">51-200</SelectItem>
+                        <SelectItem value="500">201-500</SelectItem>
+                        <SelectItem value="1000">501-1000</SelectItem>
+                        <SelectItem value="5000">1001-5000</SelectItem>
+                        <SelectItem value="10000">5001-10000</SelectItem>
+                        <SelectItem value="100000">10000+</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          <FormField
+            control={form.control}
+            name="website"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Website</FormLabel>
+                <FormControl>
+                  <Input placeholder="E.g., https://www.example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="at risk">At Risk</SelectItem>
+                      <SelectItem value="churned">Churned</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="parentAccountId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Parent Account</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value?.toString()}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select parent account" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {accounts.map((acct) => (
+                      <SelectItem key={acct.id} value={acct.id.toString()}>
+                        {acct.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="flex justify-end space-x-4 pt-4">
+            <Button variant="outline" type="button" onClick={onSubmitSuccess}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Update Account"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </>
+  );
+}
 
 export default function AccountDetail() {
   const [, params] = useRoute<{ id: string }>('/accounts/:id');
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   
   const accountId = params?.id ? parseInt(params.id) : null;
+  
+  // Fetch all accounts for parent account selection in edit dialog
+  const { data: allAccounts = [] } = useQuery<Account[]>({
+    queryKey: ['/api/accounts'],
+  });
   
   // Fetch account details
   const { data: account, isLoading: accountLoading } = useQuery<Account>({
@@ -313,7 +586,7 @@ export default function AccountDetail() {
           </div>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline" onClick={() => window.location.href = `/accounts/${account.id}/edit`}>
+          <Button variant="outline" onClick={() => setIsEditDialogOpen(true)}>
             Edit Account
           </Button>
           <DropdownMenu>
@@ -346,6 +619,17 @@ export default function AccountDetail() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+        
+        {/* Edit Account Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <AccountForm 
+              account={account} 
+              onSubmitSuccess={() => setIsEditDialogOpen(false)} 
+              accounts={allAccounts.filter(a => a.id !== account.id)} // Filter out current account to avoid self-reference
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
