@@ -34,15 +34,7 @@ import {
   generateTaskPlaybook,
   generatePredictiveAnalytics 
 } from "./anthropic";
-import { db } from "./db";
-import postgres from "postgres";
-
-// Create a plain postgres client for direct queries
-const pgClient = postgres(process.env.DATABASE_URL || "", {
-  max: 5,
-  idle_timeout: 20,
-  connect_timeout: 10
-});
+import { db, pgClient } from "./db";
 
 // Extend Express.User interface
 declare global {
@@ -1467,7 +1459,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ORDER BY c.ordinal_position;
         `;
         
-        const columns = await pgClient(columnsQuery, [table.table_name]);
+        const rawColumns = await pgClient(columnsQuery, [table.table_name]);
+        
+        // Transform column data to match frontend expectations
+        const columns = rawColumns.map(col => ({
+          name: col.column_name,
+          type: col.data_type,
+          nullable: col.nullable,
+          isPrimaryKey: col.is_primary_key,
+          isForeignKey: col.is_foreign_key,
+          referencesTable: col.references_table,
+          referencesColumn: col.references_column
+        }));
         
         return {
           tableName: table.table_name,
@@ -1500,7 +1503,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Add tenant filtering for multi-tenant tables
       // Check if the table has a tenantId column
-      const { rows: columns } = await db.query(
+      const columns = await pgClient(
         `SELECT column_name FROM information_schema.columns 
          WHERE table_name = $1 AND column_name = 'tenantId'`,
         [tableName]
@@ -1525,7 +1528,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Execute the query
       const params = columns.length > 0 && req.user?.tenantId ? [req.user.tenantId] : [];
-      const { rows: records } = await db.query(query, params);
+      const records = await pgClient(query, params);
       
       res.json(records);
     } catch (error: any) {
@@ -1546,7 +1549,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Add tenant ID if applicable
-      const { rows: columns } = await db.query(
+      const columns = await pgClient(
         `SELECT column_name FROM information_schema.columns 
          WHERE table_name = $1 AND column_name = 'tenantId'`,
         [tableName]
@@ -1579,8 +1582,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         RETURNING *
       `;
       
-      const { rows } = await db.query(query, values);
-      res.status(201).json(rows[0]);
+      const result = await pgClient(query, values);
+      res.status(201).json(result[0]);
     } catch (error: any) {
       console.error(`Error creating record in ${req.params.tableName}:`, error);
       res.status(500).json({ message: error.message });

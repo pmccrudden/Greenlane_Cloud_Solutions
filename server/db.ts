@@ -11,3 +11,6 @@ const client = postgres(process.env.DATABASE_URL || "", {
 
 // Create database interface with drizzle
 export const db = drizzle(client, { schema });
+
+// Direct SQL query client for admin tools and complex queries
+export const pgClient = client;
