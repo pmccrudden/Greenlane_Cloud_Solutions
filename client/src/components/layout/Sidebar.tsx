@@ -44,7 +44,7 @@ type SidebarNavItemWithSub = {
 };
 
 const navItems: SidebarNavItem[] = [
-  { title: "Dashboard", path: "/dashboard", icon: <LayoutDashboard className="w-5 h-5 mr-3" /> },
+  { title: "Home", path: "/dashboard", icon: <LayoutDashboard className="w-5 h-5 mr-3" /> },
   { title: "Accounts", path: "/accounts", icon: <Building2 className="w-5 h-5 mr-3" /> },
   { title: "Contacts", path: "/contacts", icon: <Users className="w-5 h-5 mr-3" /> },
   { title: "Deals", path: "/deals", icon: <DollarSign className="w-5 h-5 mr-3" /> },
@@ -53,11 +53,17 @@ const navItems: SidebarNavItem[] = [
   { title: "Support Tickets", path: "/support-tickets", icon: <MessageSquare className="w-5 h-5 mr-3" /> },
   { title: "AI Analytics", path: "/ai-analytics", icon: <PieChart className="w-5 h-5 mr-3" /> },
   { title: "Digital Journey", path: "/digital-journey", icon: <Mail className="w-5 h-5 mr-3" /> },
-  { title: "Reports", path: "/reports", icon: <BarChart className="w-5 h-5 mr-3" /> },
-  { title: "Dashboards", path: "/dashboards", icon: <LayoutDashboardIcon className="w-5 h-5 mr-3" /> },
 ];
 
 const navItemsWithSubs: SidebarNavItemWithSub[] = [
+  {
+    title: "Analytics",
+    icon: <BarChart className="w-5 h-5 mr-3" />,
+    subItems: [
+      { title: "Reports", path: "/reports", icon: <BarChart className="w-5 h-5 mr-3" /> },
+      { title: "Dashboards", path: "/dashboards", icon: <LayoutDashboardIcon className="w-5 h-5 mr-3" /> },
+    ]
+  },
   { 
     title: "Administration",
     icon: <Shield className="w-5 h-5 mr-3" />,
