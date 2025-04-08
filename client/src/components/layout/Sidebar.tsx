@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   LayoutDashboard, 
@@ -14,7 +14,11 @@ import {
   X,
   CheckSquare,
   BarChart,
-  LayoutDashboardIcon
+  LayoutDashboardIcon,
+  Settings,
+  ChevronRight,
+  Plug,
+  Shield
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -24,6 +28,19 @@ type SidebarNavItem = {
   title: string;
   path: string;
   icon: React.ReactNode;
+};
+
+type SidebarNavSubItem = {
+  title: string;
+  path: string;
+  icon: React.ReactNode;
+};
+
+type SidebarNavItemWithSub = {
+  title: string;
+  icon: React.ReactNode;
+  subItems: SidebarNavSubItem[];
+  isAdminOnly?: boolean;
 };
 
 const navItems: SidebarNavItem[] = [
@@ -40,6 +57,17 @@ const navItems: SidebarNavItem[] = [
   { title: "Dashboards", path: "/dashboards", icon: <LayoutDashboardIcon className="w-5 h-5 mr-3" /> },
 ];
 
+const navItemsWithSubs: SidebarNavItemWithSub[] = [
+  { 
+    title: "Administration",
+    icon: <Shield className="w-5 h-5 mr-3" />,
+    isAdminOnly: true,
+    subItems: [
+      { title: "Integrations", path: "/admin/integrations", icon: <Plug className="w-5 h-5 mr-3" /> },
+    ]
+  }
+];
+
 interface SidebarProps {
   user?: {
     firstName?: string;
@@ -52,6 +80,7 @@ interface SidebarProps {
 export default function Sidebar({ user }: SidebarProps) {
   const [location] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const { toast } = useToast();
   const tenant = getTenantFromUrl();
 
@@ -117,6 +146,7 @@ export default function Sidebar({ user }: SidebarProps) {
         
         <div className="overflow-y-auto flex-1">
           <nav className="p-2 space-y-1">
+            {/* Regular menu items */}
             {navItems.map((item) => {
               const isActive = location === item.path || 
                 (item.path !== "/" && location.startsWith(item.path));
@@ -134,6 +164,66 @@ export default function Sidebar({ user }: SidebarProps) {
                   {item.icon}
                   {item.title}
                 </Link>
+              );
+            })}
+            
+            {/* Items with submenus */}
+            {navItemsWithSubs.map((item) => {
+              // Skip admin-only sections for non-admin users
+              if (item.isAdminOnly && user?.role !== 'admin') {
+                return null;
+              }
+              
+              const isOpen = openSubmenu === item.title;
+              const isActive = item.subItems.some(subItem => 
+                location === subItem.path || 
+                (subItem.path !== "/" && location.startsWith(subItem.path))
+              );
+              
+              return (
+                <div key={item.title} className="space-y-1">
+                  <button
+                    onClick={() => setOpenSubmenu(isOpen ? null : item.title)}
+                    className={`w-full flex items-center justify-between p-2 rounded-md ${
+                      isActive 
+                        ? 'bg-primary-700 text-white' 
+                        : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      {item.icon}
+                      {item.title}
+                    </div>
+                    <ChevronRight 
+                      className={`w-5 h-5 transition-transform ${isOpen ? 'rotate-90' : ''}`} 
+                    />
+                  </button>
+                  
+                  {/* Submenu items */}
+                  {isOpen && (
+                    <div className="ml-6 mt-1 space-y-1 border-l border-slate-700 pl-2">
+                      {item.subItems.map(subItem => {
+                        const isSubActive = location === subItem.path || 
+                          (subItem.path !== "/" && location.startsWith(subItem.path));
+                        
+                        return (
+                          <Link
+                            key={subItem.path}
+                            href={subItem.path}
+                            className={`flex items-center p-2 rounded-md ${
+                              isSubActive 
+                                ? 'bg-primary-700 text-white' 
+                                : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                            }`}
+                          >
+                            {subItem.icon}
+                            {subItem.title}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </nav>
