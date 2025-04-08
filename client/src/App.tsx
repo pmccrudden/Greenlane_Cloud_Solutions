@@ -27,6 +27,7 @@ import Reports from "@/pages/Reports";
 import Dashboards from "@/pages/Dashboards";
 import AdminIntegrations from "@/pages/AdminIntegrations";
 import AdminUserManagement from "@/pages/AdminUserManagement";
+import DataManagement from "@/pages/admin/DataManagement";
 import MainLayout from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "./lib/protected-route";
 import { getTenantFromUrl } from "@/lib/tenant";
@@ -137,6 +138,24 @@ function Router() {
     </MainLayout>
   );
   
+  const AdminIntegrationsWithLayout = () => (
+    <MainLayout>
+      <AdminIntegrations />
+    </MainLayout>
+  );
+  
+  const AdminUserManagementWithLayout = () => (
+    <MainLayout>
+      <AdminUserManagement />
+    </MainLayout>
+  );
+  
+  const DataManagementWithLayout = () => (
+    <MainLayout>
+      <DataManagement />
+    </MainLayout>
+  );
+  
   return (
     <Switch>
       <Route path="/signin" component={SignIn} />
@@ -159,8 +178,9 @@ function Router() {
       <ProtectedRoute path="/digital-journey" component={DigitalJourneyWithLayout} />
       <ProtectedRoute path="/reports" component={ReportsWithLayout} />
       <ProtectedRoute path="/dashboards" component={DashboardsWithLayout} />
-      <ProtectedRoute path="/admin/integrations" component={AdminIntegrations} />
-      <ProtectedRoute path="/admin/users" component={AdminUserManagement} />
+      <ProtectedRoute path="/admin/integrations" component={AdminIntegrationsWithLayout} />
+      <ProtectedRoute path="/admin/users" component={AdminUserManagementWithLayout} />
+      <ProtectedRoute path="/admin/data" component={DataManagementWithLayout} />
       <ProtectedRoute path="/checkout" component={Checkout} />
       <ProtectedRoute path="/payment-success" component={PaymentSuccess} />
       <Route component={NotFound} />

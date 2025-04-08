@@ -34,6 +34,15 @@ import {
   generateTaskPlaybook,
   generatePredictiveAnalytics 
 } from "./anthropic";
+import { db } from "./db";
+import postgres from "postgres";
+
+// Create a plain postgres client for direct queries
+const pgClient = postgres(process.env.DATABASE_URL || "", {
+  max: 5,
+  idle_timeout: 20,
+  connect_timeout: 10
+});
 
 // Extend Express.User interface
 declare global {
@@ -42,10 +51,14 @@ declare global {
       id: number;
       username: string;
       email: string;
-      firstName?: string;
-      lastName?: string;
+      firstName?: string | null;
+      lastName?: string | null;
       role: string;
       tenantId: string;
+      stripeCustomerId?: string | null;
+      stripeSubscriptionId?: string | null;
+      createdAt?: Date;
+      updatedAt?: Date;
     }
   }
 }
@@ -1387,6 +1400,345 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     next();
   };
+  
+  // Data Management API
+  app.get("/api/admin/tables", requireAdmin, async (req, res) => {
+    try {
+      // Get all tables with their schemas from the database
+      const tablesQuery = `
+        SELECT
+          t.table_name,
+          obj_description(CONCAT(t.table_schema, '.', t.table_name)::regclass, 'pg_class') as description,
+          0 as record_count
+        FROM information_schema.tables t
+        WHERE t.table_schema = 'public'
+          AND t.table_type = 'BASE TABLE'
+          AND t.table_name NOT IN ('_drizzle_migrations', 'pg_stat_statements', 'sessions')
+        ORDER BY t.table_name;
+      `;
+      
+      const tables = await pgClient(tablesQuery);
+      
+      // For each table, get its columns
+      const tableSchemas = await Promise.all(tables.map(async (table) => {
+        const columnsQuery = `
+          SELECT
+            c.column_name,
+            c.data_type,
+            c.is_nullable = 'YES' as nullable,
+            EXISTS (
+              SELECT 1 FROM information_schema.table_constraints tc
+              JOIN information_schema.key_column_usage kcu
+                ON tc.constraint_name = kcu.constraint_name AND tc.table_name = kcu.table_name
+              WHERE tc.constraint_type = 'PRIMARY KEY' AND kcu.column_name = c.column_name
+                AND tc.table_name = $1
+            ) as is_primary_key,
+            EXISTS (
+              SELECT 1 FROM information_schema.table_constraints tc
+              JOIN information_schema.key_column_usage kcu
+                ON tc.constraint_name = kcu.constraint_name AND tc.table_name = kcu.table_name
+              WHERE tc.constraint_type = 'FOREIGN KEY' AND kcu.column_name = c.column_name
+                AND tc.table_name = $1
+            ) as is_foreign_key,
+            (
+              SELECT ccu.table_name
+              FROM information_schema.table_constraints tc
+              JOIN information_schema.key_column_usage kcu
+                ON tc.constraint_name = kcu.constraint_name AND tc.table_name = kcu.table_name
+              JOIN information_schema.constraint_column_usage ccu
+                ON tc.constraint_name = ccu.constraint_name
+              WHERE tc.constraint_type = 'FOREIGN KEY' AND kcu.column_name = c.column_name
+                AND tc.table_name = $1
+              LIMIT 1
+            ) as references_table,
+            (
+              SELECT ccu.column_name
+              FROM information_schema.table_constraints tc
+              JOIN information_schema.key_column_usage kcu
+                ON tc.constraint_name = kcu.constraint_name AND tc.table_name = kcu.table_name
+              JOIN information_schema.constraint_column_usage ccu
+                ON tc.constraint_name = ccu.constraint_name
+              WHERE tc.constraint_type = 'FOREIGN KEY' AND kcu.column_name = c.column_name
+                AND tc.table_name = $1
+              LIMIT 1
+            ) as references_column
+          FROM information_schema.columns c
+          WHERE c.table_name = $1
+          ORDER BY c.ordinal_position;
+        `;
+        
+        const columns = await pgClient(columnsQuery, [table.table_name]);
+        
+        return {
+          tableName: table.table_name,
+          description: table.description || `${table.table_name} table`,
+          columns,
+          recordCount: parseInt(table.record_count, 10)
+        };
+      }));
+      
+      res.json(tableSchemas);
+    } catch (error: any) {
+      console.error("Error fetching table schemas:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.get("/api/admin/tables/:tableName/records", requireAdmin, async (req, res) => {
+    try {
+      const { tableName } = req.params;
+      const { sort, order, limit = 100, offset = 0 } = req.query;
+      
+      // Validate table name (to prevent SQL injection)
+      const tablePattern = /^[a-zA-Z0-9_]+$/;
+      if (!tablePattern.test(tableName)) {
+        return res.status(400).json({ message: "Invalid table name" });
+      }
+      
+      // Build the query
+      let query = `SELECT * FROM "${tableName}"`;
+      
+      // Add tenant filtering for multi-tenant tables
+      // Check if the table has a tenantId column
+      const { rows: columns } = await db.query(
+        `SELECT column_name FROM information_schema.columns 
+         WHERE table_name = $1 AND column_name = 'tenantId'`,
+        [tableName]
+      );
+      
+      if (columns.length > 0 && req.user?.tenantId) {
+        query += ` WHERE "tenantId" = $1`;
+      }
+      
+      // Add sorting
+      if (sort && typeof sort === 'string') {
+        // Validate column name
+        if (!tablePattern.test(sort as string)) {
+          return res.status(400).json({ message: "Invalid sort column" });
+        }
+        
+        query += ` ORDER BY "${sort}" ${order === 'desc' ? 'DESC' : 'ASC'}`;
+      }
+      
+      // Add pagination
+      query += ` LIMIT ${limit} OFFSET ${offset}`;
+      
+      // Execute the query
+      const params = columns.length > 0 && req.user?.tenantId ? [req.user.tenantId] : [];
+      const { rows: records } = await db.query(query, params);
+      
+      res.json(records);
+    } catch (error: any) {
+      console.error(`Error fetching records for ${req.params.tableName}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.post("/api/admin/tables/:tableName/records", requireAdmin, async (req, res) => {
+    try {
+      const { tableName } = req.params;
+      const recordData = req.body;
+      
+      // Validate table name
+      const tablePattern = /^[a-zA-Z0-9_]+$/;
+      if (!tablePattern.test(tableName)) {
+        return res.status(400).json({ message: "Invalid table name" });
+      }
+      
+      // Add tenant ID if applicable
+      const { rows: columns } = await db.query(
+        `SELECT column_name FROM information_schema.columns 
+         WHERE table_name = $1 AND column_name = 'tenantId'`,
+        [tableName]
+      );
+      
+      if (columns.length > 0 && req.user?.tenantId) {
+        recordData.tenantId = req.user.tenantId;
+      }
+      
+      // Build the insert query
+      const fields = Object.keys(recordData)
+        .filter(key => recordData[key] !== undefined)
+        .map(key => `"${key}"`);
+      
+      const placeholders = Object.keys(recordData)
+        .filter(key => recordData[key] !== undefined)
+        .map((_, index) => `$${index + 1}`);
+      
+      const values = Object.keys(recordData)
+        .filter(key => recordData[key] !== undefined)
+        .map(key => recordData[key]);
+      
+      if (fields.length === 0) {
+        return res.status(400).json({ message: "No data provided" });
+      }
+      
+      const query = `
+        INSERT INTO "${tableName}" (${fields.join(', ')})
+        VALUES (${placeholders.join(', ')})
+        RETURNING *
+      `;
+      
+      const { rows } = await db.query(query, values);
+      res.status(201).json(rows[0]);
+    } catch (error: any) {
+      console.error(`Error creating record in ${req.params.tableName}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.put("/api/admin/tables/:tableName/records/:id", requireAdmin, async (req, res) => {
+    try {
+      const { tableName, id } = req.params;
+      const recordData = req.body;
+      
+      // Validate table name
+      const tablePattern = /^[a-zA-Z0-9_]+$/;
+      if (!tablePattern.test(tableName)) {
+        return res.status(400).json({ message: "Invalid table name" });
+      }
+      
+      // Get the primary key column
+      const pkQuery = `
+        SELECT kcu.column_name
+        FROM information_schema.table_constraints tc
+        JOIN information_schema.key_column_usage kcu
+          ON tc.constraint_name = kcu.constraint_name AND tc.table_name = kcu.table_name
+        WHERE tc.constraint_type = 'PRIMARY KEY' AND tc.table_name = $1
+        LIMIT 1;
+      `;
+      
+      const { rows: pk } = await db.query(pkQuery, [tableName]);
+      
+      if (pk.length === 0) {
+        return res.status(400).json({ message: "Table has no primary key" });
+      }
+      
+      const primaryKeyColumn = pk[0].column_name;
+      
+      // Ensure tenant ID security
+      const { rows: columns } = await db.query(
+        `SELECT column_name FROM information_schema.columns 
+         WHERE table_name = $1 AND column_name = 'tenantId'`,
+        [tableName]
+      );
+      
+      // Add tenant check to where clause if applicable
+      let whereClause = `"${primaryKeyColumn}" = $1`;
+      let queryParams = [id];
+      
+      if (columns.length > 0 && req.user?.tenantId) {
+        whereClause += ` AND "tenantId" = $2`;
+        queryParams.push(req.user.tenantId);
+        
+        // Ensure tenantId is preserved and can't be changed
+        recordData.tenantId = req.user.tenantId;
+      }
+      
+      // Build the update query
+      const setClause = Object.keys(recordData)
+        .filter(key => recordData[key] !== undefined && key !== primaryKeyColumn)
+        .map((key, index) => `"${key}" = $${index + queryParams.length + 1}`);
+      
+      if (setClause.length === 0) {
+        return res.status(400).json({ message: "No data provided for update" });
+      }
+      
+      const values = [
+        ...queryParams,
+        ...Object.keys(recordData)
+          .filter(key => recordData[key] !== undefined && key !== primaryKeyColumn)
+          .map(key => recordData[key])
+      ];
+      
+      const query = `
+        UPDATE "${tableName}"
+        SET ${setClause.join(', ')}
+        WHERE ${whereClause}
+        RETURNING *
+      `;
+      
+      const { rows } = await db.query(query, values);
+      
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Record not found or not owned by this tenant" });
+      }
+      
+      res.json(rows[0]);
+    } catch (error: any) {
+      console.error(`Error updating record in ${req.params.tableName}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.delete("/api/admin/tables/:tableName/records/:id", requireAdmin, async (req, res) => {
+    try {
+      const { tableName, id } = req.params;
+      
+      // Validate table name
+      const tablePattern = /^[a-zA-Z0-9_]+$/;
+      if (!tablePattern.test(tableName)) {
+        return res.status(400).json({ message: "Invalid table name" });
+      }
+      
+      // Get the primary key column
+      const pkQuery = `
+        SELECT kcu.column_name
+        FROM information_schema.table_constraints tc
+        JOIN information_schema.key_column_usage kcu
+          ON tc.constraint_name = kcu.constraint_name AND tc.table_name = kcu.table_name
+        WHERE tc.constraint_type = 'PRIMARY KEY' AND tc.table_name = $1
+        LIMIT 1;
+      `;
+      
+      const { rows: pk } = await db.query(pkQuery, [tableName]);
+      
+      if (pk.length === 0) {
+        return res.status(400).json({ message: "Table has no primary key" });
+      }
+      
+      const primaryKeyColumn = pk[0].column_name;
+      
+      // Ensure tenant ID security
+      const { rows: columns } = await db.query(
+        `SELECT column_name FROM information_schema.columns 
+         WHERE table_name = $1 AND column_name = 'tenantId'`,
+        [tableName]
+      );
+      
+      // Add tenant check to where clause if applicable
+      let whereClause = `"${primaryKeyColumn}" = $1`;
+      let queryParams = [id];
+      
+      if (columns.length > 0 && req.user?.tenantId) {
+        whereClause += ` AND "tenantId" = $2`;
+        queryParams.push(req.user.tenantId);
+      }
+      
+      // Prevent deletion of critical records
+      if (tableName === 'users' && parseInt(id as string) === req.user?.id) {
+        return res.status(400).json({ message: "Cannot delete your own user account" });
+      }
+      
+      // Execute the delete query
+      const query = `
+        DELETE FROM "${tableName}"
+        WHERE ${whereClause}
+        RETURNING *
+      `;
+      
+      const { rows } = await db.query(query, queryParams);
+      
+      if (rows.length === 0) {
+        return res.status(404).json({ message: "Record not found or not owned by this tenant" });
+      }
+      
+      res.json({ message: "Record deleted successfully" });
+    } catch (error: any) {
+      console.error(`Error deleting record from ${req.params.tableName}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
   
   // Get all users (admin only)
   app.get("/api/users", requireTenant, requireAuth, requireAdmin, async (req, res) => {

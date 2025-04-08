@@ -18,6 +18,7 @@ import {
   Settings,
   ChevronRight,
   Plug,
+  Database,
   Shield
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
@@ -71,6 +72,7 @@ const navItemsWithSubs: SidebarNavItemWithSub[] = [
     subItems: [
       { title: "Integrations", path: "/admin/integrations", icon: <Plug className="w-5 h-5 mr-3" /> },
       { title: "User Management", path: "/admin/users", icon: <Users className="w-5 h-5 mr-3" /> },
+      { title: "Data Management", path: "/admin/data", icon: <Database className="w-5 h-5 mr-3" /> },
     ]
   }
 ];
