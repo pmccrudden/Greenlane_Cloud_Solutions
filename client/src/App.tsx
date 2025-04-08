@@ -26,6 +26,7 @@ import DigitalJourney from "@/pages/DigitalJourney";
 import Reports from "@/pages/Reports";
 import Dashboards from "@/pages/Dashboards";
 import AdminIntegrations from "@/pages/AdminIntegrations";
+import AdminUserManagement from "@/pages/AdminUserManagement";
 import MainLayout from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "./lib/protected-route";
 import { getTenantFromUrl } from "@/lib/tenant";
@@ -159,6 +160,7 @@ function Router() {
       <ProtectedRoute path="/reports" component={ReportsWithLayout} />
       <ProtectedRoute path="/dashboards" component={DashboardsWithLayout} />
       <ProtectedRoute path="/admin/integrations" component={AdminIntegrations} />
+      <ProtectedRoute path="/admin/users" component={AdminUserManagement} />
       <ProtectedRoute path="/checkout" component={Checkout} />
       <ProtectedRoute path="/payment-success" component={PaymentSuccess} />
       <Route component={NotFound} />

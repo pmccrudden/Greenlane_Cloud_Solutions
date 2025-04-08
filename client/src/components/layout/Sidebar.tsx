@@ -70,6 +70,7 @@ const navItemsWithSubs: SidebarNavItemWithSub[] = [
     isAdminOnly: true,
     subItems: [
       { title: "Integrations", path: "/admin/integrations", icon: <Plug className="w-5 h-5 mr-3" /> },
+      { title: "User Management", path: "/admin/users", icon: <Users className="w-5 h-5 mr-3" /> },
     ]
   }
 ];
@@ -175,11 +176,10 @@ export default function Sidebar({ user }: SidebarProps) {
             
             {/* Items with submenus */}
             {navItemsWithSubs.map((item) => {
-              // TEMPORARILY DISABLED admin-only check for testing purposes
               // Skip admin-only sections for non-admin users
-              // if (item.isAdminOnly && user?.role !== 'admin') {
-              //   return null;
-              // }
+              if (item.isAdminOnly && user?.role !== 'admin') {
+                return null;
+              }
               
               const isOpen = openSubmenu === item.title;
               const isActive = item.subItems.some(subItem => 

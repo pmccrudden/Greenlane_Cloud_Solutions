@@ -33,8 +33,7 @@ import {
   SiIntercom, 
   SiJira, 
   SiMailchimp, 
-  SiMicrosoftoutlook, 
-  SiMicrosoftteams, 
+
   SiSendgrid, 
   SiSlack, 
   SiStripe, 

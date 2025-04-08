@@ -35,6 +35,21 @@ import {
   generatePredictiveAnalytics 
 } from "./anthropic";
 
+// Extend Express.User interface
+declare global {
+  namespace Express {
+    interface User {
+      id: number;
+      username: string;
+      email: string;
+      firstName?: string;
+      lastName?: string;
+      role: string;
+      tenantId: string;
+    }
+  }
+}
+
 const SECRET_KEY = process.env.SECRET || "greenlanecloudsolutions-development-secret";
 
 // Initialize Stripe if the secret key is available
@@ -1354,6 +1369,220 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.status(201).json(filter);
     } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // User Management endpoints (admin only)
+  
+  // Check if current user is an admin
+  const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+    
+    if ((req.user as any).role !== "admin") {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+    
+    next();
+  };
+  
+  // Get all users (admin only)
+  app.get("/api/users", requireTenant, requireAuth, requireAdmin, async (req, res) => {
+    try {
+      // In a real implementation, we would get users by tenant
+      // For this demo, we'll return a list of mock users
+      const users = [
+        {
+          id: 1,
+          username: "admin",
+          email: "admin@greenlanecloudsolutions.com",
+          firstName: "Admin",
+          lastName: "User",
+          role: "admin",
+          tenantId: req.tenantId,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 2,
+          username: "john.doe",
+          email: "john.doe@example.com",
+          firstName: "John",
+          lastName: "Doe",
+          role: "user",
+          tenantId: req.tenantId,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 3,
+          username: "jane.smith",
+          email: "jane.smith@example.com",
+          firstName: "Jane",
+          lastName: "Smith",
+          role: "account_manager",
+          tenantId: req.tenantId,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ];
+      
+      res.json(users);
+    } catch (error: any) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Create a new user (admin only)
+  app.post("/api/users", requireTenant, requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const { username, email, password, firstName, lastName, role } = req.body;
+      
+      // Validate required fields
+      if (!username || !email || !password || !role) {
+        return res.status(400).json({ 
+          message: "Missing required fields (username, email, password, role)" 
+        });
+      }
+      
+      // Check if username or email already exists
+      if (username === "admin" || email === "admin@greenlanecloudsolutions.com") {
+        return res.status(400).json({ message: "Username or email already exists" });
+      }
+      
+      // In a real implementation, we would create a user in the database
+      // For this demo, we'll return a mock created user
+      const newUser = {
+        id: Math.floor(Math.random() * 1000) + 10, // Random ID
+        username,
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        role,
+        tenantId: req.tenantId,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      res.status(201).json(newUser);
+    } catch (error: any) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Get a specific user by ID (admin only)
+  app.get("/api/users/:id", requireTenant, requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // In a real implementation, we would get the user from the database
+      // For this demo, we'll return a mock user or 404
+      if (userId === 1) {
+        res.json({
+          id: 1,
+          username: "admin",
+          email: "admin@greenlanecloudsolutions.com",
+          firstName: "Admin",
+          lastName: "User",
+          role: "admin",
+          tenantId: req.tenantId,
+          isActive: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      } else {
+        res.status(404).json({ message: "User not found" });
+      }
+    } catch (error: any) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Update a user (admin only)
+  app.patch("/api/users/:id", requireTenant, requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { email, firstName, lastName, role, password } = req.body;
+      
+      // In a real implementation, we would update the user in the database
+      // For this demo, we'll return a mock updated user
+      res.json({
+        id: userId,
+        username: userId === 1 ? "admin" : `user${userId}`,
+        email: email || `user${userId}@example.com`,
+        firstName: firstName || `First${userId}`,
+        lastName: lastName || `Last${userId}`,
+        role: role || "user",
+        tenantId: req.tenantId,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Delete a user (admin only)
+  app.delete("/api/users/:id", requireTenant, requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      // Prevent deleting the admin user
+      if (userId === 1) {
+        return res.status(403).json({ message: "Cannot delete admin user" });
+      }
+      
+      // In a real implementation, we would delete the user from the database
+      // For this demo, we'll just return a success message
+      res.json({ message: "User deleted successfully" });
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  // Update user status (active/inactive) (admin only)
+  app.patch("/api/users/:id/status", requireTenant, requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { isActive } = req.body;
+      
+      if (isActive === undefined) {
+        return res.status(400).json({ message: "isActive field is required" });
+      }
+      
+      // Prevent deactivating the admin user
+      if (userId === 1 && isActive === false) {
+        return res.status(403).json({ message: "Cannot deactivate admin user" });
+      }
+      
+      // In a real implementation, we would update the user status in the database
+      // For this demo, we'll return a mock updated user
+      res.json({
+        id: userId,
+        username: userId === 1 ? "admin" : `user${userId}`,
+        email: userId === 1 ? "admin@greenlanecloudsolutions.com" : `user${userId}@example.com`,
+        firstName: userId === 1 ? "Admin" : `First${userId}`,
+        lastName: userId === 1 ? "User" : `Last${userId}`,
+        role: userId === 1 ? "admin" : "user",
+        tenantId: req.tenantId,
+        isActive: isActive,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error("Error updating user status:", error);
       res.status(500).json({ message: error.message });
     }
   });
