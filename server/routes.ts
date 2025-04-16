@@ -24,7 +24,9 @@ import {
   insertDashboardDefinitionSchema,
   insertDashboardWidgetSchema,
   insertUserDashboardPreferenceSchema,
-  insertSavedReportFilterSchema
+  insertSavedReportFilterSchema,
+  insertS3BucketSchema,
+  insertCsvUploadSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -35,6 +37,12 @@ import {
   generatePredictiveAnalytics 
 } from "./anthropic";
 import { db, pgClient } from "./db";
+import {
+  uploadFileToS3,
+  processCsvFile,
+  verifyS3BucketAccess,
+  deleteFileFromS3
+} from "./s3Service";
 
 // Extend Express.User interface
 declare global {
@@ -1938,6 +1946,302 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error("Error updating user status:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== S3 Bucket Routes =====
+  // Get all S3 buckets for tenant
+  app.get("/api/s3-buckets", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const buckets = await storage.getS3Buckets(req.tenantId!);
+      res.json(buckets);
+    } catch (error: any) {
+      console.error("Error retrieving S3 buckets:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get single S3 bucket
+  app.get("/api/s3-buckets/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const bucket = await storage.getS3Bucket(parseInt(req.params.id), req.tenantId!);
+      if (!bucket) {
+        return res.status(404).json({ message: "S3 bucket not found" });
+      }
+      res.json(bucket);
+    } catch (error: any) {
+      console.error("Error retrieving S3 bucket:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new S3 bucket configuration
+  app.post("/api/s3-buckets", requireTenant, requireAuth, validateBody(insertS3BucketSchema), async (req, res) => {
+    try {
+      // Verify S3 access before creating bucket configuration
+      const bucketConfig = {
+        bucketName: req.validatedBody.bucketName,
+        region: req.validatedBody.region,
+        accessKeyId: req.validatedBody.accessKeyId,
+        secretAccessKey: req.validatedBody.secretAccessKey
+      };
+      
+      // Test the connection to the S3 bucket
+      const verificationResult = await verifyS3BucketAccess(bucketConfig);
+      if (!verificationResult.success) {
+        return res.status(400).json({ 
+          message: "Failed to connect to S3 bucket", 
+          error: verificationResult.error 
+        });
+      }
+      
+      // Create the S3 bucket configuration in our database
+      const bucket = await storage.createS3Bucket({
+        ...req.validatedBody,
+        tenantId: req.tenantId!,
+        isActive: true
+      });
+      
+      res.status(201).json(bucket);
+    } catch (error: any) {
+      console.error("Error creating S3 bucket:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Toggle S3 bucket status (active/inactive)
+  app.put("/api/s3-buckets/:id/toggle-status", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const bucket = await storage.toggleS3BucketStatus(parseInt(req.params.id), req.tenantId!);
+      res.json(bucket);
+    } catch (error: any) {
+      console.error("Error toggling S3 bucket status:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Update S3 bucket details
+  app.put("/api/s3-buckets/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const bucketId = parseInt(req.params.id);
+      
+      // If credentials are being updated, verify new credentials
+      if (req.body.accessKeyId || req.body.secretAccessKey || req.body.region || req.body.bucketName) {
+        // Get current bucket details
+        const currentBucket = await storage.getS3Bucket(bucketId, req.tenantId!);
+        if (!currentBucket) {
+          return res.status(404).json({ message: "S3 bucket not found" });
+        }
+        
+        // Create merged configuration for testing
+        const bucketConfig = {
+          bucketName: req.body.bucketName || currentBucket.bucketName,
+          region: req.body.region || currentBucket.region,
+          accessKeyId: req.body.accessKeyId || currentBucket.accessKeyId,
+          secretAccessKey: req.body.secretAccessKey || currentBucket.secretAccessKey
+        };
+        
+        // Test the connection to the S3 bucket
+        const verificationResult = await verifyS3BucketAccess(bucketConfig);
+        if (!verificationResult.success) {
+          return res.status(400).json({ 
+            message: "Failed to connect to S3 bucket with updated credentials", 
+            error: verificationResult.error 
+          });
+        }
+      }
+      
+      // Update the bucket
+      const updatedBucket = await storage.updateS3Bucket(bucketId, req.body, req.tenantId!);
+      res.json(updatedBucket);
+    } catch (error: any) {
+      console.error("Error updating S3 bucket:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // ===== CSV Upload Routes =====
+  // Get all CSV uploads for tenant
+  app.get("/api/csv-uploads", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const uploads = await storage.getCsvUploads(req.tenantId!);
+      res.json(uploads);
+    } catch (error: any) {
+      console.error("Error retrieving CSV uploads:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get single CSV upload
+  app.get("/api/csv-uploads/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const upload = await storage.getCsvUpload(parseInt(req.params.id), req.tenantId!);
+      if (!upload) {
+        return res.status(404).json({ message: "CSV upload not found" });
+      }
+      res.json(upload);
+    } catch (error: any) {
+      console.error("Error retrieving CSV upload:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Upload CSV file to S3 and create record
+  app.post("/api/csv-uploads", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const { s3BucketId, fileName, targetEntity, mappingConfig, fileBuffer } = req.body;
+      
+      if (!s3BucketId || !fileName || !targetEntity || !fileBuffer) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      // Get S3 bucket details
+      const bucket = await storage.getS3Bucket(parseInt(s3BucketId), req.tenantId!);
+      if (!bucket) {
+        return res.status(404).json({ message: "S3 bucket not found" });
+      }
+      
+      // Generate a unique key for the file in S3
+      const fileExtension = fileName.split('.').pop();
+      const s3Key = `${req.tenantId}/uploads/${Date.now()}-${fileName}`;
+      
+      // Convert the fileBuffer from base64 if needed
+      let buffer;
+      if (typeof fileBuffer === 'string') {
+        // Remove data URL prefix if present (e.g., "data:text/csv;base64,")
+        const base64Data = fileBuffer.split(';base64,').pop() || fileBuffer;
+        buffer = Buffer.from(base64Data, 'base64');
+      } else {
+        buffer = Buffer.from(fileBuffer);
+      }
+      
+      // Upload file to S3
+      const bucketConfig = {
+        bucketName: bucket.bucketName,
+        region: bucket.region,
+        accessKeyId: bucket.accessKeyId,
+        secretAccessKey: bucket.secretAccessKey
+      };
+      
+      try {
+        // Upload to S3
+        await uploadFileToS3(bucketConfig, s3Key, buffer);
+        
+        // Create CSV upload record
+        const upload = await storage.createCsvUpload({
+          fileName,
+          s3BucketId: parseInt(s3BucketId),
+          s3Key,
+          fileSize: buffer.length,
+          targetEntity,
+          tenantId: req.tenantId!,
+          userId: req.user.id,
+          status: 'pending',
+          mappingConfig: mappingConfig || null
+        });
+        
+        // Start processing the CSV file if mappingConfig is provided
+        if (mappingConfig) {
+          // Process asynchronously
+          processCsvFile(bucketConfig, s3Key, mappingConfig, targetEntity, req.tenantId!)
+            .then(async (result) => {
+              await storage.updateCsvUploadStatus(
+                upload.id, 
+                result.success ? 'completed' : 'failed', 
+                {
+                  processedRecords: result.processedRecords,
+                  totalRecords: result.totalRecords,
+                  errorMessage: result.error || null
+                },
+                req.tenantId!
+              );
+            })
+            .catch(async (error) => {
+              await storage.updateCsvUploadStatus(
+                upload.id, 
+                'failed', 
+                { errorMessage: error.message },
+                req.tenantId!
+              );
+            });
+        }
+        
+        res.status(201).json(upload);
+      } catch (error: any) {
+        console.error("Error uploading file to S3:", error);
+        res.status(500).json({ message: `Error uploading file to S3: ${error.message}` });
+      }
+    } catch (error: any) {
+      console.error("Error creating CSV upload:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Process an existing CSV upload
+  app.post("/api/csv-uploads/:id/process", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const uploadId = parseInt(req.params.id);
+      const { mappingConfig } = req.body;
+      
+      if (!mappingConfig) {
+        return res.status(400).json({ message: "Mapping configuration is required" });
+      }
+      
+      // Get CSV upload details
+      const upload = await storage.getCsvUpload(uploadId, req.tenantId!);
+      if (!upload) {
+        return res.status(404).json({ message: "CSV upload not found" });
+      }
+      
+      // Get S3 bucket details
+      const bucket = await storage.getS3Bucket(upload.s3BucketId, req.tenantId!);
+      if (!bucket) {
+        return res.status(404).json({ message: "S3 bucket not found" });
+      }
+      
+      // Update upload status and mapping config
+      await storage.updateCsvUploadStatus(
+        uploadId, 
+        'processing', 
+        { mappingConfig },
+        req.tenantId!
+      );
+      
+      // Start processing the CSV file
+      const bucketConfig = {
+        bucketName: bucket.bucketName,
+        region: bucket.region,
+        accessKeyId: bucket.accessKeyId,
+        secretAccessKey: bucket.secretAccessKey
+      };
+      
+      // Process asynchronously
+      processCsvFile(bucketConfig, upload.s3Key, mappingConfig, upload.targetEntity, req.tenantId!)
+        .then(async (result) => {
+          await storage.updateCsvUploadStatus(
+            uploadId, 
+            result.success ? 'completed' : 'failed', 
+            {
+              processedRecords: result.processedRecords,
+              totalRecords: result.totalRecords,
+              errorMessage: result.error || null
+            },
+            req.tenantId!
+          );
+        })
+        .catch(async (error) => {
+          await storage.updateCsvUploadStatus(
+            uploadId, 
+            'failed', 
+            { errorMessage: error.message },
+            req.tenantId!
+          );
+        });
+      
+      res.json({ message: "Processing started", uploadId });
+    } catch (error: any) {
+      console.error("Error processing CSV upload:", error);
       res.status(500).json({ message: error.message });
     }
   });
