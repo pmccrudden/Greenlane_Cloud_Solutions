@@ -14,7 +14,9 @@ import {
   dashboardDefinitions, DashboardDefinition, InsertDashboardDefinition,
   dashboardWidgets, DashboardWidget, InsertDashboardWidget,
   userDashboardPreferences, UserDashboardPreference, InsertUserDashboardPreference,
-  savedReportFilters, SavedReportFilter, InsertSavedReportFilter
+  savedReportFilters, SavedReportFilter, InsertSavedReportFilter,
+  s3Buckets, S3Bucket, InsertS3Bucket,
+  csvUploads, CsvUpload, InsertCsvUpload
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -127,6 +129,19 @@ export interface IStorage {
   // Saved Report Filters methods
   getSavedReportFilters(userId: number, tenantId: string): Promise<SavedReportFilter[]>;
   createSavedReportFilter(filter: InsertSavedReportFilter): Promise<SavedReportFilter>;
+  
+  // S3 Bucket methods
+  getS3Buckets(tenantId: string): Promise<S3Bucket[]>;
+  getS3Bucket(id: number, tenantId: string): Promise<S3Bucket | undefined>;
+  createS3Bucket(bucket: InsertS3Bucket): Promise<S3Bucket>;
+  updateS3Bucket(id: number, data: Partial<S3Bucket>, tenantId: string): Promise<S3Bucket>;
+  toggleS3BucketStatus(id: number, tenantId: string): Promise<S3Bucket>;
+  
+  // CSV Upload methods
+  getCsvUploads(tenantId: string): Promise<CsvUpload[]>;
+  getCsvUpload(id: number, tenantId: string): Promise<CsvUpload | undefined>;
+  createCsvUpload(upload: InsertCsvUpload): Promise<CsvUpload>;
+  updateCsvUploadStatus(id: number, status: string, data: Partial<CsvUpload>, tenantId: string): Promise<CsvUpload>;
   
   // Session store
   sessionStore: session.Store;
@@ -804,6 +819,117 @@ export class DatabaseStorage implements IStorage {
       .values(filter)
       .returning();
     return newFilter;
+  }
+
+  // S3 Bucket methods
+  async getS3Buckets(tenantId: string): Promise<S3Bucket[]> {
+    return db
+      .select()
+      .from(s3Buckets)
+      .where(eq(s3Buckets.tenantId, tenantId));
+  }
+
+  async getS3Bucket(id: number, tenantId: string): Promise<S3Bucket | undefined> {
+    const [bucket] = await db
+      .select()
+      .from(s3Buckets)
+      .where(and(
+        eq(s3Buckets.id, id),
+        eq(s3Buckets.tenantId, tenantId)
+      ));
+    return bucket;
+  }
+
+  async createS3Bucket(insertBucket: InsertS3Bucket): Promise<S3Bucket> {
+    const [bucket] = await db
+      .insert(s3Buckets)
+      .values(insertBucket)
+      .returning();
+    return bucket;
+  }
+
+  async updateS3Bucket(id: number, data: Partial<S3Bucket>, tenantId: string): Promise<S3Bucket> {
+    const [bucket] = await db
+      .update(s3Buckets)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(s3Buckets.id, id),
+        eq(s3Buckets.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!bucket) {
+      throw new Error(`S3 bucket not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return bucket;
+  }
+
+  async toggleS3BucketStatus(id: number, tenantId: string): Promise<S3Bucket> {
+    // First get the current bucket to get its status
+    const bucket = await this.getS3Bucket(id, tenantId);
+    
+    if (!bucket) {
+      throw new Error(`S3 bucket not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    // Then update with the opposite status
+    return this.updateS3Bucket(
+      id, 
+      { isActive: !bucket.isActive },
+      tenantId
+    );
+  }
+  
+  // CSV Upload methods
+  async getCsvUploads(tenantId: string): Promise<CsvUpload[]> {
+    return db
+      .select()
+      .from(csvUploads)
+      .where(eq(csvUploads.tenantId, tenantId));
+  }
+
+  async getCsvUpload(id: number, tenantId: string): Promise<CsvUpload | undefined> {
+    const [upload] = await db
+      .select()
+      .from(csvUploads)
+      .where(and(
+        eq(csvUploads.id, id),
+        eq(csvUploads.tenantId, tenantId)
+      ));
+    return upload;
+  }
+
+  async createCsvUpload(insertUpload: InsertCsvUpload): Promise<CsvUpload> {
+    const [upload] = await db
+      .insert(csvUploads)
+      .values(insertUpload)
+      .returning();
+    return upload;
+  }
+
+  async updateCsvUploadStatus(id: number, status: string, data: Partial<CsvUpload>, tenantId: string): Promise<CsvUpload> {
+    const [upload] = await db
+      .update(csvUploads)
+      .set({
+        ...data,
+        status,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(csvUploads.id, id),
+        eq(csvUploads.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!upload) {
+      throw new Error(`CSV upload not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return upload;
   }
 }
 

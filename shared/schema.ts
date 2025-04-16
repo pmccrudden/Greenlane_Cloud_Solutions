@@ -543,10 +543,80 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   createdReports: many(reportDefinitions, { relationName: 'createdBy' }),
   createdDashboards: many(dashboardDefinitions, { relationName: 'createdBy' }),
   dashboardPreferences: many(userDashboardPreferences),
-  savedFilters: many(savedReportFilters)
+  savedFilters: many(savedReportFilters),
+  csvUploads: many(csvUploads)
 }));
 
 // Update tenantRelations to include dashboard relations
+// S3 Bucket configuration table
+export const s3Buckets = pgTable("s3_buckets", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  bucketName: text("bucket_name").notNull(),
+  region: text("region").notNull(),
+  accessKeyId: text("access_key_id").notNull(),
+  secretAccessKey: text("secret_access_key").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertS3BucketSchema = createInsertSchema(s3Buckets)
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true });
+
+export const s3BucketsRelations = relations(s3Buckets, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [s3Buckets.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+export type InsertS3Bucket = z.infer<typeof insertS3BucketSchema>;
+export type S3Bucket = typeof s3Buckets.$inferSelect;
+
+// CSV File Upload records table
+export const csvUploads = pgTable("csv_uploads", {
+  id: serial("id").primaryKey(),
+  fileName: text("file_name").notNull(),
+  s3BucketId: integer("s3_bucket_id").references(() => s3Buckets.id).notNull(),
+  s3Key: text("s3_key").notNull(),
+  fileSize: integer("file_size").notNull(),
+  status: text("status").default("pending").notNull(), // pending, processing, completed, failed
+  targetEntity: text("target_entity").notNull(), // accounts, contacts, etc.
+  processedRecords: integer("processed_records").default(0),
+  totalRecords: integer("total_records").default(0),
+  errorMessage: text("error_message"),
+  mappingConfig: jsonb("mapping_config"), // How file columns map to entity fields
+  userId: integer("user_id").references(() => users.id).notNull(),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCsvUploadSchema = createInsertSchema(csvUploads)
+  .omit({ id: true, createdAt: true, updatedAt: true })
+  .partial({ tenantId: true, userId: true });
+
+export const csvUploadsRelations = relations(csvUploads, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [csvUploads.tenantId],
+    references: [tenants.id]
+  }),
+  s3Bucket: one(s3Buckets, {
+    fields: [csvUploads.s3BucketId],
+    references: [s3Buckets.id]
+  }),
+  user: one(users, {
+    fields: [csvUploads.userId],
+    references: [users.id]
+  })
+}));
+
+export type InsertCsvUpload = z.infer<typeof insertCsvUploadSchema>;
+export type CsvUpload = typeof csvUploads.$inferSelect;
+
 export const tenantsRelations = relations(tenants, ({ many }) => ({
   users: many(users),
   accounts: many(accounts),
@@ -560,5 +630,7 @@ export const tenantsRelations = relations(tenants, ({ many }) => ({
   dashboardDefinitions: many(dashboardDefinitions),
   dashboardWidgets: many(dashboardWidgets),
   userDashboardPreferences: many(userDashboardPreferences),
-  savedReportFilters: many(savedReportFilters)
+  savedReportFilters: many(savedReportFilters),
+  s3Buckets: many(s3Buckets),
+  csvUploads: many(csvUploads)
 }));
