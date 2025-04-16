@@ -56,6 +56,10 @@ type Integration = {
     email?: string;
     apiKey?: string;
     webhookUrl?: string;
+    bucketName?: string;
+    region?: string;
+    accessKeyId?: string;
+    secretAccessKey?: string;
   };
 };
 
@@ -285,6 +289,10 @@ export default function Integrations() {
         email: integrationForm.email || undefined,
         apiKey: integrationForm.apiKey ? "••••••••••••••••" : undefined, // Never store or display the actual API key in the UI
         webhookUrl: integrationForm.webhookUrl || undefined,
+        bucketName: integrationForm.bucketName || undefined,
+        region: integrationForm.region || undefined,
+        accessKeyId: integrationForm.accessKeyId ? "••••••••••••••••" : undefined,
+        secretAccessKey: integrationForm.secretAccessKey ? "••••••••••••••••" : undefined,
       },
     };
 
@@ -358,6 +366,8 @@ export default function Integrations() {
         return <SiSlack className="w-6 h-6 text-[#4A154B]" />;
       case "stripe":
         return <SiStripe className="w-6 h-6 text-[#635BFF]" />;
+      case "aws_s3":
+        return <SiAmazon className="w-6 h-6 text-[#FF9900]" />;
       default:
         return <ExternalLink className="w-6 h-6 text-slate-400" />;
     }
@@ -502,6 +512,68 @@ export default function Integrations() {
                     </div>
                   </>
                 )}
+                
+                {selectedProvider === "aws_s3" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="bucketName">S3 Bucket Name</Label>
+                      <Input
+                        id="bucketName"
+                        name="bucketName"
+                        placeholder="my-greenland-crm-bucket"
+                        value={integrationForm.bucketName}
+                        onChange={handleInputChange}
+                      />
+                      <p className="text-xs text-slate-500">
+                        Enter the name of your S3 bucket for customer data imports.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="region">AWS Region</Label>
+                      <Input
+                        id="region"
+                        name="region"
+                        placeholder="us-east-1"
+                        value={integrationForm.region}
+                        onChange={handleInputChange}
+                      />
+                      <p className="text-xs text-slate-500">
+                        The AWS region where your bucket is located (e.g., us-east-1, eu-west-2).
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="accessKeyId">AWS Access Key ID</Label>
+                      <Input
+                        id="accessKeyId"
+                        name="accessKeyId"
+                        type="password"
+                        placeholder="AKIAIOSFODNN7EXAMPLE"
+                        value={integrationForm.accessKeyId}
+                        onChange={handleInputChange}
+                      />
+                      <p className="text-xs text-slate-500">
+                        Your AWS access key ID with permissions to access the S3 bucket.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="secretAccessKey">AWS Secret Access Key</Label>
+                      <Input
+                        id="secretAccessKey"
+                        name="secretAccessKey"
+                        type="password"
+                        placeholder="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                        value={integrationForm.secretAccessKey}
+                        onChange={handleInputChange}
+                      />
+                      <p className="text-xs text-slate-500">
+                        Your AWS secret access key. Never share this with anyone.
+                      </p>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -509,7 +581,19 @@ export default function Integrations() {
               {selectedProvider && (
                 <Button
                   variant="outline"
-                  onClick={() => setSelectedProvider(null)}
+                  onClick={() => {
+                    setSelectedProvider(null);
+                    setIntegrationForm({
+                      name: "",
+                      email: "",
+                      apiKey: "",
+                      webhookUrl: "",
+                      bucketName: "",
+                      region: "",
+                      accessKeyId: "",
+                      secretAccessKey: "",
+                    });
+                  }}
                 >
                   Back
                 </Button>
@@ -520,6 +604,16 @@ export default function Integrations() {
                   onClick={() => {
                     setIsAddDialogOpen(false);
                     setSelectedProvider(null);
+                    setIntegrationForm({
+                      name: "",
+                      email: "",
+                      apiKey: "",
+                      webhookUrl: "",
+                      bucketName: "",
+                      region: "",
+                      accessKeyId: "",
+                      secretAccessKey: "",
+                    });
                   }}
                 >
                   Cancel
@@ -631,6 +725,13 @@ export default function Integrations() {
                       {integration.lastSynced && (
                         <div className="mb-2">
                           Last synced: {new Date(integration.lastSynced).toLocaleString()}
+                        </div>
+                      )}
+                      {integration.provider === "aws_s3" && integration.details?.bucketName && (
+                        <div>
+                          <div className="font-medium mb-1">S3 Bucket Details:</div>
+                          <div>Bucket: {integration.details.bucketName}</div>
+                          <div>Region: {integration.details.region}</div>
                         </div>
                       )}
                     </div>
