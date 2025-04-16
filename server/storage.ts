@@ -945,6 +945,8 @@ export class MemStorage implements IStorage {
   private emailTemplates: Map<number, EmailTemplate>;
   private digitalJourneys: Map<number, DigitalJourney>;
   private accountTasks: Map<number, AccountTask>;
+  private s3Buckets: Map<number, S3Bucket>;
+  private csvUploads: Map<number, CsvUpload>;
   
   currentUserId: number;
   currentAccountId: number;
@@ -956,6 +958,8 @@ export class MemStorage implements IStorage {
   currentEmailTemplateId: number;
   currentDigitalJourneyId: number;
   currentAccountTaskId: number;
+  currentS3BucketId: number;
+  currentCsvUploadId: number;
   
   sessionStore: session.Store;
 
@@ -971,6 +975,8 @@ export class MemStorage implements IStorage {
     this.emailTemplates = new Map();
     this.digitalJourneys = new Map();
     this.accountTasks = new Map();
+    this.s3Buckets = new Map();
+    this.csvUploads = new Map();
     
     this.currentUserId = 1;
     this.currentAccountId = 1;
@@ -982,6 +988,8 @@ export class MemStorage implements IStorage {
     this.currentEmailTemplateId = 1;
     this.currentDigitalJourneyId = 1;
     this.currentAccountTaskId = 1;
+    this.currentS3BucketId = 1;
+    this.currentCsvUploadId = 1;
     
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // 24 hours
@@ -1694,6 +1702,111 @@ export class MemStorage implements IStorage {
     };
     this.savedReportFilters.set(id, newFilter);
     return newFilter;
+  }
+
+  // S3 Bucket methods
+  async getS3Buckets(tenantId: string): Promise<S3Bucket[]> {
+    return Array.from(this.s3Buckets.values()).filter(
+      (bucket) => bucket.tenantId === tenantId
+    );
+  }
+
+  async getS3Bucket(id: number, tenantId: string): Promise<S3Bucket | undefined> {
+    const bucket = this.s3Buckets.get(id);
+    if (bucket && bucket.tenantId === tenantId) {
+      return bucket;
+    }
+    return undefined;
+  }
+
+  async createS3Bucket(insertBucket: InsertS3Bucket): Promise<S3Bucket> {
+    const id = this.currentS3BucketId++;
+    const now = new Date();
+    const bucket: S3Bucket = {
+      ...insertBucket,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.s3Buckets.set(id, bucket);
+    return bucket;
+  }
+
+  async updateS3Bucket(id: number, data: Partial<S3Bucket>, tenantId: string): Promise<S3Bucket> {
+    const bucket = await this.getS3Bucket(id, tenantId);
+    if (!bucket) {
+      throw new Error(`S3 bucket not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedBucket: S3Bucket = {
+      ...bucket,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.s3Buckets.set(id, updatedBucket);
+    return updatedBucket;
+  }
+
+  async toggleS3BucketStatus(id: number, tenantId: string): Promise<S3Bucket> {
+    // First get the current bucket to get its status
+    const bucket = await this.getS3Bucket(id, tenantId);
+    
+    if (!bucket) {
+      throw new Error(`S3 bucket not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    // Then update with the opposite status
+    return this.updateS3Bucket(
+      id, 
+      { isActive: !bucket.isActive },
+      tenantId
+    );
+  }
+  
+  // CSV Upload methods
+  async getCsvUploads(tenantId: string): Promise<CsvUpload[]> {
+    return Array.from(this.csvUploads.values()).filter(
+      (upload) => upload.tenantId === tenantId
+    );
+  }
+
+  async getCsvUpload(id: number, tenantId: string): Promise<CsvUpload | undefined> {
+    const upload = this.csvUploads.get(id);
+    if (upload && upload.tenantId === tenantId) {
+      return upload;
+    }
+    return undefined;
+  }
+
+  async createCsvUpload(insertUpload: InsertCsvUpload): Promise<CsvUpload> {
+    const id = this.currentCsvUploadId++;
+    const now = new Date();
+    const upload: CsvUpload = {
+      ...insertUpload,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.csvUploads.set(id, upload);
+    return upload;
+  }
+
+  async updateCsvUploadStatus(id: number, status: string, data: Partial<CsvUpload>, tenantId: string): Promise<CsvUpload> {
+    const upload = await this.getCsvUpload(id, tenantId);
+    if (!upload) {
+      throw new Error(`CSV upload not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedUpload: CsvUpload = {
+      ...upload,
+      ...data,
+      status,
+      updatedAt: new Date()
+    };
+    
+    this.csvUploads.set(id, updatedUpload);
+    return updatedUpload;
   }
 }
 
