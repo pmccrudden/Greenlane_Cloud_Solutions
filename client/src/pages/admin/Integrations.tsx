@@ -28,12 +28,12 @@ import {
 } from "lucide-react";
 import { 
   SiAsana, 
+  SiAmazon,
   SiGooglecalendar, 
   SiHubspot, 
   SiIntercom, 
   SiJira, 
   SiMailchimp, 
-
   SiSendgrid, 
   SiSlack, 
   SiStripe, 
@@ -89,10 +89,21 @@ export default function Integrations() {
     email: "",
     apiKey: "",
     webhookUrl: "",
+    bucketName: "",
+    region: "",
+    accessKeyId: "",
+    secretAccessKey: "",
   });
 
   // Integration types with their icons and status
   const availableIntegrations = [
+    {
+      id: "aws_s3",
+      name: "AWS S3",
+      description: "Data storage and CSV import for customer data",
+      icon: <SiAmazon className="w-8 h-8 text-[#FF9900]" />,
+      status: "available"
+    },
     { 
       id: "slack", 
       name: "Slack", 
@@ -225,6 +236,44 @@ export default function Integrations() {
       return;
     }
 
+    if (selectedProvider === "aws_s3") {
+      if (!integrationForm.bucketName) {
+        toast({
+          title: "Error",
+          description: "Bucket name is required for AWS S3 integration",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!integrationForm.region) {
+        toast({
+          title: "Error",
+          description: "Region is required for AWS S3 integration",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!integrationForm.accessKeyId) {
+        toast({
+          title: "Error",
+          description: "Access Key ID is required for AWS S3 integration",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!integrationForm.secretAccessKey) {
+        toast({
+          title: "Error",
+          description: "Secret Access Key is required for AWS S3 integration",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     // In a real implementation, this would call your API to store the integration
     const newIntegration: Integration = {
       id: Date.now().toString(),
@@ -247,6 +296,10 @@ export default function Integrations() {
       email: "",
       apiKey: "",
       webhookUrl: "",
+      bucketName: "",
+      region: "",
+      accessKeyId: "",
+      secretAccessKey: "",
     });
 
     toast({
