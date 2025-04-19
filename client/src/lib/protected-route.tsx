@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Route, useLocation } from 'wouter';
 import { Loader2 } from 'lucide-react';
+import { checkAuth } from './auth';
 
 interface ProtectedRouteProps {
   path: string;
@@ -13,11 +14,12 @@ export function ProtectedRoute({ path, component: Component }: ProtectedRoutePro
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const verifyAuth = async () => {
       try {
-        const res = await fetch('/api/auth/status');
+        // Use checkAuth function from auth.ts which properly includes tenant ID
+        const { isAuthenticated: authStatus } = await checkAuth();
         
-        if (res.status === 200) {
+        if (authStatus) {
           setIsAuthenticated(true);
         } else {
           setLocation('/signin');
@@ -30,7 +32,7 @@ export function ProtectedRoute({ path, component: Component }: ProtectedRoutePro
       }
     };
     
-    checkAuth();
+    verifyAuth();
   }, [setLocation]);
 
   return (
