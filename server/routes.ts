@@ -318,6 +318,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error creating community post" });
     }
   });
+  
+  // ===== Workflows Routes =====
+  app.get("/api/workflows", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      // In development, serving sample data until database tables are created
+      const workflows = [
+        {
+          id: "wf-1",
+          name: "Account Health Score Update",
+          description: "Automatically updates account health scores based on activity data",
+          status: "active",
+          createdAt: new Date("2025-03-15"),
+          updatedAt: new Date("2025-04-01"),
+          tenantId: req.tenantId as string
+        },
+        {
+          id: "wf-2",
+          name: "Support Ticket Assignment",
+          description: "Assigns support tickets to team members based on expertise and workload",
+          status: "active",
+          createdAt: new Date("2025-03-20"),
+          updatedAt: new Date("2025-03-25"),
+          tenantId: req.tenantId as string
+        },
+        {
+          id: "wf-3",
+          name: "Deal Probability Calculation",
+          description: "Calculates win probability for deals based on historical data",
+          status: "draft",
+          createdAt: new Date("2025-04-05"),
+          updatedAt: new Date("2025-04-05"),
+          tenantId: req.tenantId as string
+        }
+      ];
+      
+      res.json(workflows);
+    } catch (error: any) {
+      console.error("Error fetching workflows:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/workflows/:id", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const workflowId = req.params.id;
+      
+      // Sample data for development
+      const workflow = {
+        id: workflowId,
+        name: workflowId === "wf-1" ? "Account Health Score Update" : 
+              workflowId === "wf-2" ? "Support Ticket Assignment" : 
+              "Deal Probability Calculation",
+        description: "Detailed configuration for this workflow",
+        status: workflowId === "wf-3" ? "draft" : "active",
+        createdAt: new Date("2025-03-15"),
+        updatedAt: new Date("2025-04-01"),
+        tenantId: req.tenantId as string,
+        dataSource: {
+          type: "crm_object",
+          objectType: "account"
+        },
+        trigger: {
+          type: "schedule",
+          scheduleFrequency: "daily"
+        },
+        actions: [
+          {
+            type: "set_score",
+            config: { 
+              target: "account.healthScore",
+              formula: "activity_score * 0.6 + support_score * 0.4" 
+            }
+          }
+        ]
+      };
+      
+      res.json(workflow);
+    } catch (error: any) {
+      console.error("Error fetching workflow:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/workflows", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const workflowData = req.body;
+      
+      // Sample response for development
+      const newWorkflow = {
+        id: `wf-${Date.now()}`,
+        ...workflowData,
+        tenantId: req.tenantId as string,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdById: req.user?.id
+      };
+      
+      res.status(201).json(newWorkflow);
+    } catch (error: any) {
+      console.error("Error creating workflow:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/workflows/:id", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const workflowId = req.params.id;
+      const updateData = req.body;
+      
+      // Sample response for development
+      const updatedWorkflow = {
+        id: workflowId,
+        ...updateData,
+        tenantId: req.tenantId as string,
+        updatedAt: new Date(),
+      };
+      
+      res.json(updatedWorkflow);
+    } catch (error: any) {
+      console.error("Error updating workflow:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/workflows/:id", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const workflowId = req.params.id;
+      
+      // In a real implementation, you would delete the workflow from the database
+      
+      res.status(204).end();
+    } catch (error: any) {
+      console.error("Error deleting workflow:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
 
   // ===== Auth Routes =====
   app.post("/api/auth/login", passport.authenticate("local"), (req, res) => {

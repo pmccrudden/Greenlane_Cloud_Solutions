@@ -58,7 +58,6 @@ const navItems: SidebarNavItem[] = [
   { title: "Support Tickets", path: "/support-tickets", icon: <MessageSquare className="w-5 h-5 mr-3" /> },
   { title: "AI Analytics", path: "/ai-analytics", icon: <PieChart className="w-5 h-5 mr-3" /> },
   { title: "Digital Journey", path: "/digital-journey", icon: <Mail className="w-5 h-5 mr-3" /> },
-  { title: "Workflows", path: "/workflows", icon: <Workflow className="w-5 h-5 mr-3" /> },
 ];
 
 const navItemsWithSubs: SidebarNavItemWithSub[] = [
@@ -79,6 +78,7 @@ const navItemsWithSubs: SidebarNavItemWithSub[] = [
       { title: "User Management", path: "/admin/users", icon: <Users className="w-5 h-5 mr-3" /> },
       { title: "Data Management", path: "/admin/data", icon: <Database className="w-5 h-5 mr-3" /> },
       { title: "Module Management", path: "/admin/modules", icon: <Settings className="w-5 h-5 mr-3" /> },
+      { title: "Workflows", path: "/workflows", icon: <Workflow className="w-5 h-5 mr-3" /> },
     ]
   }
 ];
