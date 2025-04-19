@@ -31,6 +31,7 @@ import DataManagement from "@/pages/admin/DataManagement";
 import ModuleManagement from "@/pages/admin/ModuleManagement";
 import Community from "@/pages/community/index";
 import CommunitySettings from "@/pages/community/settings";
+import WorkflowsPage from "@/pages/workflows/index";
 import MainLayout from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "./lib/protected-route";
 import { getTenantFromUrl } from "@/lib/tenant";
@@ -177,6 +178,10 @@ function Router() {
     </MainLayout>
   );
   
+  const WorkflowsWithLayout = () => (
+    <WorkflowsPage />
+  );
+  
   return (
     <Switch>
       <Route path="/signin" component={SignIn} />
@@ -197,6 +202,7 @@ function Router() {
       <ProtectedRoute path="/tasks" component={TasksWithLayout} />
       <ProtectedRoute path="/ai-analytics" component={AIAnalyticsWithLayout} />
       <ProtectedRoute path="/digital-journey" component={DigitalJourneyWithLayout} />
+      <ProtectedRoute path="/workflows" component={WorkflowsWithLayout} />
       <ProtectedRoute path="/reports" component={ReportsWithLayout} />
       <ProtectedRoute path="/dashboards" component={DashboardsWithLayout} />
       <ProtectedRoute path="/admin/integrations" component={AdminIntegrationsWithLayout} />

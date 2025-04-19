@@ -21,7 +21,8 @@ import {
   Database,
   Shield,
   ExternalLink,
-  Globe
+  Globe,
+  Workflow
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -57,6 +58,7 @@ const navItems: SidebarNavItem[] = [
   { title: "Support Tickets", path: "/support-tickets", icon: <MessageSquare className="w-5 h-5 mr-3" /> },
   { title: "AI Analytics", path: "/ai-analytics", icon: <PieChart className="w-5 h-5 mr-3" /> },
   { title: "Digital Journey", path: "/digital-journey", icon: <Mail className="w-5 h-5 mr-3" /> },
+  { title: "Workflows", path: "/workflows", icon: <Workflow className="w-5 h-5 mr-3" /> },
 ];
 
 const navItemsWithSubs: SidebarNavItemWithSub[] = [

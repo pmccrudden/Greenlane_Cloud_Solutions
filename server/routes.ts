@@ -2345,6 +2345,267 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== Workflow/Rules Engine Routes =====
+  
+  // Get all workflows
+  app.get("/api/workflows", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const workflows = await storage.getAllWorkflows(req.tenantId!);
+      res.json(workflows);
+    } catch (error: any) {
+      console.error("Error fetching workflows:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get a single workflow by ID
+  app.get("/api/workflows/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const workflow = await storage.getWorkflow(req.params.id, req.tenantId!);
+      if (!workflow) {
+        return res.status(404).json({ message: "Workflow not found" });
+      }
+      res.json(workflow);
+    } catch (error: any) {
+      console.error(`Error fetching workflow ${req.params.id}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new workflow
+  app.post("/api/workflows", requireTenant, requireAuth, validateBody(createWorkflowSchema), async (req, res) => {
+    try {
+      const workflowData = {
+        ...req.validatedBody,
+        tenantId: req.tenantId!,
+        id: crypto.randomUUID() // Generate a UUID for the workflow
+      };
+      const workflow = await storage.createWorkflow(workflowData);
+      res.status(201).json(workflow);
+    } catch (error: any) {
+      console.error("Error creating workflow:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Update a workflow
+  app.patch("/api/workflows/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const workflow = await storage.updateWorkflow(req.params.id, req.body, req.tenantId!);
+      res.json(workflow);
+    } catch (error: any) {
+      console.error(`Error updating workflow ${req.params.id}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Delete a workflow
+  app.delete("/api/workflows/:id", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const workflow = await storage.deleteWorkflow(req.params.id, req.tenantId!);
+      res.json({ message: "Workflow deleted successfully", workflow });
+    } catch (error: any) {
+      console.error(`Error deleting workflow ${req.params.id}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get data sources for a workflow
+  app.get("/api/workflows/:workflowId/data-sources", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const dataSources = await storage.getDataSources(req.params.workflowId, req.tenantId!);
+      res.json(dataSources);
+    } catch (error: any) {
+      console.error(`Error fetching data sources for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new data source for a workflow
+  app.post("/api/workflows/:workflowId/data-sources", requireTenant, requireAuth, validateBody(insertDataSourceSchema), async (req, res) => {
+    try {
+      const dataSourceData = {
+        ...req.validatedBody,
+        workflowId: req.params.workflowId,
+        tenantId: req.tenantId!,
+        id: crypto.randomUUID() // Generate a UUID for the data source
+      };
+      const dataSource = await storage.createDataSource(dataSourceData);
+      res.status(201).json(dataSource);
+    } catch (error: any) {
+      console.error(`Error creating data source for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get data joins for a workflow
+  app.get("/api/workflows/:workflowId/data-joins", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const dataJoins = await storage.getDataJoins(req.params.workflowId, req.tenantId!);
+      res.json(dataJoins);
+    } catch (error: any) {
+      console.error(`Error fetching data joins for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new data join for a workflow
+  app.post("/api/workflows/:workflowId/data-joins", requireTenant, requireAuth, validateBody(insertDataJoinSchema), async (req, res) => {
+    try {
+      const dataJoinData = {
+        ...req.validatedBody,
+        workflowId: req.params.workflowId,
+        tenantId: req.tenantId!,
+        id: crypto.randomUUID() // Generate a UUID for the data join
+      };
+      const dataJoin = await storage.createDataJoin(dataJoinData);
+      res.status(201).json(dataJoin);
+    } catch (error: any) {
+      console.error(`Error creating data join for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get data transformations for a workflow
+  app.get("/api/workflows/:workflowId/transformations", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const transformations = await storage.getDataTransformations(req.params.workflowId, req.tenantId!);
+      res.json(transformations);
+    } catch (error: any) {
+      console.error(`Error fetching transformations for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new data transformation for a workflow
+  app.post("/api/workflows/:workflowId/transformations", requireTenant, requireAuth, validateBody(insertDataTransformationSchema), async (req, res) => {
+    try {
+      const transformationData = {
+        ...req.validatedBody,
+        workflowId: req.params.workflowId,
+        tenantId: req.tenantId!,
+        id: crypto.randomUUID() // Generate a UUID for the transformation
+      };
+      const transformation = await storage.createDataTransformation(transformationData);
+      res.status(201).json(transformation);
+    } catch (error: any) {
+      console.error(`Error creating transformation for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get rule conditions for a workflow
+  app.get("/api/workflows/:workflowId/rule-conditions", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const conditions = await storage.getRuleConditions(req.params.workflowId, req.tenantId!);
+      res.json(conditions);
+    } catch (error: any) {
+      console.error(`Error fetching rule conditions for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new rule condition for a workflow
+  app.post("/api/workflows/:workflowId/rule-conditions", requireTenant, requireAuth, validateBody(insertRuleConditionSchema), async (req, res) => {
+    try {
+      const conditionData = {
+        ...req.validatedBody,
+        workflowId: req.params.workflowId,
+        tenantId: req.tenantId!,
+        id: crypto.randomUUID() // Generate a UUID for the condition
+      };
+      const condition = await storage.createRuleCondition(conditionData);
+      res.status(201).json(condition);
+    } catch (error: any) {
+      console.error(`Error creating rule condition for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get actions for a workflow
+  app.get("/api/workflows/:workflowId/actions", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const actions = await storage.getActions(req.params.workflowId, req.tenantId!);
+      res.json(actions);
+    } catch (error: any) {
+      console.error(`Error fetching actions for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new action for a workflow
+  app.post("/api/workflows/:workflowId/actions", requireTenant, requireAuth, validateBody(insertActionSchema), async (req, res) => {
+    try {
+      const actionData = {
+        ...req.validatedBody,
+        workflowId: req.params.workflowId,
+        tenantId: req.tenantId!,
+        id: crypto.randomUUID() // Generate a UUID for the action
+      };
+      const action = await storage.createAction(actionData);
+      res.status(201).json(action);
+    } catch (error: any) {
+      console.error(`Error creating action for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get triggers for a workflow
+  app.get("/api/workflows/:workflowId/triggers", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const triggers = await storage.getTriggers(req.params.workflowId, req.tenantId!);
+      res.json(triggers);
+    } catch (error: any) {
+      console.error(`Error fetching triggers for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new trigger for a workflow
+  app.post("/api/workflows/:workflowId/triggers", requireTenant, requireAuth, validateBody(insertTriggerSchema), async (req, res) => {
+    try {
+      const triggerData = {
+        ...req.validatedBody,
+        workflowId: req.params.workflowId,
+        tenantId: req.tenantId!,
+        id: crypto.randomUUID() // Generate a UUID for the trigger
+      };
+      const trigger = await storage.createTrigger(triggerData);
+      res.status(201).json(trigger);
+    } catch (error: any) {
+      console.error(`Error creating trigger for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get execution logs for a workflow
+  app.get("/api/workflows/:workflowId/execution-logs", requireTenant, requireAuth, async (req, res) => {
+    try {
+      const logs = await storage.getExecutionLogs(req.params.workflowId, req.tenantId!);
+      res.json(logs);
+    } catch (error: any) {
+      console.error(`Error fetching execution logs for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new execution log for a workflow
+  app.post("/api/workflows/:workflowId/execution-logs", requireTenant, requireAuth, validateBody(insertExecutionLogSchema), async (req, res) => {
+    try {
+      const logData = {
+        ...req.validatedBody,
+        workflowId: req.params.workflowId,
+        tenantId: req.tenantId!,
+        id: crypto.randomUUID() // Generate a UUID for the log
+      };
+      const log = await storage.createExecutionLog(logData);
+      res.status(201).json(log);
+    } catch (error: any) {
+      console.error(`Error creating execution log for workflow ${req.params.workflowId}:`, error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
