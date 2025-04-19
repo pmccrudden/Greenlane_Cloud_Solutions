@@ -1,3 +1,4 @@
+import React, { lazy, Suspense } from 'react';
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -40,6 +41,9 @@ import { getTenantFromUrl } from "@/lib/tenant";
 
 function Router() {
   const [location] = useLocation();
+  
+  // Import the marketing page
+  const MarketingPage = React.lazy(() => import('./pages/marketing/index'));
   
   // Creating a protected dashboard component with MainLayout
   const DashboardWithLayout = () => (
@@ -196,6 +200,13 @@ function Router() {
     <Switch>
       <Route path="/signin" component={SignIn} />
       <Route path="/signup" component={SignUp} />
+      <Route path="/marketing" component={() => (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>}>
+          <MarketingPage />
+        </Suspense>
+      )} />
       <Route path="/" component={Home} />
       <ProtectedRoute path="/dashboard" component={DashboardWithLayout} />
       <ProtectedRoute path="/accounts/:id" component={AccountDetailWithLayout} />
