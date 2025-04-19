@@ -159,7 +159,56 @@ export default function ModuleManagement() {
   useEffect(() => {
     const communityModule = modules.find((m: Module) => m.id === "community");
     if (communityModule?.settings) {
-      setCommunitySettings(communityModule.settings as CommunityModuleSettings);
+      // Define default settings
+      const defaultSettings = {
+        subdomain: "",
+        customDomain: "",
+        branding: {
+          primaryColor: "#10B981",
+          secondaryColor: "#3B82F6",
+          showGreenLaneBranding: true,
+        },
+        features: {
+          enableForums: true,
+          enableGroups: true,
+          enableDirectMessages: true,
+          enableUserProfiles: true,
+          enableNotifications: true,
+          enableAnalytics: true,
+        },
+        integration: {
+          syncUsers: true,
+          syncCustomerData: true,
+          createSupportTicketsFromPosts: false,
+          notifyOnNegativeSentiment: false,
+        }
+      };
+      
+      // Safely access nested objects with fallbacks
+      const settings = communityModule.settings as Partial<CommunityModuleSettings>;
+      const branding = settings.branding || {};
+      const features = settings.features || {};
+      const integration = settings.integration || {};
+      
+      // Create merged settings object
+      const mergedSettings = {
+        ...defaultSettings,
+        ...settings,
+        branding: {
+          ...defaultSettings.branding,
+          ...branding
+        },
+        features: {
+          ...defaultSettings.features,
+          ...features
+        },
+        integration: {
+          ...defaultSettings.integration,
+          ...integration
+        }
+      };
+      
+      setCommunitySettings(mergedSettings);
     }
   }, [modules]);
 
@@ -177,9 +226,56 @@ export default function ModuleManagement() {
   const handleOpenSettings = (module: Module) => {
     setSelectedModule(module);
     
-    // Initialize settings based on the module
-    if (module.id === "community" && module.settings) {
-      setCommunitySettings(module.settings as CommunityModuleSettings);
+    // Initialize settings based on the module with proper defaults
+    if (module.id === "community") {
+      const defaultSettings = {
+        subdomain: "",
+        customDomain: "",
+        branding: {
+          primaryColor: "#10B981",
+          secondaryColor: "#3B82F6",
+          showGreenLaneBranding: true,
+        },
+        features: {
+          enableForums: true,
+          enableGroups: true,
+          enableDirectMessages: true,
+          enableUserProfiles: true,
+          enableNotifications: true,
+          enableAnalytics: true,
+        },
+        integration: {
+          syncUsers: true,
+          syncCustomerData: true,
+          createSupportTicketsFromPosts: false,
+          notifyOnNegativeSentiment: false,
+        }
+      };
+      
+      if (module.settings) {
+        // Merge with defaults for proper initialization
+        const settings = module.settings as Partial<CommunityModuleSettings>;
+        setCommunitySettings({
+          ...defaultSettings,
+          ...settings,
+          // Ensure nested objects are properly merged
+          branding: {
+            ...defaultSettings.branding,
+            ...(settings.branding || {})
+          },
+          features: {
+            ...defaultSettings.features,
+            ...(settings.features || {})
+          },
+          integration: {
+            ...defaultSettings.integration,
+            ...(settings.integration || {})
+          }
+        });
+      } else {
+        // Use defaults if no settings
+        setCommunitySettings(defaultSettings);
+      }
     }
     
     setIsSettingsOpen(true);
