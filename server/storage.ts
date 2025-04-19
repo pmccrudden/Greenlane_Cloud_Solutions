@@ -2507,6 +2507,395 @@ export class MemStorage implements IStorage {
     this.communityPosts.set(id, newPost);
     return newPost;
   }
+  
+  // Workflow methods
+  async getAllWorkflows(tenantId: string): Promise<Workflow[]> {
+    return Array.from(this.workflows.values()).filter(
+      (workflow) => workflow.tenantId === tenantId
+    );
+  }
+  
+  async getWorkflow(id: string, tenantId: string): Promise<Workflow | undefined> {
+    const workflow = this.workflows.get(id);
+    if (workflow && workflow.tenantId === tenantId) {
+      return workflow;
+    }
+    return undefined;
+  }
+  
+  async createWorkflow(data: InsertWorkflow): Promise<Workflow> {
+    const now = new Date();
+    const workflow: Workflow = {
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.workflows.set(workflow.id, workflow);
+    return workflow;
+  }
+  
+  async updateWorkflow(id: string, data: Partial<Workflow>, tenantId: string): Promise<Workflow> {
+    const workflow = await this.getWorkflow(id, tenantId);
+    if (!workflow) {
+      throw new Error(`Workflow not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedWorkflow: Workflow = {
+      ...workflow,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.workflows.set(id, updatedWorkflow);
+    return updatedWorkflow;
+  }
+  
+  async deleteWorkflow(id: string, tenantId: string): Promise<Workflow> {
+    const workflow = await this.getWorkflow(id, tenantId);
+    if (!workflow) {
+      throw new Error(`Workflow not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    this.workflows.delete(id);
+    return workflow;
+  }
+  
+  // Workflow DataSource methods
+  async getDataSources(workflowId: string, tenantId: string): Promise<DataSource[]> {
+    return Array.from(this.dataSources.values()).filter(
+      (source) => source.workflowId === workflowId && source.tenantId === tenantId
+    );
+  }
+  
+  async getDataSource(id: string, tenantId: string): Promise<DataSource | undefined> {
+    const dataSource = this.dataSources.get(id);
+    if (dataSource && dataSource.tenantId === tenantId) {
+      return dataSource;
+    }
+    return undefined;
+  }
+  
+  async createDataSource(data: InsertDataSource): Promise<DataSource> {
+    const now = new Date();
+    const dataSource: DataSource = {
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.dataSources.set(dataSource.id, dataSource);
+    return dataSource;
+  }
+  
+  async updateDataSource(id: string, data: Partial<DataSource>, tenantId: string): Promise<DataSource> {
+    const dataSource = await this.getDataSource(id, tenantId);
+    if (!dataSource) {
+      throw new Error(`Data source not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedDataSource: DataSource = {
+      ...dataSource,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.dataSources.set(id, updatedDataSource);
+    return updatedDataSource;
+  }
+  
+  async deleteDataSource(id: string, tenantId: string): Promise<DataSource> {
+    const dataSource = await this.getDataSource(id, tenantId);
+    if (!dataSource) {
+      throw new Error(`Data source not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    this.dataSources.delete(id);
+    return dataSource;
+  }
+  
+  // Workflow DataJoin methods
+  async getDataJoins(workflowId: string, tenantId: string): Promise<DataJoin[]> {
+    return Array.from(this.dataJoins.values()).filter(
+      (join) => join.workflowId === workflowId && join.tenantId === tenantId
+    );
+  }
+  
+  async getDataJoin(id: string, tenantId: string): Promise<DataJoin | undefined> {
+    const dataJoin = this.dataJoins.get(id);
+    if (dataJoin && dataJoin.tenantId === tenantId) {
+      return dataJoin;
+    }
+    return undefined;
+  }
+  
+  async createDataJoin(data: InsertDataJoin): Promise<DataJoin> {
+    const now = new Date();
+    const dataJoin: DataJoin = {
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.dataJoins.set(dataJoin.id, dataJoin);
+    return dataJoin;
+  }
+  
+  async updateDataJoin(id: string, data: Partial<DataJoin>, tenantId: string): Promise<DataJoin> {
+    const dataJoin = await this.getDataJoin(id, tenantId);
+    if (!dataJoin) {
+      throw new Error(`Data join not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedDataJoin: DataJoin = {
+      ...dataJoin,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.dataJoins.set(id, updatedDataJoin);
+    return updatedDataJoin;
+  }
+  
+  async deleteDataJoin(id: string, tenantId: string): Promise<DataJoin> {
+    const dataJoin = await this.getDataJoin(id, tenantId);
+    if (!dataJoin) {
+      throw new Error(`Data join not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    this.dataJoins.delete(id);
+    return dataJoin;
+  }
+  
+  // Workflow Transformation methods
+  async getDataTransformations(workflowId: string, tenantId: string): Promise<DataTransformation[]> {
+    return Array.from(this.dataTransformations.values()).filter(
+      (transformation) => transformation.workflowId === workflowId && transformation.tenantId === tenantId
+    );
+  }
+  
+  async getDataTransformation(id: string, tenantId: string): Promise<DataTransformation | undefined> {
+    const dataTransformation = this.dataTransformations.get(id);
+    if (dataTransformation && dataTransformation.tenantId === tenantId) {
+      return dataTransformation;
+    }
+    return undefined;
+  }
+  
+  async createDataTransformation(data: InsertDataTransformation): Promise<DataTransformation> {
+    const now = new Date();
+    const dataTransformation: DataTransformation = {
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.dataTransformations.set(dataTransformation.id, dataTransformation);
+    return dataTransformation;
+  }
+  
+  async updateDataTransformation(id: string, data: Partial<DataTransformation>, tenantId: string): Promise<DataTransformation> {
+    const dataTransformation = await this.getDataTransformation(id, tenantId);
+    if (!dataTransformation) {
+      throw new Error(`Data transformation not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedDataTransformation: DataTransformation = {
+      ...dataTransformation,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.dataTransformations.set(id, updatedDataTransformation);
+    return updatedDataTransformation;
+  }
+  
+  async deleteDataTransformation(id: string, tenantId: string): Promise<DataTransformation> {
+    const dataTransformation = await this.getDataTransformation(id, tenantId);
+    if (!dataTransformation) {
+      throw new Error(`Data transformation not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    this.dataTransformations.delete(id);
+    return dataTransformation;
+  }
+  
+  // Workflow Rule Condition methods
+  async getRuleConditions(workflowId: string, tenantId: string): Promise<RuleCondition[]> {
+    return Array.from(this.ruleConditions.values()).filter(
+      (condition) => condition.workflowId === workflowId && condition.tenantId === tenantId
+    );
+  }
+  
+  async getRuleCondition(id: string, tenantId: string): Promise<RuleCondition | undefined> {
+    const ruleCondition = this.ruleConditions.get(id);
+    if (ruleCondition && ruleCondition.tenantId === tenantId) {
+      return ruleCondition;
+    }
+    return undefined;
+  }
+  
+  async createRuleCondition(data: InsertRuleCondition): Promise<RuleCondition> {
+    const now = new Date();
+    const ruleCondition: RuleCondition = {
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.ruleConditions.set(ruleCondition.id, ruleCondition);
+    return ruleCondition;
+  }
+  
+  async updateRuleCondition(id: string, data: Partial<RuleCondition>, tenantId: string): Promise<RuleCondition> {
+    const ruleCondition = await this.getRuleCondition(id, tenantId);
+    if (!ruleCondition) {
+      throw new Error(`Rule condition not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedRuleCondition: RuleCondition = {
+      ...ruleCondition,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.ruleConditions.set(id, updatedRuleCondition);
+    return updatedRuleCondition;
+  }
+  
+  async deleteRuleCondition(id: string, tenantId: string): Promise<RuleCondition> {
+    const ruleCondition = await this.getRuleCondition(id, tenantId);
+    if (!ruleCondition) {
+      throw new Error(`Rule condition not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    this.ruleConditions.delete(id);
+    return ruleCondition;
+  }
+  
+  // Workflow Action methods
+  async getActions(workflowId: string, tenantId: string): Promise<Action[]> {
+    return Array.from(this.actions.values()).filter(
+      (action) => action.workflowId === workflowId && action.tenantId === tenantId
+    );
+  }
+  
+  async getAction(id: string, tenantId: string): Promise<Action | undefined> {
+    const action = this.actions.get(id);
+    if (action && action.tenantId === tenantId) {
+      return action;
+    }
+    return undefined;
+  }
+  
+  async createAction(data: InsertAction): Promise<Action> {
+    const now = new Date();
+    const action: Action = {
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.actions.set(action.id, action);
+    return action;
+  }
+  
+  async updateAction(id: string, data: Partial<Action>, tenantId: string): Promise<Action> {
+    const action = await this.getAction(id, tenantId);
+    if (!action) {
+      throw new Error(`Action not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedAction: Action = {
+      ...action,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.actions.set(id, updatedAction);
+    return updatedAction;
+  }
+  
+  async deleteAction(id: string, tenantId: string): Promise<Action> {
+    const action = await this.getAction(id, tenantId);
+    if (!action) {
+      throw new Error(`Action not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    this.actions.delete(id);
+    return action;
+  }
+  
+  // Workflow Trigger methods
+  async getTriggers(workflowId: string, tenantId: string): Promise<Trigger[]> {
+    return Array.from(this.triggers.values()).filter(
+      (trigger) => trigger.workflowId === workflowId && trigger.tenantId === tenantId
+    );
+  }
+  
+  async getTrigger(id: string, tenantId: string): Promise<Trigger | undefined> {
+    const trigger = this.triggers.get(id);
+    if (trigger && trigger.tenantId === tenantId) {
+      return trigger;
+    }
+    return undefined;
+  }
+  
+  async createTrigger(data: InsertTrigger): Promise<Trigger> {
+    const now = new Date();
+    const trigger: Trigger = {
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.triggers.set(trigger.id, trigger);
+    return trigger;
+  }
+  
+  async updateTrigger(id: string, data: Partial<Trigger>, tenantId: string): Promise<Trigger> {
+    const trigger = await this.getTrigger(id, tenantId);
+    if (!trigger) {
+      throw new Error(`Trigger not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedTrigger: Trigger = {
+      ...trigger,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.triggers.set(id, updatedTrigger);
+    return updatedTrigger;
+  }
+  
+  async deleteTrigger(id: string, tenantId: string): Promise<Trigger> {
+    const trigger = await this.getTrigger(id, tenantId);
+    if (!trigger) {
+      throw new Error(`Trigger not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    this.triggers.delete(id);
+    return trigger;
+  }
+  
+  // Workflow Execution Log methods
+  async getExecutionLogs(workflowId: string, tenantId: string): Promise<ExecutionLog[]> {
+    return Array.from(this.executionLogs.values()).filter(
+      (log) => log.workflowId === workflowId && log.tenantId === tenantId
+    );
+  }
+  
+  async getExecutionLog(id: string, tenantId: string): Promise<ExecutionLog | undefined> {
+    const executionLog = this.executionLogs.get(id);
+    if (executionLog && executionLog.tenantId === tenantId) {
+      return executionLog;
+    }
+    return undefined;
+  }
+  
+  async createExecutionLog(data: InsertExecutionLog): Promise<ExecutionLog> {
+    const now = new Date();
+    const executionLog: ExecutionLog = {
+      ...data,
+      createdAt: now
+    };
+    this.executionLogs.set(executionLog.id, executionLog);
+    return executionLog;
+  }
 }
 
 // Currently using the DatabaseStorage

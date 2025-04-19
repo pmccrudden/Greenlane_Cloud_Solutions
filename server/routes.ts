@@ -28,6 +28,18 @@ import {
   insertS3BucketSchema,
   insertCsvUploadSchema
 } from "@shared/schema";
+
+import {
+  insertWorkflowSchema,
+  insertDataSourceSchema,
+  insertDataJoinSchema,
+  insertDataTransformationSchema,
+  insertRuleConditionSchema,
+  insertActionSchema,
+  insertTriggerSchema,
+  insertExecutionLogSchema,
+  createWorkflowSchema
+} from "@shared/workflow-schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { 
