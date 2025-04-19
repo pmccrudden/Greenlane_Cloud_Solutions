@@ -1,0 +1,142 @@
+Project: Workflows/Rules Engine for Greenlane Cloud Solutions
+
+Objective: Build a Workflows/Rules Engine as a new section under the Administration Section of Greenlane Cloud Solutions, a CRM, customer success, marketing, analytics, and community platform hosted at greenlanecloudsolutions.com. The engine should allow users to create datasets from various data sources, manipulate the data through joins, transformations, and filtering, and define rules that trigger actions or alerts based on conditions. The feature should mirror the functionality of Gainsight’s Rules Engine (Horizon Experience) while integrating seamlessly with Greenlane’s existing CRM and customer community module.
+
+Requirements:
+
+1. **Tech Stack**:
+   - Backend: Node.js with Express.js for RESTful APIs, MongoDB for data storage (multi-tenant support).
+   - Frontend: React.js with Tailwind CSS for a responsive, modern UI consistent with the existing CRM design (green/white color scheme).
+   - Authentication: Reuse the CRM’s JWT-based SSO for user access.
+   - Hosting: Designed for deployment on a cloud provider (e.g., AWS, Heroku) with subdomain support (e.g., company1.greenlanecloudsolutions.com).
+   - External Dependencies: Use CDN-hosted libraries (e.g., Tailwind CSS, React) to minimize setup.
+
+2. **Section Setup**:
+   - **Location**: Create a new section called "Workflows" under the Administration Section of the CRM.
+   - **UI Layout**:
+     - A main dashboard listing all workflows with columns: Name, Status (Active/Inactive), Last Run, Next Run, Actions (Edit, Delete, Run Now).
+     - A “Create Workflow” button leading to a multi-step form:
+       1. **Dataset Creation**: Select data sources, define joins/transformations, and apply filters.
+       2. **Rules Setup**: Define conditions using a form-based interface.
+       3. **Actions**: Select and configure action types.
+       4. **Scheduling**: Set a schedule or event trigger.
+       5. **Review and Save**: Summary of the workflow with a “Save and Activate” button.
+     - An “Execution History” tab showing logs of past runs (success/failure, affected records, timestamps).
+
+3. **Dataset Creation**:
+   - **Data Sources**:
+     - CRM objects: Accounts, Projects, Deals, Tasks, Health Scores.
+     - Customer Community module: Engagement data (e.g., posts, active users).
+     - External sources: Via API (e.g., Salesforce, Zendesk).
+   - **Joins and Transformations**:
+     - Support joins: Inner, Left, Right (e.g., join Accounts with Community Posts on Account ID).
+     - Transformations: Aggregations (sum, avg, count), string manipulations, date formatting, calculated fields (e.g., “Days Since Last Contact”).
+   - **Filtering**: Conditions like “Revenue > $10,000” or “Last Activity < 30 days ago”.
+   - **Output**: Save the dataset as a temporary MongoDB collection for use in rules.
+
+4. **Rules Setup**:
+   - **Conditions**: Form-based interface to define rules (e.g., “Health Score < 50 AND Last Contact > 60 days”).
+   - **Identifiers**: Use unique keys (e.g., Account ID, Deal ID) to map data to CRM records.
+   - **Scheduling**:
+     - Run on a schedule (hourly, daily, weekly, monthly, specific time based also).
+     - Event-based triggers (e.g., new community post, deal status change).
+   - **UI**: Drag-and-drop or form-based condition builder with AND/OR logic.
+
+5. **Action Types**:
+   Implement the following actions (inspired by Gainsight’s Rules Engine):
+   - **Load to Object**: Write to CRM objects (e.g., update Account Health Score).
+   - **Load to Relationship**: Update relationship records.
+   - **Load to Company**: Update company data (e.g., revenue).
+   - **Load to Usage Data**: Write to usage data tables.
+   - **Load to CTA**: Create tasks or alerts (e.g., assign a task to a CSM).
+   - **Load to Timeline**: Add a timeline entry.
+   - **Load to People**: Update user records.
+   - **Load to Feature**: Update feature usage data.
+   - **Load to Surveys**: Trigger a survey.
+   - **Load to Assets**: Update asset records.
+   - **Load to Success Plan**: Update success plans.
+   - **Load to SFDC Object**: Write to Salesforce objects (mock API for now).
+   - **Load to MDA Object**: Write to custom CRM objects.
+   - **Send Email**: Send a notification email.
+   - **Set Score**: Update health scores.
+   - **Set Score 2.0**: Advanced scoring with weighted measures.
+   - **Call an External API**: Trigger an API call (mock endpoint for now).
+   - **Create Zendesk Ticket**: Create a ticket (mock API for now).
+   - **Load to Journey Orchestrator**: Trigger a marketing campaign.
+   - **Load to Program**: Update program records.
+   - **Load to Gainsight Task**: Create a task (use Greenlane’s task object).
+
+   **Action Configuration**:
+   - Each action should allow mapping dataset fields to target object fields (e.g., map “Dataset.Revenue” to “Account.Revenue”).
+   - Support conditional actions (e.g., “If Health Score < 50, then create a task”).
+
+6. **Execution and Monitoring**:
+   - **Execution Engine**:
+     - Process datasets in batches to handle large volumes (e.g., 10,000 records).
+     - Use MongoDB indexing for fast queries.
+   - **Logs**:
+     - Store execution history in MongoDB (e.g., collection `workflow_logs`).
+     - Log success/failure, affected records, and errors.
+   - **Error Handling**:
+     - Notify users of failures via email or in-app notification.
+     - Allow retry for failed runs.
+   - **UI**: Display logs in the Execution History tab with filters (e.g., by date, status).
+
+7. **Integration with CRM and Community Module**:
+   - **Data Sync**:
+     - Pull data from CRM objects and community module via internal APIs.
+     - Write data back to CRM objects and external systems (mock external APIs for now).
+   - **SSO and Permissions**:
+     - Restrict access to admin users (check role in JWT token).
+   - **APIs**:
+     - Expose an API to trigger workflows programmatically (e.g., `POST /api/workflows/run/:workflowId`).
+   - **Community Module**:
+     - Allow workflows to use community data (e.g., “If Community Posts < 5, create a task”).
+
+8. **Security**:
+   - Validate all inputs to prevent SQL injection or XSS.
+   - Ensure GDPR compliance for data handling (e.g., log data access).
+   - Use HTTPS for all API calls.
+   - Implement rate-limiting on API endpoints.
+
+9. **Scalability**:
+   - Use MongoDB’s multi-tenant schema (separate collections per tenant).
+   - Optimize for large datasets with batch processing and caching (e.g., Redis for temporary datasets).
+   - Support concurrent workflow executions with a job queue (e.g., Bull.js).
+
+10. **Deliverables**:
+    - A working prototype on Replit with a sample workflow running in the CRM.
+    - Backend: Express.js server with APIs for dataset creation, rule execution, and action handling.
+    - Frontend: React app with Tailwind CSS, including the Workflows section (dashboard, create workflow form, execution history).
+    - Integration Docs: A README detailing how to integrate with CRM objects and the community module.
+    - Sample Workflow: Create a sample workflow (e.g., “If Account Health Score < 50, create a task for the CSM”).
+    - Setup Script: Initialize MongoDB with sample data (e.g., accounts, community posts).
+
+11. **Constraints**:
+    - Ensure UI consistency with the existing CRM (green/white color scheme, Tailwind CSS).
+    - Complete a functional MVP within 3 weeks, focusing on dataset creation, rules, and core actions (Load to Object, Send Email, Set Score).
+    - Optimize for performance with large datasets (e.g., 10,000+ records).
+
+12. **Testing**:
+    - Unit tests for backend APIs using Jest (e.g., test dataset creation, rule execution).
+    - Frontend component tests using React Testing Library.
+    - Manual testing guide for creating and running a workflow.
+
+13. **Bonus Features** (if time permits):
+    - Drag-and-drop condition builder for rules.
+    - Real-time execution monitoring (e.g., progress bar for running workflows).
+    - Export execution logs as CSV.
+
+Prompt Deliverables:
+- Fork this Replit project and implement the Workflows/Rules Engine.
+- Provide a live demo link (Replit’s preview or deployed URL).
+- Include a README with setup instructions, API documentation, and integration steps.
+- Ensure the code is modular and commented for easy maintenance.
+
+Context:
+- Greenlane Cloud Solutions is a SaaS CRM platform with clients managing their own tenants (subdomains).
+- The Workflows feature should compete with Gainsight’s Rules Engine, focusing on ease of use, flexibility, and integration.
+- The CRM includes a customer community module, and workflows should leverage community data (e.g., engagement metrics).
+- Competitors like Gainsight and Salesforce offer similar features, so prioritize usability and performance to stand out.
+
+Start by setting up the Express.js server and MongoDB schema for workflows, datasets, and execution logs. Then build the React frontend for the Workflows section. Implement dataset creation and core actions first, then add scheduling and monitoring. Test thoroughly with sample data before submitting.

@@ -22,6 +22,18 @@ import {
   communityForums, CommunityForum, InsertCommunityForum, 
   communityGroups, CommunityGroup, InsertCommunityGroup
 } from "@shared/schema";
+
+// Import workflow schemas
+import {
+  workflow, Workflow, InsertWorkflow,
+  dataSource, DataSource, InsertDataSource,
+  dataJoin, DataJoin, InsertDataJoin,
+  dataTransformation, DataTransformation, InsertDataTransformation,
+  ruleCondition, RuleCondition, InsertRuleCondition,
+  action, Action, InsertAction,
+  trigger, Trigger, InsertTrigger,
+  executionLog, ExecutionLog, InsertExecutionLog
+} from "@shared/workflow-schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 import session from "express-session";
