@@ -1026,6 +1026,8 @@ export class MemStorage implements IStorage {
   private accountTasks: Map<number, AccountTask>;
   private s3Buckets: Map<number, S3Bucket>;
   private csvUploads: Map<number, CsvUpload>;
+  private modules: Map<string, Module>;
+  private communityPosts: Map<number, CommunityPost>;
   
   currentUserId: number;
   currentAccountId: number;
@@ -1056,6 +1058,8 @@ export class MemStorage implements IStorage {
     this.accountTasks = new Map();
     this.s3Buckets = new Map();
     this.csvUploads = new Map();
+    this.modules = new Map();
+    this.communityPosts = new Map();
     
     this.currentUserId = 1;
     this.currentAccountId = 1;
@@ -1886,6 +1890,66 @@ export class MemStorage implements IStorage {
     
     this.csvUploads.set(id, updatedUpload);
     return updatedUpload;
+  }
+  
+  // Module methods
+  async getModules(tenantId: string): Promise<Module[]> {
+    return Array.from(this.modules.values()).filter(
+      (module) => module.tenantId === tenantId
+    );
+  }
+
+  async getModule(id: string, tenantId: string): Promise<Module | undefined> {
+    const module = this.modules.get(id);
+    if (module && module.tenantId === tenantId) {
+      return module;
+    }
+    return undefined;
+  }
+
+  async updateModule(id: string, data: Partial<Module>, tenantId: string): Promise<Module> {
+    const module = await this.getModule(id, tenantId);
+    if (!module) {
+      throw new Error(`Module not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    const updatedModule: Module = {
+      ...module,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.modules.set(id, updatedModule);
+    return updatedModule;
+  }
+  
+  // Community methods
+  async getCommunityPosts(tenantId: string, options: { forumId?: number, limit: number, offset: number }): Promise<CommunityPost[]> {
+    let posts = Array.from(this.communityPosts.values()).filter(
+      (post) => post.tenantId === tenantId
+    );
+    
+    if (options.forumId) {
+      posts = posts.filter(post => post.forumId === options.forumId);
+    }
+    
+    // Apply pagination
+    const start = options.offset;
+    const end = start + options.limit;
+    return posts.slice(start, end);
+  }
+
+  async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
+    const id = 1; // Simple ID generation - should auto-increment in real implementation
+    const now = new Date();
+    const newPost: CommunityPost = {
+      ...post,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.communityPosts.set(id, newPost);
+    return newPost;
   }
 }
 
