@@ -222,7 +222,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/modules", requireAuth, requireTenant, async (req: Request, res: Response) => {
     try {
       const modules = await storage.getModules(req.tenantId!);
-      res.json(modules);
+      // Add status field to each module for client-side compatibility
+      const modulesWithStatus = modules.map(module => ({
+        ...module,
+        status: module.enabled ? 'active' : 'inactive'
+      }));
+      res.json(modulesWithStatus);
     } catch (error) {
       console.error("Error fetching modules:", error);
       res.status(500).json({ message: "Error fetching modules" });
@@ -235,7 +240,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!module) {
         return res.status(404).json({ message: "Module not found" });
       }
-      res.json(module);
+      // Add status field for client-side compatibility
+      const moduleWithStatus = {
+        ...module,
+        status: module.enabled ? 'active' : 'inactive'
+      };
+      res.json(moduleWithStatus);
     } catch (error) {
       console.error(`Error fetching module ${req.params.id}:`, error);
       res.status(500).json({ message: "Error fetching module" });
@@ -252,7 +262,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const updatedModule = await storage.updateModule(moduleId, req.body, req.tenantId!);
-      res.json(updatedModule);
+      
+      // Add status field for client-side compatibility
+      const moduleWithStatus = {
+        ...updatedModule,
+        status: updatedModule.enabled ? 'active' : 'inactive'
+      };
+      
+      res.json(moduleWithStatus);
     } catch (error) {
       console.error(`Error updating module ${req.params.id}:`, error);
       res.status(500).json({ message: "Error updating module" });
