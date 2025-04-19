@@ -149,7 +149,87 @@ declare global {
   }
 }
 
+// Admin role check middleware
+const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+  if (req.isAuthenticated() && req.user && (req.user as User).role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ message: "Forbidden: Admin role required" });
+  }
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Module management endpoints
+  app.get("/api/modules", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const modules = await storage.getModules(req.tenantId!);
+      res.json(modules);
+    } catch (error) {
+      console.error("Error fetching modules:", error);
+      res.status(500).json({ message: "Error fetching modules" });
+    }
+  });
+
+  app.get("/api/modules/:id", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const module = await storage.getModule(req.params.id, req.tenantId!);
+      if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+      }
+      res.json(module);
+    } catch (error) {
+      console.error(`Error fetching module ${req.params.id}:`, error);
+      res.status(500).json({ message: "Error fetching module" });
+    }
+  });
+
+  app.patch("/api/modules/:id", requireAuth, requireTenant, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const moduleId = req.params.id;
+      const module = await storage.getModule(moduleId, req.tenantId!);
+      
+      if (!module) {
+        return res.status(404).json({ message: "Module not found" });
+      }
+      
+      const updatedModule = await storage.updateModule(moduleId, req.body, req.tenantId!);
+      res.json(updatedModule);
+    } catch (error) {
+      console.error(`Error updating module ${req.params.id}:`, error);
+      res.status(500).json({ message: "Error updating module" });
+    }
+  });
+
+  // Community-specific endpoints
+  app.get("/api/community/posts", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const { forumId, limit = 20, offset = 0 } = req.query;
+      const posts = await storage.getCommunityPosts(req.tenantId!, {
+        forumId: forumId ? Number(forumId) : undefined,
+        limit: Number(limit),
+        offset: Number(offset),
+      });
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching community posts:", error);
+      res.status(500).json({ message: "Error fetching community posts" });
+    }
+  });
+  
+  app.post("/api/community/posts", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const post = {
+        ...req.body,
+        authorId: (req.user as User).id,
+        tenantId: req.tenantId!,
+      };
+      const newPost = await storage.createCommunityPost(post);
+      res.status(201).json(newPost);
+    } catch (error) {
+      console.error("Error creating community post:", error);
+      res.status(500).json({ message: "Error creating community post" });
+    }
+  });
   // Setup session and authentication
   app.use(
     session({
@@ -1388,18 +1468,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // User Management endpoints (admin only)
   
-  // Check if current user is an admin
-  const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-    
-    if ((req.user as any).role !== "admin") {
-      return res.status(403).json({ message: "Admin access required" });
-    }
-    
-    next();
-  };
+  // Use the globally defined requireAdmin middleware here
   
   // Data Management API
   app.get("/api/admin/tables", requireAdmin, async (req, res) => {

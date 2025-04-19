@@ -617,6 +617,127 @@ export const csvUploadsRelations = relations(csvUploads, ({ one }) => ({
 export type InsertCsvUpload = z.infer<typeof insertCsvUploadSchema>;
 export type CsvUpload = typeof csvUploads.$inferSelect;
 
+// Modules table
+export const modules = pgTable("modules", {
+  id: text("id").primaryKey(), // community, knowledge-base, api-gateway, etc.
+  name: text("name").notNull(),
+  description: text("description"),
+  enabled: boolean("enabled").default(false).notNull(),
+  version: text("version").notNull(),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+  settings: jsonb("settings"), // JSON structure for module settings
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertModuleSchema = createInsertSchema(modules)
+  .omit({ createdAt: true, updatedAt: true });
+
+export const modulesRelations = relations(modules, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [modules.tenantId],
+    references: [tenants.id]
+  })
+}));
+
+// Community Posts table
+export const communityPosts = pgTable("community_posts", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  authorId: integer("author_id").notNull().references(() => users.id),
+  forumId: integer("forum_id"),
+  parentPostId: integer("parent_post_id"),
+  status: text("status").default("published").notNull(), // published, draft, archived, hidden
+  pinned: boolean("pinned").default(false).notNull(),
+  sentiment: text("sentiment"), // positive, negative, neutral (from AI analysis)
+  tags: text("tags").array(), // Array of tags/topics
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCommunityPostSchema = createInsertSchema(communityPosts)
+  .omit({ id: true, createdAt: true, updatedAt: true, sentiment: true });
+
+export const communityPostsRelations = relations(communityPosts, ({ one, many }) => ({
+  author: one(users, {
+    fields: [communityPosts.authorId],
+    references: [users.id]
+  }),
+  tenant: one(tenants, {
+    fields: [communityPosts.tenantId],
+    references: [tenants.id]
+  }),
+  parentPost: one(communityPosts, {
+    fields: [communityPosts.parentPostId],
+    references: [communityPosts.id]
+  }),
+  replies: many(communityPosts, { relationName: "parentPost" })
+}));
+
+// Community Forums table
+export const communityForums = pgTable("community_forums", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  slug: text("slug").notNull(),
+  order: integer("order").default(0),
+  groupId: integer("group_id"),
+  isPrivate: boolean("is_private").default(false).notNull(),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCommunityForumSchema = createInsertSchema(communityForums)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export const communityForumsRelations = relations(communityForums, ({ one, many }) => ({
+  tenant: one(tenants, {
+    fields: [communityForums.tenantId],
+    references: [tenants.id]
+  }),
+  posts: many(communityPosts)
+}));
+
+// Community Groups table
+export const communityGroups = pgTable("community_groups", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  slug: text("slug").notNull(),
+  isPrivate: boolean("is_private").default(false).notNull(),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCommunityGroupSchema = createInsertSchema(communityGroups)
+  .omit({ id: true, createdAt: true, updatedAt: true });
+
+export const communityGroupsRelations = relations(communityGroups, ({ one, many }) => ({
+  tenant: one(tenants, {
+    fields: [communityGroups.tenantId],
+    references: [tenants.id]
+  }),
+  forums: many(communityForums)
+}));
+
+// Export types for community modules
+export type InsertModule = z.infer<typeof insertModuleSchema>;
+export type Module = typeof modules.$inferSelect;
+
+export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
+export type CommunityPost = typeof communityPosts.$inferSelect;
+
+export type InsertCommunityForum = z.infer<typeof insertCommunityForumSchema>;
+export type CommunityForum = typeof communityForums.$inferSelect;
+
+export type InsertCommunityGroup = z.infer<typeof insertCommunityGroupSchema>;
+export type CommunityGroup = typeof communityGroups.$inferSelect;
+
 export const tenantsRelations = relations(tenants, ({ many }) => ({
   users: many(users),
   accounts: many(accounts),
@@ -632,5 +753,9 @@ export const tenantsRelations = relations(tenants, ({ many }) => ({
   userDashboardPreferences: many(userDashboardPreferences),
   savedReportFilters: many(savedReportFilters),
   s3Buckets: many(s3Buckets),
-  csvUploads: many(csvUploads)
+  csvUploads: many(csvUploads),
+  modules: many(modules),
+  communityPosts: many(communityPosts),
+  communityForums: many(communityForums),
+  communityGroups: many(communityGroups)
 }));

@@ -329,26 +329,7 @@ export default function ModuleManagement() {
               <TabsContent value="general" className="space-y-4 py-4">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="subdomain">Community Subdomain</Label>
-                    <div className="flex items-center mt-1">
-                      <Input
-                        id="subdomain"
-                        value={communitySettings.subdomain}
-                        onChange={(e) => handleInputChange("subdomain", "subdomain", e.target.value)}
-                        placeholder="your-community"
-                        className="rounded-r-none"
-                      />
-                      <span className="bg-slate-100 px-3 py-2 border border-l-0 rounded-r-md text-slate-500">
-                        .greenlanecloudsolutions.com
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-500 mt-1">
-                      This will be the URL where your community is accessible
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="customDomain">Custom Domain (Optional)</Label>
+                    <Label htmlFor="customDomain">Custom Domain</Label>
                     <Input
                       id="customDomain"
                       value={communitySettings.customDomain || ""}
@@ -356,8 +337,78 @@ export default function ModuleManagement() {
                       placeholder="community.yourcompany.com"
                     />
                     <p className="text-xs text-slate-500 mt-1">
-                      If you want to use your own domain, enter it here. You'll need to set up DNS records.
+                      Enter your custom domain where the community will be accessible
                     </p>
+                  </div>
+                  
+                  <div className="bg-amber-50 border border-amber-200 p-4 rounded-md">
+                    <h4 className="text-amber-800 font-medium flex items-center">
+                      <Info className="w-5 h-5 mr-2" />
+                      Domain Setup Guide
+                    </h4>
+                    <div className="mt-3 space-y-4">
+                      <div>
+                        <h5 className="font-medium text-sm text-amber-800">Step 1: Register Your Domain</h5>
+                        <p className="text-xs text-amber-700 mt-1">
+                          If you don't already have a domain, register one through a domain registrar like
+                          Namecheap, GoDaddy, or Google Domains.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-medium text-sm text-amber-800">Step 2: Configure DNS Settings</h5>
+                        <p className="text-xs text-amber-700 mt-1">
+                          Log in to your domain registrar's dashboard and access the DNS settings for your domain.
+                          You'll need to add the following records:
+                        </p>
+                        <div className="mt-2 bg-white p-3 rounded border border-amber-200 text-xs">
+                          <div className="grid grid-cols-3 gap-2 font-medium text-amber-800 pb-1 border-b border-amber-100">
+                            <div>Record Type</div>
+                            <div>Host/Name</div>
+                            <div>Value/Points To</div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 pt-2 text-amber-700">
+                            <div>CNAME</div>
+                            <div>community</div>
+                            <div>community.greenlanecloudsolutions.com</div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 pt-2 text-amber-700">
+                            <div>A</div>
+                            <div>community</div>
+                            <div>18.205.24.136</div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 pt-2 pb-1 text-amber-700">
+                            <div>TXT</div>
+                            <div>_greenlaneverify.community</div>
+                            <div>verify=tenant-{selectedModule?.id}</div>
+                          </div>
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">
+                          Note: DNS changes can take up to 24-48 hours to propagate globally, though they often take effect much sooner.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-medium text-sm text-amber-800">Step 3: SSL Certificate Setup</h5>
+                        <p className="text-xs text-amber-700 mt-1">
+                          SSL certificates are provisioned automatically once your DNS settings are verified. This typically takes 15-30 minutes after DNS propagation.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-medium text-sm text-amber-800">Step 4: Domain Verification</h5>
+                        <p className="text-xs text-amber-700 mt-1">
+                          After saving your settings, our system will automatically verify your domain configuration. You can check the status in the "Domains" section.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-medium text-sm text-amber-800">Step 5: Test Your Community</h5>
+                        <p className="text-xs text-amber-700 mt-1">
+                          Once verification is complete, visit your community domain to ensure everything is working properly. If you encounter any issues, please contact our support team.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="bg-blue-50 p-4 rounded-md">

@@ -16,7 +16,11 @@ import {
   userDashboardPreferences, UserDashboardPreference, InsertUserDashboardPreference,
   savedReportFilters, SavedReportFilter, InsertSavedReportFilter,
   s3Buckets, S3Bucket, InsertS3Bucket,
-  csvUploads, CsvUpload, InsertCsvUpload
+  csvUploads, CsvUpload, InsertCsvUpload,
+  modules, Module, InsertModule,
+  communityPosts, CommunityPost, InsertCommunityPost,
+  communityForums, CommunityForum, InsertCommunityForum, 
+  communityGroups, CommunityGroup, InsertCommunityGroup
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -142,6 +146,15 @@ export interface IStorage {
   getCsvUpload(id: number, tenantId: string): Promise<CsvUpload | undefined>;
   createCsvUpload(upload: InsertCsvUpload): Promise<CsvUpload>;
   updateCsvUploadStatus(id: number, status: string, data: Partial<CsvUpload>, tenantId: string): Promise<CsvUpload>;
+  
+  // Module methods
+  getModules(tenantId: string): Promise<Module[]>;
+  getModule(id: string, tenantId: string): Promise<Module | undefined>;
+  updateModule(id: string, data: Partial<Module>, tenantId: string): Promise<Module>;
+  
+  // Community methods
+  getCommunityPosts(tenantId: string, options: { forumId?: number, limit: number, offset: number }): Promise<CommunityPost[]>;
+  createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost>;
   
   // Session store
   sessionStore: session.Store;
@@ -930,6 +943,72 @@ export class DatabaseStorage implements IStorage {
     }
     
     return upload;
+  }
+  
+  // Module methods
+  async getModules(tenantId: string): Promise<Module[]> {
+    return db.select().from(modules).where(eq(modules.tenantId, tenantId));
+  }
+
+  async getModule(id: string, tenantId: string): Promise<Module | undefined> {
+    const [module] = await db
+      .select()
+      .from(modules)
+      .where(and(
+        eq(modules.id, id),
+        eq(modules.tenantId, tenantId)
+      ));
+    
+    return module;
+  }
+
+  async updateModule(id: string, data: Partial<Module>, tenantId: string): Promise<Module> {
+    const [module] = await db
+      .update(modules)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(modules.id, id),
+        eq(modules.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!module) {
+      throw new Error(`Module not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return module;
+  }
+  
+  // Community methods
+  async getCommunityPosts(tenantId: string, options: { forumId?: number, limit: number, offset: number }): Promise<CommunityPost[]> {
+    let query = db
+      .select()
+      .from(communityPosts)
+      .where(eq(communityPosts.tenantId, tenantId))
+      .limit(options.limit)
+      .offset(options.offset);
+    
+    if (options.forumId) {
+      query = query.where(eq(communityPosts.forumId, options.forumId));
+    }
+    
+    return query;
+  }
+
+  async createCommunityPost(post: InsertCommunityPost): Promise<CommunityPost> {
+    const [newPost] = await db
+      .insert(communityPosts)
+      .values(post)
+      .returning();
+    
+    if (!newPost) {
+      throw new Error("Failed to create community post");
+    }
+    
+    return newPost;
   }
 }
 
