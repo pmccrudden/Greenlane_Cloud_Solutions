@@ -159,6 +159,65 @@ const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup session and authentication first
+  app.use(
+    session({
+      secret: SECRET_KEY,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      },
+    })
+  );
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Configure passport
+  passport.use(
+    new LocalStrategy(async (username, password, done) => {
+      try {
+        const user = await storage.getUserByUsername(username);
+        if (!user) {
+          return done(null, false, { message: "Incorrect username" });
+        }
+
+        // Check if the password is already hashed (starts with $2b$) - bcrypt
+        if (user.password.startsWith('$2b$')) {
+          // Let's create a simple function to check if passwords match
+          // since we're using bcrypt
+          console.log("Password is bcrypt hashed, attempting to compare");
+          return done(null, user); // For now, accept any login
+        } else {
+          // Plain text comparison
+          if (user.password !== password) {
+            return done(null, false, { message: "Incorrect password" });
+          }
+        }
+
+        return done(null, user);
+      } catch (error) {
+        console.error("Authentication error:", error);
+        return done(error);
+      }
+    })
+  );
+
+  passport.serializeUser((user: any, done) => {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(async (id: number, done) => {
+    try {
+      const user = await storage.getUser(id);
+      done(null, user);
+    } catch (error) {
+      done(error);
+    }
+  });
+  
   // Module management endpoints
   app.get("/api/modules", requireAuth, requireTenant, async (req: Request, res: Response) => {
     try {
@@ -228,64 +287,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating community post:", error);
       res.status(500).json({ message: "Error creating community post" });
-    }
-  });
-  // Setup session and authentication
-  app.use(
-    session({
-      secret: SECRET_KEY,
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      },
-    })
-  );
-
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  // Configure passport
-  passport.use(
-    new LocalStrategy(async (username, password, done) => {
-      try {
-        const user = await storage.getUserByUsername(username);
-        if (!user) {
-          return done(null, false, { message: "Incorrect username" });
-        }
-
-        // Check if the password is already hashed (starts with $2b$) - bcrypt
-        if (user.password.startsWith('$2b$')) {
-          // Let's create a simple function to check if passwords match
-          // since we're using bcrypt
-          console.log("Password is bcrypt hashed, attempting to compare");
-          return done(null, user); // For now, accept any login
-        } else {
-          // Plain text comparison
-          if (user.password !== password) {
-            return done(null, false, { message: "Incorrect password" });
-          }
-        }
-
-        return done(null, user);
-      } catch (error) {
-        console.error("Authentication error:", error);
-        return done(error);
-      }
-    })
-  );
-
-  passport.serializeUser((user: any, done) => {
-    done(null, user.id);
-  });
-
-  passport.deserializeUser(async (id: number, done) => {
-    try {
-      const user = await storage.getUser(id);
-      done(null, user);
-    } catch (error) {
-      done(error);
     }
   });
 
