@@ -39,6 +39,7 @@ type Module = {
   version: string;
   lastUpdated?: string;
   settings?: Record<string, any>;
+  tenantId?: string; // Add tenantId to Module type
 };
 
 // Define the community setting types
@@ -196,6 +197,14 @@ export default function ModuleManagement() {
     }
   };
   
+  // Extract subdomain from tenant ID
+  const extractSubdomainFromTenant = () => {
+    // Get the tenant name from the selected module or use a generic default
+    const tenant = selectedModule?.tenantId || "572c77d7-e838-44ca-8adb-7ddef5f199bb";
+    // Create a readable subdomain from the first 8 characters of the tenant ID
+    return `community-${tenant.substring(0, 8)}`;
+  };
+
   // Function to check DNS settings
   const handleVerifyDNS = () => {
     if (!communitySettings.customDomain) {
@@ -217,7 +226,7 @@ export default function ModuleManagement() {
       if (success) {
         setDnsVerification({ 
           status: 'success', 
-          message: `DNS verification successful for ${communitySettings.customDomain}!` 
+          message: `DNS verification successful for ${communitySettings.customDomain}! SSL certificate will be provisioned automatically.` 
         });
       } else {
         setDnsVerification({ 
@@ -275,7 +284,7 @@ export default function ModuleManagement() {
 
       {/* Module List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {modules.map((module) => (
+        {modules.map((module: Module) => (
           <Card key={module.id} className="h-full">
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -346,37 +355,101 @@ export default function ModuleManagement() {
               <TabsContent value="general" className="space-y-4 py-4">
                 <div className="space-y-4">
                   <div className="bg-white border rounded-md p-4 shadow-sm">
-                    <h3 className="font-semibold text-lg mb-3">Domain Setup</h3>
+                    <h3 className="font-semibold text-lg mb-2">Domain Setup</h3>
+                    <div className="mb-4 bg-blue-50 p-3 rounded-md border border-blue-100">
+                      <h4 className="font-medium text-blue-800 flex items-center gap-1.5">
+                        <Info className="h-4 w-4" />
+                        Setup Progress
+                      </h4>
+                      <div className="mt-2 w-full bg-blue-100 h-2 rounded-full overflow-hidden">
+                        <div 
+                          className="bg-blue-500 h-full rounded-full" 
+                          style={{ 
+                            width: dnsVerification.status === 'success' ? '100%' : 
+                                  communitySettings.customDomain ? '50%' : '25%' 
+                          }}
+                        />
+                      </div>
+                      <p className="text-xs mt-1 text-blue-700">
+                        {dnsVerification.status === 'success' 
+                          ? 'Complete! Your community is ready.' 
+                          : communitySettings.customDomain 
+                            ? 'Step 2: Verify your domain DNS settings' 
+                            : 'Step 1: Configure your community domain'}
+                      </p>
+                    </div>
                     
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="customDomain">Custom Domain</Label>
-                        <div className="flex mt-1">
-                          <Input
-                            id="customDomain"
-                            value={communitySettings.customDomain || ""}
-                            onChange={(e) => handleInputChange("customDomain", "customDomain", e.target.value)}
-                            placeholder="community.yourcompany.com"
-                            className="rounded-r-none"
+                        <div className="flex items-center justify-between mb-2">
+                          <Label htmlFor="useCustomDomain" className="text-sm font-medium">
+                            Use a Custom Domain?
+                          </Label>
+                          <Switch 
+                            id="useCustomDomain" 
+                            checked={!!communitySettings.customDomain} 
+                            onCheckedChange={(checked) => {
+                              if (!checked) {
+                                handleInputChange("customDomain", "customDomain", "");
+                                setDnsVerification({ status: null });
+                              }
+                            }}
                           />
-                          <Button 
-                            type="button" 
-                            variant="secondary"
-                            className="rounded-l-none flex gap-2 items-center"
-                            onClick={handleVerifyDNS}
-                            disabled={dnsVerification.status === 'verifying' || !communitySettings.customDomain}
-                          >
-                            {dnsVerification.status === 'verifying' ? (
-                              <>
-                                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                                Verifying...
-                              </>
-                            ) : "Verify DNS"}
-                          </Button>
                         </div>
-                        <p className="text-xs text-slate-500 mt-1">
-                          Enter your custom domain where the community will be accessible
-                        </p>
+                        
+                        {!communitySettings.customDomain && (
+                          <div className="p-3 bg-gray-50 rounded-md border border-gray-200 mb-3">
+                            <p className="text-sm text-gray-700">
+                              Your community will be accessible at: <span className="font-medium">{communitySettings.subdomain || extractSubdomainFromTenant()}.greenlanecloudsolutions.com</span> (default)
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              This subdomain is ready to use with no additional setup required. Toggle the switch above to use your own custom domain.
+                            </p>
+                          </div>
+                        )}
+                        
+                        {!!communitySettings.customDomain && (
+                          <>
+                            <Label htmlFor="customDomain">Custom Domain</Label>
+                            <div className="flex mt-1">
+                              <Input
+                                id="customDomain"
+                                value={communitySettings.customDomain || ""}
+                                onChange={(e) => handleInputChange("customDomain", "customDomain", e.target.value)}
+                                placeholder="community.yourcompany.com"
+                                className="rounded-r-none"
+                              />
+                              <Button 
+                                type="button" 
+                                variant="secondary"
+                                className="rounded-l-none flex gap-2 items-center"
+                                onClick={handleVerifyDNS}
+                                disabled={dnsVerification.status === 'verifying' || !communitySettings.customDomain}
+                              >
+                                {dnsVerification.status === 'verifying' ? (
+                                  <>
+                                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                                    Verifying...
+                                  </>
+                                ) : "Verify DNS"}
+                              </Button>
+                            </div>
+                            <div className="mt-2 text-xs text-slate-600 flex items-center gap-1">
+                              <CheckCircle className="h-3.5 w-3.5 text-green-500" />
+                              We'll automatically secure your domain with a free SSL certificate (HTTPS)
+                            </div>
+                            
+                            <div className="mt-4 bg-amber-50 p-3 rounded-md border border-amber-100">
+                              <h4 className="text-sm font-medium text-amber-800">DNS Setup Instructions</h4>
+                              <ol className="mt-2 text-xs text-amber-700 list-decimal list-inside space-y-1">
+                                <li>Log in to your domain registrar (e.g., GoDaddy, Namecheap)</li>
+                                <li>Find the DNS management section</li>
+                                <li>Add a CNAME record pointing your custom domain to <code className="bg-amber-100 px-1 py-0.5 rounded">greenlanecloudsolutions.com</code></li>
+                                <li>Save changes and click "Verify DNS" above (may take 24-48 hours to propagate)</li>
+                              </ol>
+                            </div>
+                          </>
+                        )}
                       </div>
                       
                       {dnsVerification.status && (
