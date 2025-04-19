@@ -265,247 +265,249 @@ export default function WorkflowView() {
           {/* Main content area */}
           <div className="col-span-1 lg:col-span-3">
             <div className="bg-white rounded-lg border shadow-sm">
-              <div className="flex justify-between items-center p-4 border-b">
-                <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="mb-0">
-                    <TabsTrigger value="rules">Rules</TabsTrigger>
-                    <TabsTrigger value="datasets">Datasets</TabsTrigger>
-                    <TabsTrigger value="code">Code View</TabsTrigger>
-                    <TabsTrigger value="execution">Execution History</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-                <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm">
-                    <Play className="mr-2 h-4 w-4" />
-                    Test
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Save className="mr-2 h-4 w-4" />
-                    Save
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="p-4">
-                <TabsContent value="rules" className="mt-0">
-                  <div className="mb-4 flex justify-between items-center">
-                    <h3 className="text-lg font-medium">Rules</h3>
-                    <Button>
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Rule
+              <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+                <div className="flex justify-between items-center p-4 border-b">
+                  <div className="w-full">
+                    <TabsList className="mb-0">
+                      <TabsTrigger value="rules">Rules</TabsTrigger>
+                      <TabsTrigger value="datasets">Datasets</TabsTrigger>
+                      <TabsTrigger value="code">Code View</TabsTrigger>
+                      <TabsTrigger value="execution">Execution History</TabsTrigger>
+                    </TabsList>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="sm">
+                      <Play className="mr-2 h-4 w-4" />
+                      Test
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Save className="mr-2 h-4 w-4" />
+                      Save
                     </Button>
                   </div>
-                  
-                  {rules.length === 0 ? (
-                    <div className="text-center py-12">
-                      <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium mb-2">No Rules Yet</h3>
-                      <p className="text-muted-foreground mb-6">
-                        Rules define when and how your workflow runs
-                      </p>
+                </div>
+                
+                <div className="p-4">
+                  <TabsContent value="rules" className="mt-0">
+                    <div className="mb-4 flex justify-between items-center">
+                      <h3 className="text-lg font-medium">Rules</h3>
                       <Button>
                         <Plus className="mr-2 h-4 w-4" />
-                        Create First Rule
+                        Add Rule
                       </Button>
                     </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {rules.map(rule => (
-                        <Card key={rule.id}>
-                          <CardHeader className="py-3">
+                    
+                    {rules.length === 0 ? (
+                      <div className="text-center py-12">
+                        <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-medium mb-2">No Rules Yet</h3>
+                        <p className="text-muted-foreground mb-6">
+                          Rules define when and how your workflow runs
+                        </p>
+                        <Button>
+                          <Plus className="mr-2 h-4 w-4" />
+                          Create First Rule
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {rules.map(rule => (
+                          <Card key={rule.id}>
+                            <CardHeader className="py-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <CardTitle className="text-md">{rule.name}</CardTitle>
+                                  <Badge variant={rule.enabled ? "outline" : "secondary"} className="ml-2">
+                                    {rule.enabled ? "Enabled" : "Disabled"}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Switch 
+                                    checked={rule.enabled} 
+                                    onCheckedChange={(checked) => handleRuleToggle(rule.id, checked)} 
+                                  />
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="icon">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem>
+                                        <Edit className="mr-2 h-4 w-4" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem>
+                                        <Play className="mr-2 h-4 w-4" />
+                                        Test
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem className="text-destructive">
+                                        <Trash className="mr-2 h-4 w-4" />
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
+                              </div>
+                              {rule.description && (
+                                <CardDescription>{rule.description}</CardDescription>
+                              )}
+                            </CardHeader>
+                            <CardContent className="pb-3">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="font-medium mb-2 text-sm">Conditions</h4>
+                                  <div className="space-y-2">
+                                    {rule.conditions.map(condition => (
+                                      <div key={condition.id} className="text-sm bg-muted p-2 rounded-md">
+                                        <span className="font-medium">{condition.field}</span>
+                                        <span className="mx-1">{condition.operator}</span>
+                                        <span>{condition.value.toString()}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div>
+                                  <h4 className="font-medium mb-2 text-sm">Actions</h4>
+                                  <div className="space-y-2">
+                                    {rule.actions.map(action => (
+                                      <div key={action.id} className="text-sm bg-muted p-2 rounded-md">
+                                        <span className="font-medium capitalize">{action.type.replace("_", " ")}</span>
+                                        <span className="text-xs text-muted-foreground block">
+                                          {Object.entries(action.settings).map(([key, value]) => (
+                                            <span key={key} className="mr-2">
+                                              {key}: {value as string}
+                                            </span>
+                                          ))}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="datasets" className="mt-0">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-medium mb-2">Datasets</h3>
+                      <p className="text-muted-foreground">
+                        Configure the data sources your workflow can access and manipulate
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {datasetOptions.map(dataset => (
+                        <Card key={dataset.value} className="overflow-hidden">
+                          <CardHeader className="pb-2">
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <CardTitle className="text-md">{rule.name}</CardTitle>
-                                <Badge variant={rule.enabled ? "outline" : "secondary"} className="ml-2">
-                                  {rule.enabled ? "Enabled" : "Disabled"}
-                                </Badge>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Switch 
-                                  checked={rule.enabled} 
-                                  onCheckedChange={(checked) => handleRuleToggle(rule.id, checked)} 
-                                />
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                      <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem>
-                                      <Edit className="mr-2 h-4 w-4" />
-                                      Edit
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                      <Play className="mr-2 h-4 w-4" />
-                                      Test
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem className="text-destructive">
-                                      <Trash className="mr-2 h-4 w-4" />
-                                      Delete
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
+                              <CardTitle className="text-md flex items-center gap-2">
+                                <Database className="h-4 w-4" />
+                                {dataset.label}
+                              </CardTitle>
+                              <Badge variant="outline" className="ml-auto">
+                                {dataset.fields.length} fields
+                              </Badge>
                             </div>
-                            {rule.description && (
-                              <CardDescription>{rule.description}</CardDescription>
-                            )}
                           </CardHeader>
-                          <CardContent className="pb-3">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <div>
-                                <h4 className="font-medium mb-2 text-sm">Conditions</h4>
-                                <div className="space-y-2">
-                                  {rule.conditions.map(condition => (
-                                    <div key={condition.id} className="text-sm bg-muted p-2 rounded-md">
-                                      <span className="font-medium">{condition.field}</span>
-                                      <span className="mx-1">{condition.operator}</span>
-                                      <span>{condition.value.toString()}</span>
-                                    </div>
-                                  ))}
+                          <CardContent className="text-sm">
+                            <div className="space-y-1">
+                              {dataset.fields.slice(0, 3).map(field => (
+                                <div key={field.name} className="flex justify-between">
+                                  <span>{field.label}</span>
+                                  <span className="text-muted-foreground">{field.type}</span>
                                 </div>
-                              </div>
-                              <div>
-                                <h4 className="font-medium mb-2 text-sm">Actions</h4>
-                                <div className="space-y-2">
-                                  {rule.actions.map(action => (
-                                    <div key={action.id} className="text-sm bg-muted p-2 rounded-md">
-                                      <span className="font-medium capitalize">{action.type.replace("_", " ")}</span>
-                                      <span className="text-xs text-muted-foreground block">
-                                        {Object.entries(action.settings).map(([key, value]) => (
-                                          <span key={key} className="mr-2">
-                                            {key}: {value as string}
-                                          </span>
-                                        ))}
-                                      </span>
-                                    </div>
-                                  ))}
+                              ))}
+                              {dataset.fields.length > 3 && (
+                                <div className="text-muted-foreground text-center mt-2">
+                                  + {dataset.fields.length - 3} more fields
                                 </div>
-                              </div>
+                              )}
                             </div>
                           </CardContent>
+                          <CardFooter className="bg-muted py-2">
+                            <Button variant="ghost" size="sm" className="w-full">
+                              <Edit className="h-4 w-4 mr-2" />
+                              Configure
+                            </Button>
+                          </CardFooter>
                         </Card>
                       ))}
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="datasets" className="mt-0">
-                  <div className="mb-4">
-                    <h3 className="text-lg font-medium mb-2">Datasets</h3>
-                    <p className="text-muted-foreground">
-                      Configure the data sources your workflow can access and manipulate
-                    </p>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {datasetOptions.map(dataset => (
-                      <Card key={dataset.value} className="overflow-hidden">
-                        <CardHeader className="pb-2">
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-md flex items-center gap-2">
-                              <Database className="h-4 w-4" />
-                              {dataset.label}
-                            </CardTitle>
-                            <Badge variant="outline" className="ml-auto">
-                              {dataset.fields.length} fields
-                            </Badge>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="text-sm">
-                          <div className="space-y-1">
-                            {dataset.fields.slice(0, 3).map(field => (
-                              <div key={field.name} className="flex justify-between">
-                                <span>{field.label}</span>
-                                <span className="text-muted-foreground">{field.type}</span>
-                              </div>
-                            ))}
-                            {dataset.fields.length > 3 && (
-                              <div className="text-muted-foreground text-center mt-2">
-                                + {dataset.fields.length - 3} more fields
-                              </div>
-                            )}
-                          </div>
-                        </CardContent>
-                        <CardFooter className="bg-muted py-2">
-                          <Button variant="ghost" size="sm" className="w-full">
-                            <Edit className="h-4 w-4 mr-2" />
-                            Configure
+                      
+                      <Card className="border-dashed">
+                        <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
+                          <Button variant="outline" className="mb-2">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add Custom Dataset
                           </Button>
-                        </CardFooter>
+                          <p className="text-sm text-muted-foreground text-center">
+                            Connect to external data sources or create custom datasets
+                          </p>
+                        </CardContent>
                       </Card>
-                    ))}
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="code" className="mt-0">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-medium mb-2">Code View</h3>
+                      <p className="text-muted-foreground">
+                        Advanced view of the workflow configuration
+                      </p>
+                    </div>
                     
-                    <Card className="border-dashed">
-                      <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
-                        <Button variant="outline" className="mb-2">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Add Custom Dataset
-                        </Button>
-                        <p className="text-sm text-muted-foreground text-center">
-                          Connect to external data sources or create custom datasets
-                        </p>
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-md">JSON Configuration</CardTitle>
+                          <Badge variant="outline">Read-only</Badge>
+                        </div>
+                        <CardDescription>
+                          This is the underlying configuration for your workflow
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="bg-muted p-4 rounded-md font-mono text-xs overflow-auto max-h-96">
+                          <pre>{JSON.stringify({
+                            id: workflowData?.id,
+                            name: workflowData?.name,
+                            description: workflowData?.description,
+                            status: workflowData?.status,
+                            rules: rules,
+                            datasets: datasetOptions.map(d => d.value),
+                            version: "1.0"
+                          }, null, 2)}</pre>
+                        </div>
                       </CardContent>
                     </Card>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="code" className="mt-0">
-                  <div className="mb-4">
-                    <h3 className="text-lg font-medium mb-2">Code View</h3>
-                    <p className="text-muted-foreground">
-                      Advanced view of the workflow configuration
-                    </p>
-                  </div>
+                  </TabsContent>
                   
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-md">JSON Configuration</CardTitle>
-                        <Badge variant="outline">Read-only</Badge>
-                      </div>
-                      <CardDescription>
-                        This is the underlying configuration for your workflow
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="bg-muted p-4 rounded-md font-mono text-xs overflow-auto max-h-96">
-                        <pre>{JSON.stringify({
-                          id: workflowData?.id,
-                          name: workflowData?.name,
-                          description: workflowData?.description,
-                          status: workflowData?.status,
-                          rules: rules,
-                          datasets: datasetOptions.map(d => d.value),
-                          version: "1.0"
-                        }, null, 2)}</pre>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                
-                <TabsContent value="execution" className="mt-0">
-                  <div className="mb-4">
-                    <h3 className="text-lg font-medium mb-2">Execution History</h3>
-                    <p className="text-muted-foreground">
-                      View past runs and their results
-                    </p>
-                  </div>
-                  
-                  <div className="text-center py-12">
-                    <Activity className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">No Execution History</h3>
-                    <p className="text-muted-foreground mb-6">
-                      This workflow hasn't been run yet
-                    </p>
-                    <Button>
-                      <Play className="mr-2 h-4 w-4" />
-                      Run Now
-                    </Button>
-                  </div>
-                </TabsContent>
-              </div>
+                  <TabsContent value="execution" className="mt-0">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-medium mb-2">Execution History</h3>
+                      <p className="text-muted-foreground">
+                        View past runs and their results
+                      </p>
+                    </div>
+                    
+                    <div className="text-center py-12">
+                      <Activity className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-medium mb-2">No Execution History</h3>
+                      <p className="text-muted-foreground mb-6">
+                        This workflow hasn't been run yet
+                      </p>
+                      <Button>
+                        <Play className="mr-2 h-4 w-4" />
+                        Run Now
+                      </Button>
+                    </div>
+                  </TabsContent>
+                </div>
+              </Tabs>
             </div>
           </div>
           
