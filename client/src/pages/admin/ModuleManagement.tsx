@@ -430,7 +430,7 @@ export default function ModuleManagement() {
 
       {/* Settings Dialog for Community Module */}
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{selectedModule?.name} Settings</DialogTitle>
             <DialogDescription>
@@ -440,12 +440,14 @@ export default function ModuleManagement() {
 
           {selectedModule?.id === "community" && (
             <Tabs defaultValue="general" value={currentTab} onValueChange={setCurrentTab}>
-              <TabsList className="grid grid-cols-4">
-                <TabsTrigger value="general">General</TabsTrigger>
-                <TabsTrigger value="branding">Branding</TabsTrigger>
-                <TabsTrigger value="features">Features</TabsTrigger>
-                <TabsTrigger value="integration">Integration</TabsTrigger>
-              </TabsList>
+              <div className="sticky top-0 z-10 bg-white pt-2 pb-4 border-b">
+                <TabsList className="grid grid-cols-4">
+                  <TabsTrigger value="general">General</TabsTrigger>
+                  <TabsTrigger value="branding">Branding</TabsTrigger>
+                  <TabsTrigger value="features">Features</TabsTrigger>
+                  <TabsTrigger value="integration">Integration</TabsTrigger>
+                </TabsList>
+              </div>
               
               {/* General Settings */}
               <TabsContent value="general" className="space-y-4 py-4">
