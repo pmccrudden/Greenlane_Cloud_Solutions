@@ -31,6 +31,7 @@ import DataManagement from "@/pages/admin/DataManagement";
 import ModuleManagement from "@/pages/admin/ModuleManagement";
 import Community from "@/pages/community/index";
 import CommunitySettings from "@/pages/community/settings";
+import CommunityPreview from "@/pages/community/preview";
 import WorkflowsPage from "@/pages/workflows/index";
 import WorkflowView from "@/pages/workflows/workflow-view";
 import MainLayout from "@/components/layout/MainLayout";
@@ -187,6 +188,10 @@ function Router() {
     <WorkflowView />
   );
   
+  const CommunityPreviewComponent = () => (
+    <CommunityPreview />
+  );
+  
   return (
     <Switch>
       <Route path="/signin" component={SignIn} />
@@ -216,6 +221,7 @@ function Router() {
       <ProtectedRoute path="/admin/data" component={DataManagementWithLayout} />
       <ProtectedRoute path="/admin/modules" component={ModuleManagementWithLayout} />
       <ProtectedRoute path="/community/settings" component={CommunitySettingsWithLayout} />
+      <ProtectedRoute path="/community/preview" component={CommunityPreviewComponent} />
       <ProtectedRoute path="/community" component={CommunityWithLayout} />
       <ProtectedRoute path="/checkout" component={Checkout} />
       <ProtectedRoute path="/payment-success" component={PaymentSuccess} />

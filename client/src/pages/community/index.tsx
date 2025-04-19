@@ -6,6 +6,7 @@ import { Globe, Users, MessageSquare, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Link } from "wouter";
 
 export default function CommunityPortal() {
   const { toast } = useToast();
@@ -60,17 +61,28 @@ export default function CommunityPortal() {
           <p className="text-gray-500">Connect with your customers in a community platform</p>
         </div>
         
-        {communitySettings?.customDomain && (
-          <a 
-            href={`https://${communitySettings.customDomain}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 md:mt-0 flex items-center bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-lg transition-colors"
-          >
-            <ExternalLink className="mr-2 h-4 w-4" />
-            Visit Community Site
-          </a>
-        )}
+        <div className="flex space-x-2 mt-4 md:mt-0">
+          {/* Local preview link - available in all environments */}
+          <Link to="/community/preview">
+            <Button variant="outline" className="flex items-center">
+              <Globe className="mr-2 h-4 w-4" />
+              Preview Community
+            </Button>
+          </Link>
+          
+          {/* External site link - only if domain is configured */}
+          {communitySettings?.customDomain && (
+            <a 
+              href={`https://${communitySettings.customDomain}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-lg transition-colors"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Visit Community Site
+            </a>
+          )}
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -256,25 +268,34 @@ export default function CommunityPortal() {
               <CardTitle>Community Preview</CardTitle>
               <CardDescription>Preview your community portal as your users would see it</CardDescription>
             </CardHeader>
-            <CardContent className="p-0 aspect-video">
-              {communitySettings?.customDomain ? (
-                <iframe 
-                  src={`https://${communitySettings.customDomain}`} 
-                  className="w-full h-full border-0"
-                  title="Community Preview"
-                ></iframe>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full p-4 bg-gray-50">
-                  <Globe className="w-16 h-16 text-gray-300 mb-4" />
-                  <h3 className="text-lg font-medium">No preview available</h3>
-                  <p className="text-sm text-gray-500 text-center mt-2">
-                    Set up a custom domain in Community Settings to enable preview.
-                  </p>
-                  <Button variant="outline" className="mt-4" asChild>
-                    <a href="/community/settings">Configure Domain</a>
-                  </Button>
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg">
+                <Globe className="w-16 h-16 text-gray-300 mb-4" />
+                <h3 className="text-lg font-medium">Preview Your Community</h3>
+                <p className="text-sm text-gray-500 text-center mt-2 mb-6">
+                  View a local preview of your community portal with sample content.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link to="/community/preview">
+                    <Button className="flex items-center">
+                      <Globe className="mr-2 h-4 w-4" />
+                      Open Local Preview
+                    </Button>
+                  </Link>
+                  
+                  {communitySettings?.customDomain && (
+                    <a 
+                      href={`https://${communitySettings.customDomain}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2 rounded-lg transition-colors"
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      View Live Site
+                    </a>
+                  )}
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
