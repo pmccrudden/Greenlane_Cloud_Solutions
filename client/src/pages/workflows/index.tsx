@@ -46,6 +46,7 @@ interface FolderType {
 }
 
 export default function WorkflowsPage() {
+  const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [workflowFormData, setWorkflowFormData] = useState({
