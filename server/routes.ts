@@ -488,6 +488,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ===== Stripe Integration =====
   if (stripe) {
+    // Marketing website routes
+    app.post("/api/marketing/create-customer", async (req, res) => {
+      try {
+        const { email, name } = req.body;
+
+        if (!email) {
+          return res.status(400).json({ error: 'Email is required' });
+        }
+
+        const customer = await stripe.customers.create({
+          email,
+          name: name || email,
+        });
+
+        res.status(200).json({ customerId: customer.id });
+      } catch (error: any) {
+        console.error('Error creating Stripe customer:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.post("/api/marketing/create-free-trial", async (req, res) => {
+      try {
+        const { 
+          email,
+          name,
+          priceId,
+          successUrl,
+          cancelUrl,
+          metadata = {}
+        } = req.body;
+
+        if (!email || !priceId || !successUrl || !cancelUrl) {
+          return res.status(400).json({ 
+            error: 'Email, price ID, success URL, and cancel URL are required' 
+          });
+        }
+
+        // Create a checkout session
+        const session = await stripe.checkout.sessions.create({
+          mode: 'subscription',
+          payment_method_types: ['card'],
+          line_items: [
+            {
+              price: priceId,
+              quantity: 1,
+            },
+          ],
+          subscription_data: {
+            trial_period_days: 14,
+          },
+          customer_email: email,
+          success_url: successUrl,
+          cancel_url: cancelUrl,
+          metadata: {
+            ...metadata,
+            userName: name || '',
+          },
+        });
+
+        res.status(200).json({ 
+          sessionId: session.id,
+          url: session.url 
+        });
+      } catch (error: any) {
+        console.error('Error creating Stripe checkout session:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    app.get("/api/marketing/plans", async (req, res) => {
+      try {
+        // Fetch active prices from Stripe
+        const prices = await stripe.prices.list({
+          active: true,
+          limit: 100,
+          expand: ['data.product'],
+        });
+
+        // Format the response for the frontend
+        const plans = prices.data.map((price) => {
+          const product = price.product as Stripe.Product;
+          return {
+            id: price.id,
+            productId: product.id,
+            name: product.name,
+            description: product.description,
+            amount: price.unit_amount,
+            currency: price.currency,
+            interval: price.recurring?.interval,
+            intervalCount: price.recurring?.interval_count,
+          };
+        });
+
+        res.status(200).json(plans);
+      } catch (error: any) {
+        console.error('Error fetching Stripe plans:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
     // One-time payment
     app.post("/api/create-payment-intent", async (req, res) => {
       try {

@@ -42,8 +42,10 @@ import { getTenantFromUrl } from "@/lib/tenant";
 function Router() {
   const [location] = useLocation();
   
-  // Import the marketing page
+  // Import the marketing pages
   const MarketingPage = React.lazy(() => import('./pages/marketing/index'));
+  const FreeTrialPage = React.lazy(() => import('./pages/marketing/free-trial'));
+  const TrialSuccessPage = React.lazy(() => import('./pages/marketing/trial-success'));
   
   // Creating a protected dashboard component with MainLayout
   const DashboardWithLayout = () => (
@@ -205,6 +207,20 @@ function Router() {
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>}>
           <MarketingPage />
+        </Suspense>
+      )} />
+      <Route path="/marketing/free-trial" component={() => (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>}>
+          <FreeTrialPage />
+        </Suspense>
+      )} />
+      <Route path="/marketing/trial-success" component={() => (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>}>
+          <TrialSuccessPage />
         </Suspense>
       )} />
       <Route path="/" component={Home} />
