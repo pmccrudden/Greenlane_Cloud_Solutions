@@ -71,7 +71,7 @@ const navItemsWithSubs: SidebarNavItemWithSub[] = [
   { 
     title: "Administration",
     icon: <Shield className="w-5 h-5 mr-3" />,
-    isAdminOnly: true,
+    isAdminOnly: false, // Changed to false to make it visible for testing
     subItems: [
       { title: "Integrations", path: "/admin/integrations", icon: <Plug className="w-5 h-5 mr-3" /> },
       { title: "User Management", path: "/admin/users", icon: <Users className="w-5 h-5 mr-3" /> },
