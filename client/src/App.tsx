@@ -29,6 +29,8 @@ import AdminIntegrations from "@/pages/AdminIntegrations";
 import AdminUserManagement from "@/pages/AdminUserManagement";
 import DataManagement from "@/pages/admin/DataManagement";
 import ModuleManagement from "@/pages/admin/ModuleManagement";
+import Community from "@/pages/community/index";
+import CommunitySettings from "@/pages/community/settings";
 import MainLayout from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "./lib/protected-route";
 import { getTenantFromUrl } from "@/lib/tenant";
@@ -160,6 +162,18 @@ function Router() {
   const ModuleManagementWithLayout = () => (
     <MainLayout>
       <ModuleManagement />
+    </MainLayout>
+  );
+  
+  const CommunityWithLayout = () => (
+    <MainLayout>
+      <Community />
+    </MainLayout>
+  );
+  
+  const CommunitySettingsWithLayout = () => (
+    <MainLayout>
+      <CommunitySettings />
     </MainLayout>
   );
   

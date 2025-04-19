@@ -19,11 +19,14 @@ import {
   ChevronRight,
   Plug,
   Database,
-  Shield
+  Shield,
+  ExternalLink,
+  Globe
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getTenantFromUrl } from "@/lib/tenant";
+import { useQuery } from "@tanstack/react-query";
 
 type SidebarNavItem = {
   title: string;
@@ -87,12 +90,34 @@ interface SidebarProps {
   };
 }
 
+type CommunityNavSubItem = {
+  title: string;
+  path?: string;
+  icon: React.ReactNode;
+  externalLink?: string;
+};
+
 export default function Sidebar({ user }: SidebarProps) {
   const [location] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const { toast } = useToast();
   const tenant = getTenantFromUrl();
+  
+  // Fetch community module status
+  const { data: modules } = useQuery({
+    queryKey: ['/api/modules'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/modules');
+      return await response.json();
+    },
+    enabled: !!user, // Only fetch if user is authenticated
+  });
+
+  // Find if community module is enabled and its settings
+  const communityModule = modules?.find((module: any) => module.id === 'community');
+  const isCommunityEnabled = communityModule?.enabled ?? false;
+  const communitySettings = communityModule?.settings || {};
 
   useEffect(() => {
     // Close sidebar on location change for mobile
@@ -176,6 +201,73 @@ export default function Sidebar({ user }: SidebarProps) {
                 </Link>
               );
             })}
+            
+            {/* Community module menu (conditionally displayed) */}
+            {isCommunityEnabled && (
+              <div className="space-y-1">
+                <button
+                  onClick={() => setOpenSubmenu(openSubmenu === "Community" ? null : "Community")}
+                  className={`w-full flex items-center justify-between p-2 rounded-md ${
+                    location.startsWith("/community") 
+                      ? 'bg-primary-700 text-white' 
+                      : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <Globe className="w-5 h-5 mr-3" />
+                    Community
+                  </div>
+                  <ChevronRight 
+                    className={`w-5 h-5 transition-transform ${openSubmenu === "Community" ? 'rotate-90' : ''}`} 
+                  />
+                </button>
+                
+                {/* Community submenu items */}
+                {openSubmenu === "Community" && (
+                  <div className="ml-6 mt-1 space-y-1 border-l border-slate-700 pl-2">
+                    {/* Community Portal item */}
+                    <Link
+                      href="/community"
+                      className={`flex items-center p-2 rounded-md ${
+                        location === "/community" 
+                          ? 'bg-primary-700 text-white' 
+                          : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <Globe className="w-5 h-5 mr-3" />
+                      Community Portal
+                    </Link>
+                    
+                    {/* Community Settings item */}
+                    <Link
+                      href="/community/settings"
+                      className={`flex items-center p-2 rounded-md ${
+                        location === "/community/settings" 
+                          ? 'bg-primary-700 text-white' 
+                          : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                      }`}
+                    >
+                      <Settings className="w-5 h-5 mr-3" />
+                      Settings
+                    </Link>
+                    
+                    {/* External link to community (if custom domain is set) */}
+                    {communitySettings?.customDomain && (
+                      <a
+                        href={`https://${communitySettings.customDomain}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center p-2 rounded-md text-slate-300 hover:bg-slate-700 hover:text-white"
+                      >
+                        <ExternalLink className="w-5 h-5 mr-3" />
+                        Visit Community
+                        <ExternalLink className="w-4 h-4 ml-2 opacity-70" />
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* Items with submenus */}
             {navItemsWithSubs.map((item) => {
