@@ -203,6 +203,8 @@ function Router() {
       <ProtectedRoute path="/admin/users" component={AdminUserManagementWithLayout} />
       <ProtectedRoute path="/admin/data" component={DataManagementWithLayout} />
       <ProtectedRoute path="/admin/modules" component={ModuleManagementWithLayout} />
+      <ProtectedRoute path="/community/settings" component={CommunitySettingsWithLayout} />
+      <ProtectedRoute path="/community" component={CommunityWithLayout} />
       <ProtectedRoute path="/checkout" component={Checkout} />
       <ProtectedRoute path="/payment-success" component={PaymentSuccess} />
       <Route component={NotFound} />
