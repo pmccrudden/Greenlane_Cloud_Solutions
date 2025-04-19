@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -219,14 +220,14 @@ export default function WorkflowsPage() {
                   <div className="grid gap-2">
                     <Label htmlFor="folder">Folder</Label>
                     <Select 
-                      value={selectedFolder || ""} 
-                      onValueChange={(value) => setSelectedFolder(value || null)}
+                      value={selectedFolder || "none"} 
+                      onValueChange={(value) => setSelectedFolder(value === "none" ? null : value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select folder (optional)" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No folder</SelectItem>
+                        <SelectItem value="none">No folder</SelectItem>
                         {folders.map((folder) => (
                           <SelectItem key={folder.id} value={folder.id}>{folder.name}</SelectItem>
                         ))}
@@ -267,14 +268,14 @@ export default function WorkflowsPage() {
                   <div className="grid gap-2">
                     <Label htmlFor="parentFolder">Parent Folder (Optional)</Label>
                     <Select 
-                      value={folderFormData.parentId || ""} 
-                      onValueChange={(value) => setFolderFormData({...folderFormData, parentId: value || null})}
+                      value={folderFormData.parentId || "none"} 
+                      onValueChange={(value) => setFolderFormData({...folderFormData, parentId: value === "none" ? null : value})}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="No parent folder" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No parent folder</SelectItem>
+                        <SelectItem value="none">No parent folder</SelectItem>
                         {folders.map((folder) => (
                           <SelectItem key={folder.id} value={folder.id}>{folder.name}</SelectItem>
                         ))}
