@@ -28,6 +28,7 @@ import Dashboards from "@/pages/Dashboards";
 import AdminIntegrations from "@/pages/AdminIntegrations";
 import AdminUserManagement from "@/pages/AdminUserManagement";
 import DataManagement from "@/pages/admin/DataManagement";
+import ModuleManagement from "@/pages/admin/ModuleManagement";
 import MainLayout from "@/components/layout/MainLayout";
 import { ProtectedRoute } from "./lib/protected-route";
 import { getTenantFromUrl } from "@/lib/tenant";
@@ -156,6 +157,12 @@ function Router() {
     </MainLayout>
   );
   
+  const ModuleManagementWithLayout = () => (
+    <MainLayout>
+      <ModuleManagement />
+    </MainLayout>
+  );
+  
   return (
     <Switch>
       <Route path="/signin" component={SignIn} />
@@ -181,6 +188,7 @@ function Router() {
       <ProtectedRoute path="/admin/integrations" component={AdminIntegrationsWithLayout} />
       <ProtectedRoute path="/admin/users" component={AdminUserManagementWithLayout} />
       <ProtectedRoute path="/admin/data" component={DataManagementWithLayout} />
+      <ProtectedRoute path="/admin/modules" component={ModuleManagementWithLayout} />
       <ProtectedRoute path="/checkout" component={Checkout} />
       <ProtectedRoute path="/payment-success" component={PaymentSuccess} />
       <Route component={NotFound} />

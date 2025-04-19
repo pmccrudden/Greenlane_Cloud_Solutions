@@ -1,0 +1,66 @@
+Objective: Build a customizable customer community platform as an additional module for Greenlane Cloud Solutions, a CRM, customer success, marketing, analytics, and community platform hosted at greenlanecloudsolutions.com. The community should integrate seamlessly with the existing CRM system, allowing clients to create branded communities on subdomains (e.g., company1.greenlanecloudsolutions.com). The platform should be modular, scalable, and easy to deploy.
+
+Requirements:
+
+1. **Tech Stack**:
+   - Backend: Node.js with Express.js for RESTful APIs, MongoDB for data storage (multi-tenant support).
+   - Frontend: React.js with Tailwind CSS for a responsive, modern UI consistent with the provided landing page design.
+   - Authentication: JWT-based authentication with SSO integration to reuse CRM credentials.
+   - Hosting: Designed for deployment on a cloud provider (e.g., AWS, Heroku) with subdomain support (e.g., company1.greenlanecloudsolutions.com).
+   - External Dependencies: Use CDN-hosted libraries where possible (e.g., Tailwind CSS, React) to minimize setup.
+
+2. **Core Features**:
+   - **Forums**: Create, view, edit, and moderate discussion threads with support for text, images, and tags.
+   - **User Profiles**: Allow users to edit profiles (name, bio, avatar) synced with CRM data via API.
+   - **Groups**: Support for public/private sub-communities with role-based access (admin, moderator, member).
+   - **Notifications**: Email and in-app notifications for new posts or replies, configurable by users.
+   - **Search**: Full-text search for posts and users using MongoDB’s text indexes.
+   - **Analytics**: Track engagement metrics (e.g., posts created, active users) and expose via API for CRM integration.
+
+3. **Customization**:
+   - **Branding**: Allow clients to upload logos, set color schemes, and choose templates via a settings page.
+   - **Subdomain Support**: Each client’s community runs on a unique subdomain (e.g., company1.greenlanecloudsolutions.com).
+   - **Custom Fields**: Enable clients to add custom metadata to posts or profiles (e.g., “Customer Tier”).
+   - **White-Labeling**: Option to remove Greenlane branding for enterprise clients.
+
+4. **CRM Integration**:
+   - **API Endpoints**: Provide APIs to sync community data (users, posts, metrics) with the CRM system.
+     - GET /api/users: Fetch community user data for CRM sync.
+     - POST /api/interactions: Send community interactions (e.g., new post) to CRM.
+     - GET /api/analytics: Retrieve engagement metrics for CRM dashboard.
+   - **SSO**: Integrate with the CRM’s authentication system using OAuth 2.0 or JWT tokens.
+   - **Webhook Support**: Trigger CRM workflows (e.g., create a support ticket) when specific community actions occur (e.g., negative post).
+   - **Embedded Widget**: Create a React component for embedding a “Recent Posts” feed in the CRM dashboard.
+
+5. **Security**:
+   - Use HTTPS for all subdomains.
+   - Implement input validation and sanitization to prevent XSS/SQL injection.
+   - Ensure GDPR-compliant user consent for data collection.
+   - Provide moderation tools (e.g., flag posts, ban users) with audit logs.
+
+6. **Scalability**:
+   - Use MongoDB’s multi-tenant schema (e.g., separate collections per client) to isolate data.
+   - Optimize for high concurrency with caching (e.g., Redis for frequently accessed data).
+   - Design APIs to handle pagination and rate-limiting.
+
+7. **Deliverables**:
+   - A working prototype on Replit with a sample community running at a mock subdomain (e.g., demo.greenlanecloudsolutions.com).
+   - Backend: Express.js server with documented API endpoints.
+   - Frontend: React app with Tailwind CSS, including forum, profile, and settings pages.
+   - Integration Docs: A README detailing how to connect the community to the CRM via APIs and SSO.
+   - Setup Script: A script to initialize the MongoDB database and seed sample data.
+
+8. **Constraints**:
+   - Ensure compatibility with the existing landing page’s design (green/white color scheme, Tailwind CSS).
+   - Minimize external dependencies to simplify deployment.
+   - Complete a functional MVP within 2 weeks, focusing on core features (forums, profiles, CRM sync).
+
+9. **Testing**:
+   - Unit tests for backend APIs using Jest.
+   - Frontend component tests using React Testing Library.
+   - Manual testing guide for subdomain setup and CRM integration.
+
+10. **Bonus Features** (if time permits):
+    - Gamification: Add badges for active users.
+    - Mobile PWA: Make the community a Progressive Web App.
+    - Sentiment Analysis: Use a simple NLP library to detect post sentiment and report to CRM.
