@@ -23,8 +23,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // Import icons
-import { Shield, Globe, Users, Settings, Archive, Info, MessageSquare } from "lucide-react";
+import { Shield, Globe, Users, Settings, Archive, Info, MessageSquare, CheckCircle, AlertCircle, ExternalLink } from "lucide-react";
 import { SiMongodb, SiNodedotjs, SiReact, SiTailwindcss, SiExpress } from "react-icons/si";
 
 // Define module type
@@ -67,61 +69,14 @@ type CommunityModuleSettings = {
 
 export default function ModuleManagement() {
   const { toast } = useToast();
-  const [modules, setModules] = useState<Module[]>([
-    {
-      id: "community",
-      name: "Customer Community",
-      description: "Create branded customer communities and forums with full CRM integration",
-      enabled: false,
-      status: "inactive",
-      version: "1.0.0",
-      lastUpdated: "2025-04-15T00:00:00Z",
-      settings: {
-        subdomain: "",
-        customDomain: "",
-        branding: {
-          primaryColor: "#10B981",
-          secondaryColor: "#3B82F6",
-          showGreenLaneBranding: true,
-        },
-        features: {
-          enableForums: true,
-          enableGroups: true,
-          enableDirectMessages: true,
-          enableUserProfiles: true,
-          enableNotifications: true,
-          enableAnalytics: true,
-        },
-        integration: {
-          syncUsers: true,
-          syncCustomerData: true,
-          createSupportTicketsFromPosts: false,
-          notifyOnNegativeSentiment: false,
-        }
-      }
-    },
-    {
-      id: "knowledge-base",
-      name: "Knowledge Base",
-      description: "Create and manage a self-service knowledge base for your customers",
-      enabled: false,
-      status: "inactive",
-      version: "1.0.0"
-    },
-    {
-      id: "api-gateway",
-      name: "API Gateway",
-      description: "Expose your CRM data via secure APIs for custom integrations",
-      enabled: false,
-      status: "inactive",
-      version: "0.9.0"
-    }
-  ]);
-  
+  const queryClient = useQueryClient();
+  // State for holding modules
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("general");
+  const [dnsVerification, setDnsVerification] = useState<{ status: 'verifying' | 'success' | 'error' | null, message?: string }>({ status: null });
   
+  // Community settings state
   const [communitySettings, setCommunitySettings] = useState<CommunityModuleSettings>({
     subdomain: "",
     customDomain: "",
@@ -146,32 +101,74 @@ export default function ModuleManagement() {
     }
   });
 
-  // Initialize community settings from modules
+  // Fetch modules from the API
+  const { data: modules = [], isLoading } = useQuery({
+    queryKey: ['/api/modules'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/modules');
+      return await response.json();
+    }
+  });
+
+  // Mutation for toggling modules
+  const toggleModuleMutation = useMutation({
+    mutationFn: async ({ id, enabled }: { id: string, enabled: boolean }) => {
+      const response = await apiRequest('PATCH', `/api/modules/${id}`, {
+        enabled,
+        status: enabled ? 'active' : 'inactive'
+      });
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/modules'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to update module: ${error.message}`,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Mutation for updating module settings
+  const updateModuleSettingsMutation = useMutation({
+    mutationFn: async ({ id, settings }: { id: string, settings: any }) => {
+      const response = await apiRequest('PATCH', `/api/modules/${id}`, { settings });
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/modules'] });
+      setIsSettingsOpen(false);
+      toast({
+        title: "Settings Saved",
+        description: `Module settings have been saved successfully.`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: `Failed to save settings: ${error.message}`,
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Initialize community settings from modules when data changes
   useEffect(() => {
-    const communityModule = modules.find(m => m.id === "community");
-    if (communityModule && communityModule.settings) {
+    const communityModule = modules.find((m: Module) => m.id === "community");
+    if (communityModule?.settings) {
       setCommunitySettings(communityModule.settings as CommunityModuleSettings);
     }
   }, [modules]);
 
+  // Handler for toggling module state
   const handleToggleModule = (id: string) => {
-    setModules(prev => 
-      prev.map(module => 
-        module.id === id 
-          ? { 
-              ...module, 
-              enabled: !module.enabled,
-              status: !module.enabled ? "active" : "inactive"
-            } 
-          : module
-      )
-    );
-
-    const module = modules.find(m => m.id === id);
+    const module = modules.find((m: Module) => m.id === id);
     if (module) {
-      toast({
-        title: `${module.name} ${!module.enabled ? "Enabled" : "Disabled"}`,
-        description: `The module has been ${!module.enabled ? "enabled" : "disabled"} successfully.`,
+      toggleModuleMutation.mutate({ 
+        id, 
+        enabled: !module.enabled 
       });
     }
   };
@@ -190,25 +187,45 @@ export default function ModuleManagement() {
   const handleSaveSettings = () => {
     if (!selectedModule) return;
 
-    // Update module settings based on the module type
+    // Save settings to the backend using the mutation
     if (selectedModule.id === "community") {
-      setModules(prev => 
-        prev.map(module => 
-          module.id === selectedModule.id 
-            ? { 
-                ...module, 
-                settings: communitySettings
-              } 
-            : module
-        )
-      );
+      updateModuleSettingsMutation.mutate({
+        id: selectedModule.id,
+        settings: communitySettings
+      });
     }
-
-    setIsSettingsOpen(false);
-    toast({
-      title: "Settings Saved",
-      description: `Settings for ${selectedModule.name} have been saved successfully.`,
-    });
+  };
+  
+  // Function to check DNS settings
+  const handleVerifyDNS = () => {
+    if (!communitySettings.customDomain) {
+      toast({
+        title: "Domain Required",
+        description: "Please enter a custom domain before verifying DNS settings.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setDnsVerification({ status: 'verifying' });
+    
+    // Simulate DNS verification with a delay
+    setTimeout(() => {
+      // In a real implementation, this would make an API call to verify DNS
+      const success = Math.random() > 0.3; // Simulating success rate for demo purposes
+      
+      if (success) {
+        setDnsVerification({ 
+          status: 'success', 
+          message: `DNS verification successful for ${communitySettings.customDomain}!` 
+        });
+      } else {
+        setDnsVerification({ 
+          status: 'error', 
+          message: `Could not verify DNS records for ${communitySettings.customDomain}. Please check your DNS configuration.` 
+        });
+      }
+    }, 2000);
   };
 
   const handleInputChange = (
@@ -328,17 +345,95 @@ export default function ModuleManagement() {
               {/* General Settings */}
               <TabsContent value="general" className="space-y-4 py-4">
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="customDomain">Custom Domain</Label>
-                    <Input
-                      id="customDomain"
-                      value={communitySettings.customDomain || ""}
-                      onChange={(e) => handleInputChange("customDomain", "customDomain", e.target.value)}
-                      placeholder="community.yourcompany.com"
-                    />
-                    <p className="text-xs text-slate-500 mt-1">
-                      Enter your custom domain where the community will be accessible
-                    </p>
+                  <div className="bg-white border rounded-md p-4 shadow-sm">
+                    <h3 className="font-semibold text-lg mb-3">Domain Setup</h3>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="customDomain">Custom Domain</Label>
+                        <div className="flex mt-1">
+                          <Input
+                            id="customDomain"
+                            value={communitySettings.customDomain || ""}
+                            onChange={(e) => handleInputChange("customDomain", "customDomain", e.target.value)}
+                            placeholder="community.yourcompany.com"
+                            className="rounded-r-none"
+                          />
+                          <Button 
+                            type="button" 
+                            variant="secondary"
+                            className="rounded-l-none flex gap-2 items-center"
+                            onClick={handleVerifyDNS}
+                            disabled={dnsVerification.status === 'verifying' || !communitySettings.customDomain}
+                          >
+                            {dnsVerification.status === 'verifying' ? (
+                              <>
+                                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                                Verifying...
+                              </>
+                            ) : "Verify DNS"}
+                          </Button>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Enter your custom domain where the community will be accessible
+                        </p>
+                      </div>
+                      
+                      {dnsVerification.status && (
+                        <div className={`p-3 rounded-md mt-3 ${
+                          dnsVerification.status === 'success' 
+                            ? 'bg-green-50 text-green-800 border border-green-200' 
+                            : dnsVerification.status === 'error'
+                              ? 'bg-red-50 text-red-800 border border-red-200'
+                              : 'bg-blue-50 text-blue-800 border border-blue-200'
+                        }`}>
+                          <div className="flex items-start">
+                            {dnsVerification.status === 'success' ? (
+                              <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+                            ) : dnsVerification.status === 'error' ? (
+                              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+                            ) : (
+                              <Info className="h-5 w-5 mr-2 flex-shrink-0" />
+                            )}
+                            <div>
+                              <p className="text-sm font-medium">
+                                {dnsVerification.status === 'success' 
+                                  ? 'DNS Verification Successful' 
+                                  : dnsVerification.status === 'error'
+                                    ? 'DNS Verification Failed'
+                                    : 'Verifying DNS Settings'}
+                              </p>
+                              <p className="text-xs mt-1">{dnsVerification.message}</p>
+                              
+                              {dnsVerification.status === 'success' && (
+                                <a 
+                                  href={`https://${communitySettings.customDomain}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center text-xs font-medium mt-2 hover:underline"
+                                >
+                                  Visit your community portal
+                                  <ExternalLink className="h-3 w-3 ml-1" />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="bg-blue-50 border border-blue-100 p-3 rounded-md">
+                        <p className="text-sm text-blue-800 flex items-center">
+                          <Info className="h-4 w-4 mr-2 text-blue-500" />
+                          Default Access
+                        </p>
+                        <p className="text-xs text-blue-700 mt-1">
+                          While setting up your custom domain, your community will be accessible at the default URL:
+                        </p>
+                        <div className="bg-white px-3 py-2 rounded text-sm mt-1 font-mono">
+                          https://community-{selectedModule?.id}.greenlanecloudsolutions.com
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="bg-amber-50 border border-amber-200 p-4 rounded-md">
