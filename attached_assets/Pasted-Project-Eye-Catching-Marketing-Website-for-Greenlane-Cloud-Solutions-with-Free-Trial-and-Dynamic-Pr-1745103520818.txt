@@ -1,0 +1,112 @@
+Project: Eye-Catching Marketing Website for Greenlane Cloud Solutions with Free Trial and Dynamic Pricing
+
+Objective: Revamp the marketing website for Greenlane Cloud Solutions (hosted at greenlanecloudsolutions.com) to be more eye-catching, modern, and optimized for maximizing sales and lead conversions. The site should guide users to sign up for a 14-day free trial via Stripe, requiring card details upfront, with automatic charging if not canceled before the trial ends. The product packaging should include the core CRM priced by usage (number of users), with add-ons (Community, Marketing Hub, Support Centre) as optional extras. Pricing must dynamically adjust based on the user’s location (Europe, Australia, USA, Canada, UK). The website should feature professional-looking screenshots of the product with short titles or briefs explaining the benefit of each feature or platform.
+
+Requirements:
+
+1. **Tech Stack**:
+   - Frontend: React.js with Tailwind CSS for a modern, responsive UI (consistent with the existing green/white color scheme).
+   - Backend: Node.js with Express.js for handling API requests, Stripe integration, and location-based pricing.
+   - External APIs: Stripe for payment processing, IP geolocation API (e.g., ipapi.co) for detecting user location.
+   - Hosting: Designed for deployment on a cloud provider (e.g., AWS, Heroku) with CDN support for fast loading.
+
+2. **Design and User Experience**:
+   - **Eye-Catching and Modern**:
+     - Use bold typography, vibrant gradients (e.g., green to white transitions), and animated elements (e.g., subtle hover effects, scrolling animations) to make the site visually engaging [Ref web ID: 18].
+     - Incorporate rich media like animated banners or hero images to capture attention [Ref web ID: 18].
+     - Ensure a mobile-optimized, responsive design with a consistent brand experience across devices [Ref web ID: 21].
+   - **Conversion-Driven Flow**:
+     - Place a prominent “Start Your 14-Day Free Trial” CTA button in the hero section, sticky header, and key sections (e.g., pricing, features) [Ref web ID: 21].
+     - Use urgency cues like “No credit card required” (even though Stripe requires card details, clarify it’s not charged until after the trial) and “Limited Offer” to drive action [Ref web ID: 0].
+     - Add trust signals: security badges (e.g., “Secured by Stripe”), testimonials, and client logos [Ref web ID: 23].
+   - **Navigation**:
+     - Sticky header with links: Home, Features, Pricing, Screenshots, Sign Up, Log In.
+     - Footer with links: Contact, Privacy Policy, Terms of Service, Support.
+
+3. **Free Trial Signup with Stripe**:
+   - **Flow**:
+     1. User clicks “Start Your 14-Day Free Trial” button.
+     2. Redirect to a signup form: fields for Name, Email, Company Name, and Password.
+     3. After submitting, redirect to a Stripe Checkout form requiring card details for a 14-day free trial.
+     4. Post-signup, create a tenant (e.g., company1.greenlanecloudsolutions.com) and email the user with access details.
+   - **Stripe Integration**:
+     - Use Stripe Checkout to handle the trial signup with a $0 initial charge [Ref web ID: 7].
+     - Set a 14-day trial period, after which the user is automatically charged the selected plan unless canceled [Ref web ID: 7].
+     - Provide a “Cancel Subscription” option in the user’s account dashboard to stop charges before the trial ends.
+     - Display a confirmation message: “Your 14-day free trial has started! You’ll be charged on [date] unless canceled.”
+   - **Error Handling**:
+     - Validate form inputs (e.g., email format) and show error messages (e.g., “Invalid email”).
+     - Handle Stripe errors (e.g., declined card) with user-friendly messages.
+
+4. **Product Packaging**:
+   - **Core CRM**:
+     - Priced based on usage (number of users).
+     - Base features: Contact Management, Deal Tracking, Task Management, Basic Analytics.
+   - **Add-Ons**:
+     - Community: Discussion forums, user groups, engagement analytics.
+     - Marketing Hub: Email campaigns, drip campaigns, marketing automation.
+     - Support Centre: Ticketing system, live chat, knowledge base.
+   - **UI Presentation**:
+     - Show the core CRM as the foundation package with a toggle to add/remove add-ons.
+     - Display add-ons as cards with checkboxes (e.g., “Add Community: +$X/month”) and brief descriptions of benefits.
+
+5. **Dynamic Pricing by Location**:
+   - **Regions**: Europe, Australia, USA, Canada, UK.
+   - **Base Pricing (in USD)**:
+     - Core CRM: $10/user/month.
+     - Community Add-On: $50/month.
+     - Marketing Hub Add-On: $75/month.
+     - Support Centre Add-On: $30/month.
+   - **Location-Based Adjustments**:
+     - USA: Base price (USD).
+     - Canada: +5% (CAD conversion).
+     - UK: +10% (GBP conversion).
+     - Europe: +15% (EUR conversion).
+     - Australia: +20% (AUD conversion).
+   - **Implementation**:
+     - Use an IP geolocation API (e.g., ipapi.co) to detect the user’s location on page load.
+     - Adjust prices dynamically using real-time currency conversion (e.g., via a free API like exchangerate-api.com).
+     - Display the price in the user’s local currency (e.g., “$10/user/month (USD)” for USA, “€11.50/user/month (EUR)” for Europe).
+     - Allow users to manually select their region via a dropdown if the geolocation is incorrect.
+   - **UI**:
+     - Show a pricing table with columns: Core CRM, Add-Ons (Community, Marketing Hub, Support Centre).
+     - Include a “Total: $X/month” summary that updates as users toggle add-ons.
+
+6. **Professional Screenshots with Feature Benefits**:
+   - **Screenshots Section**:
+     - Create a dedicated “See It in Action” section with a carousel or grid of 4-5 screenshots.
+     - Each screenshot should be a mockup of the CRM interface (e.g., dashboard, community forum, marketing campaign builder).
+     - Use placeholder images (e.g., from a mockup tool like Figma or Placeit) with a clean, professional look.
+   - **Titles and Briefs**:
+     - Screenshot 1: “Unified Dashboard” – “Manage contacts, deals, and tasks in one place.”
+     - Screenshot 2: “Engage Your Community” – “Build forums and groups to connect with customers.”
+     - Screenshot 3: “Automate Marketing” – “Create email campaigns and drip sequences effortlessly.”
+     - Screenshot 4: “Support Made Easy” – “Resolve issues with a ticketing system and live chat.”
+     - Screenshot 5: “Actionable Analytics” – “Track performance with real-time insights.”
+   - **Design**:
+     - Frame screenshots in device mockups (e.g., laptop or tablet screens) for a polished look.
+     - Add subtle animations (e.g., fade-in on scroll) to make the section engaging [Ref web ID: 18].
+
+7. **Additional Conversion Features**:
+   - **Testimonials**: Add 2-3 customer testimonials with quotes, names, and company logos.
+   - **FAQ Section**: Address common objections (e.g., “What happens after the trial?” – “You’ll be charged based on your selected plan unless canceled.”).
+   - **Live Demo Option**: Include a “Request a Demo” button linking to a contact form.
+   - **Social Proof**: Display logos of trusted companies (e.g., mockups like “Trusted by TechCorp, Innovate Ltd”).
+   - **Email Capture**: Add a “Not ready to sign up? Join our newsletter!” form for lead capture [Ref web ID: 0].
+
+8. **Security and Compliance**:
+   - Ensure GDPR compliance for users in Europe (e.g., cookie consent popup).
+   - Use HTTPS for all pages.
+   - Validate inputs to prevent XSS or injection attacks.
+
+9. **Deliverables**:
+   - A working prototype on Replit with the updated marketing website.
+   - Backend: Express.js server with APIs for Stripe integration, geolocation, and currency conversion.
+   - Frontend: React app with Tailwind CSS, including hero, features, pricing, screenshots, and signup sections.
+   - Documentation: A README with setup instructions, API endpoints, and Stripe integration steps.
+   - Sample Data: Mock screenshots and testimonials for the site.
+
+10. **Constraints**:
+    - Ensure UI consistency with the existing site (green/white color scheme, Tailwind CSS).
+    - Complete the revamp within 2 weeks, focusing on the trial signup flow, pricing, and screenshots first.
+    - Optimize for fast loading (e.g., use a CDN for images, minify CSS/JS).
