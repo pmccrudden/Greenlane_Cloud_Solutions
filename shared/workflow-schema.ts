@@ -123,7 +123,7 @@ export type ExecutionStatusType = typeof executionStatusTypes[number];
 
 // Data Source
 export const dataSource = pgTable("workflow_data_sources", {
-  id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().$defaultFn(() => nanoid()),
   workflowId: text("workflow_id").notNull(),
   tenantId: text("tenant_id").notNull(),
   type: text("type").notNull(),
@@ -140,7 +140,7 @@ export const insertDataSourceSchema = createInsertSchema(dataSource);
 
 // Data Join
 export const dataJoin = pgTable("workflow_data_joins", {
-  id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().$defaultFn(() => nanoid()),
   workflowId: text("workflow_id").notNull(),
   tenantId: text("tenant_id").notNull(),
   leftSourceId: text("left_source_id").notNull(),
@@ -158,7 +158,7 @@ export const insertDataJoinSchema = createInsertSchema(dataJoin);
 
 // Data Transformation
 export const dataTransformation = pgTable("workflow_data_transformations", {
-  id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().$defaultFn(() => nanoid()),
   workflowId: text("workflow_id").notNull(),
   tenantId: text("tenant_id").notNull(),
   type: text("type").notNull(),
@@ -175,7 +175,7 @@ export const insertDataTransformationSchema = createInsertSchema(dataTransformat
 
 // Rule Condition
 export const ruleCondition = pgTable("workflow_rule_conditions", {
-  id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().$defaultFn(() => nanoid()),
   workflowId: text("workflow_id").notNull(),
   tenantId: text("tenant_id").notNull(), 
   field: text("field").notNull(),
@@ -193,7 +193,7 @@ export const insertRuleConditionSchema = createInsertSchema(ruleCondition);
 
 // Action
 export const action = pgTable("workflow_actions", {
-  id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().$defaultFn(() => nanoid()),
   workflowId: text("workflow_id").notNull(),
   tenantId: text("tenant_id").notNull(),
   type: text("type").notNull(),
@@ -209,7 +209,7 @@ export const insertActionSchema = createInsertSchema(action);
 
 // Trigger
 export const trigger = pgTable("workflow_triggers", {
-  id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().$defaultFn(() => nanoid()),
   workflowId: text("workflow_id").notNull(),
   tenantId: text("tenant_id").notNull(),
   type: text("type").notNull(),
@@ -228,7 +228,7 @@ export const insertTriggerSchema = createInsertSchema(trigger);
 
 // Workflow
 export const workflow = pgTable("workflows", {
-  id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().$defaultFn(() => nanoid()),
   tenantId: text("tenant_id").notNull(),
   name: text("name").notNull(),
   description: text("description"),
@@ -246,7 +246,7 @@ export const insertWorkflowSchema = createInsertSchema(workflow);
 
 // Execution Log
 export const executionLog = pgTable("workflow_execution_logs", {
-  id: text("id").primaryKey().notNull().$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().$defaultFn(() => nanoid()),
   workflowId: text("workflow_id").notNull(),
   tenantId: text("tenant_id").notNull(),
   status: text("status").notNull(),
