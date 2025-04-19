@@ -47,6 +47,60 @@ const MemoryStore = createMemoryStore(session);
 // you might need
 
 export interface IStorage {
+  // Workflow methods
+  getAllWorkflows(tenantId: string): Promise<Workflow[]>;
+  getWorkflow(id: string, tenantId: string): Promise<Workflow | undefined>;
+  createWorkflow(data: InsertWorkflow): Promise<Workflow>;
+  updateWorkflow(id: string, data: Partial<Workflow>, tenantId: string): Promise<Workflow>;
+  deleteWorkflow(id: string, tenantId: string): Promise<Workflow>;
+  
+  // Workflow DataSource methods
+  getDataSources(workflowId: string, tenantId: string): Promise<DataSource[]>;
+  getDataSource(id: string, tenantId: string): Promise<DataSource | undefined>;
+  createDataSource(data: InsertDataSource): Promise<DataSource>;
+  updateDataSource(id: string, data: Partial<DataSource>, tenantId: string): Promise<DataSource>;
+  deleteDataSource(id: string, tenantId: string): Promise<DataSource>;
+  
+  // Workflow DataJoin methods
+  getDataJoins(workflowId: string, tenantId: string): Promise<DataJoin[]>;
+  getDataJoin(id: string, tenantId: string): Promise<DataJoin | undefined>;
+  createDataJoin(data: InsertDataJoin): Promise<DataJoin>;
+  updateDataJoin(id: string, data: Partial<DataJoin>, tenantId: string): Promise<DataJoin>;
+  deleteDataJoin(id: string, tenantId: string): Promise<DataJoin>;
+  
+  // Workflow Transformation methods
+  getDataTransformations(workflowId: string, tenantId: string): Promise<DataTransformation[]>;
+  getDataTransformation(id: string, tenantId: string): Promise<DataTransformation | undefined>; 
+  createDataTransformation(data: InsertDataTransformation): Promise<DataTransformation>;
+  updateDataTransformation(id: string, data: Partial<DataTransformation>, tenantId: string): Promise<DataTransformation>;
+  deleteDataTransformation(id: string, tenantId: string): Promise<DataTransformation>;
+  
+  // Workflow Rule Condition methods
+  getRuleConditions(workflowId: string, tenantId: string): Promise<RuleCondition[]>;
+  getRuleCondition(id: string, tenantId: string): Promise<RuleCondition | undefined>;
+  createRuleCondition(data: InsertRuleCondition): Promise<RuleCondition>;
+  updateRuleCondition(id: string, data: Partial<RuleCondition>, tenantId: string): Promise<RuleCondition>;
+  deleteRuleCondition(id: string, tenantId: string): Promise<RuleCondition>;
+  
+  // Workflow Action methods
+  getActions(workflowId: string, tenantId: string): Promise<Action[]>;
+  getAction(id: string, tenantId: string): Promise<Action | undefined>;
+  createAction(data: InsertAction): Promise<Action>;
+  updateAction(id: string, data: Partial<Action>, tenantId: string): Promise<Action>;
+  deleteAction(id: string, tenantId: string): Promise<Action>;
+  
+  // Workflow Trigger methods
+  getTriggers(workflowId: string, tenantId: string): Promise<Trigger[]>;
+  getTrigger(id: string, tenantId: string): Promise<Trigger | undefined>;
+  createTrigger(data: InsertTrigger): Promise<Trigger>;
+  updateTrigger(id: string, data: Partial<Trigger>, tenantId: string): Promise<Trigger>;
+  deleteTrigger(id: string, tenantId: string): Promise<Trigger>;
+  
+  // Workflow Execution Log methods
+  getExecutionLogs(workflowId: string, tenantId: string): Promise<ExecutionLog[]>;
+  getExecutionLog(id: string, tenantId: string): Promise<ExecutionLog | undefined>;
+  createExecutionLog(data: InsertExecutionLog): Promise<ExecutionLog>;
+  
   // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -1022,6 +1076,476 @@ export class DatabaseStorage implements IStorage {
     
     return newPost;
   }
+  
+  // Workflow methods
+  async getAllWorkflows(tenantId: string): Promise<Workflow[]> {
+    return db.select().from(workflow).where(eq(workflow.tenantId, tenantId));
+  }
+  
+  async getWorkflow(id: string, tenantId: string): Promise<Workflow | undefined> {
+    const [foundWorkflow] = await db
+      .select()
+      .from(workflow)
+      .where(and(
+        eq(workflow.id, id),
+        eq(workflow.tenantId, tenantId)
+      ));
+    
+    return foundWorkflow;
+  }
+  
+  async createWorkflow(data: InsertWorkflow): Promise<Workflow> {
+    const [newWorkflow] = await db.insert(workflow).values(data).returning();
+    return newWorkflow;
+  }
+  
+  async updateWorkflow(id: string, data: Partial<Workflow>, tenantId: string): Promise<Workflow> {
+    const [updatedWorkflow] = await db
+      .update(workflow)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(workflow.id, id),
+        eq(workflow.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!updatedWorkflow) {
+      throw new Error(`Workflow not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return updatedWorkflow;
+  }
+  
+  async deleteWorkflow(id: string, tenantId: string): Promise<Workflow> {
+    const [deletedWorkflow] = await db
+      .delete(workflow)
+      .where(and(
+        eq(workflow.id, id),
+        eq(workflow.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!deletedWorkflow) {
+      throw new Error(`Workflow not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return deletedWorkflow;
+  }
+  
+  // Workflow DataSource methods
+  async getDataSources(workflowId: string, tenantId: string): Promise<DataSource[]> {
+    return db
+      .select()
+      .from(dataSource)
+      .where(and(
+        eq(dataSource.workflowId, workflowId),
+        eq(dataSource.tenantId, tenantId)
+      ));
+  }
+  
+  async getDataSource(id: string, tenantId: string): Promise<DataSource | undefined> {
+    const [foundDataSource] = await db
+      .select()
+      .from(dataSource)
+      .where(and(
+        eq(dataSource.id, id),
+        eq(dataSource.tenantId, tenantId)
+      ));
+    
+    return foundDataSource;
+  }
+  
+  async createDataSource(data: InsertDataSource): Promise<DataSource> {
+    const [newDataSource] = await db.insert(dataSource).values(data).returning();
+    return newDataSource;
+  }
+  
+  async updateDataSource(id: string, data: Partial<DataSource>, tenantId: string): Promise<DataSource> {
+    const [updatedDataSource] = await db
+      .update(dataSource)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(dataSource.id, id),
+        eq(dataSource.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!updatedDataSource) {
+      throw new Error(`Data source not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return updatedDataSource;
+  }
+  
+  async deleteDataSource(id: string, tenantId: string): Promise<DataSource> {
+    const [deletedDataSource] = await db
+      .delete(dataSource)
+      .where(and(
+        eq(dataSource.id, id),
+        eq(dataSource.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!deletedDataSource) {
+      throw new Error(`Data source not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return deletedDataSource;
+  }
+  
+  // Workflow DataJoin methods
+  async getDataJoins(workflowId: string, tenantId: string): Promise<DataJoin[]> {
+    return db
+      .select()
+      .from(dataJoin)
+      .where(and(
+        eq(dataJoin.workflowId, workflowId),
+        eq(dataJoin.tenantId, tenantId)
+      ));
+  }
+  
+  async getDataJoin(id: string, tenantId: string): Promise<DataJoin | undefined> {
+    const [foundDataJoin] = await db
+      .select()
+      .from(dataJoin)
+      .where(and(
+        eq(dataJoin.id, id),
+        eq(dataJoin.tenantId, tenantId)
+      ));
+    
+    return foundDataJoin;
+  }
+  
+  async createDataJoin(data: InsertDataJoin): Promise<DataJoin> {
+    const [newDataJoin] = await db.insert(dataJoin).values(data).returning();
+    return newDataJoin;
+  }
+  
+  async updateDataJoin(id: string, data: Partial<DataJoin>, tenantId: string): Promise<DataJoin> {
+    const [updatedDataJoin] = await db
+      .update(dataJoin)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(dataJoin.id, id),
+        eq(dataJoin.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!updatedDataJoin) {
+      throw new Error(`Data join not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return updatedDataJoin;
+  }
+  
+  async deleteDataJoin(id: string, tenantId: string): Promise<DataJoin> {
+    const [deletedDataJoin] = await db
+      .delete(dataJoin)
+      .where(and(
+        eq(dataJoin.id, id),
+        eq(dataJoin.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!deletedDataJoin) {
+      throw new Error(`Data join not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return deletedDataJoin;
+  }
+  
+  // Workflow DataTransformation methods
+  async getDataTransformations(workflowId: string, tenantId: string): Promise<DataTransformation[]> {
+    return db
+      .select()
+      .from(dataTransformation)
+      .where(and(
+        eq(dataTransformation.workflowId, workflowId),
+        eq(dataTransformation.tenantId, tenantId)
+      ));
+  }
+  
+  async getDataTransformation(id: string, tenantId: string): Promise<DataTransformation | undefined> {
+    const [foundTransformation] = await db
+      .select()
+      .from(dataTransformation)
+      .where(and(
+        eq(dataTransformation.id, id),
+        eq(dataTransformation.tenantId, tenantId)
+      ));
+    
+    return foundTransformation;
+  }
+  
+  async createDataTransformation(data: InsertDataTransformation): Promise<DataTransformation> {
+    const [newTransformation] = await db.insert(dataTransformation).values(data).returning();
+    return newTransformation;
+  }
+  
+  async updateDataTransformation(id: string, data: Partial<DataTransformation>, tenantId: string): Promise<DataTransformation> {
+    const [updatedTransformation] = await db
+      .update(dataTransformation)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(dataTransformation.id, id),
+        eq(dataTransformation.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!updatedTransformation) {
+      throw new Error(`Data transformation not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return updatedTransformation;
+  }
+  
+  async deleteDataTransformation(id: string, tenantId: string): Promise<DataTransformation> {
+    const [deletedTransformation] = await db
+      .delete(dataTransformation)
+      .where(and(
+        eq(dataTransformation.id, id),
+        eq(dataTransformation.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!deletedTransformation) {
+      throw new Error(`Data transformation not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return deletedTransformation;
+  }
+  
+  // Workflow RuleCondition methods
+  async getRuleConditions(workflowId: string, tenantId: string): Promise<RuleCondition[]> {
+    return db
+      .select()
+      .from(ruleCondition)
+      .where(and(
+        eq(ruleCondition.workflowId, workflowId),
+        eq(ruleCondition.tenantId, tenantId)
+      ));
+  }
+  
+  async getRuleCondition(id: string, tenantId: string): Promise<RuleCondition | undefined> {
+    const [foundCondition] = await db
+      .select()
+      .from(ruleCondition)
+      .where(and(
+        eq(ruleCondition.id, id),
+        eq(ruleCondition.tenantId, tenantId)
+      ));
+    
+    return foundCondition;
+  }
+  
+  async createRuleCondition(data: InsertRuleCondition): Promise<RuleCondition> {
+    const [newCondition] = await db.insert(ruleCondition).values(data).returning();
+    return newCondition;
+  }
+  
+  async updateRuleCondition(id: string, data: Partial<RuleCondition>, tenantId: string): Promise<RuleCondition> {
+    const [updatedCondition] = await db
+      .update(ruleCondition)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(ruleCondition.id, id),
+        eq(ruleCondition.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!updatedCondition) {
+      throw new Error(`Rule condition not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return updatedCondition;
+  }
+  
+  async deleteRuleCondition(id: string, tenantId: string): Promise<RuleCondition> {
+    const [deletedCondition] = await db
+      .delete(ruleCondition)
+      .where(and(
+        eq(ruleCondition.id, id),
+        eq(ruleCondition.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!deletedCondition) {
+      throw new Error(`Rule condition not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return deletedCondition;
+  }
+  
+  // Workflow Action methods
+  async getActions(workflowId: string, tenantId: string): Promise<Action[]> {
+    return db
+      .select()
+      .from(action)
+      .where(and(
+        eq(action.workflowId, workflowId),
+        eq(action.tenantId, tenantId)
+      ));
+  }
+  
+  async getAction(id: string, tenantId: string): Promise<Action | undefined> {
+    const [foundAction] = await db
+      .select()
+      .from(action)
+      .where(and(
+        eq(action.id, id),
+        eq(action.tenantId, tenantId)
+      ));
+    
+    return foundAction;
+  }
+  
+  async createAction(data: InsertAction): Promise<Action> {
+    const [newAction] = await db.insert(action).values(data).returning();
+    return newAction;
+  }
+  
+  async updateAction(id: string, data: Partial<Action>, tenantId: string): Promise<Action> {
+    const [updatedAction] = await db
+      .update(action)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(action.id, id),
+        eq(action.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!updatedAction) {
+      throw new Error(`Action not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return updatedAction;
+  }
+  
+  async deleteAction(id: string, tenantId: string): Promise<Action> {
+    const [deletedAction] = await db
+      .delete(action)
+      .where(and(
+        eq(action.id, id),
+        eq(action.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!deletedAction) {
+      throw new Error(`Action not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return deletedAction;
+  }
+  
+  // Workflow Trigger methods
+  async getTriggers(workflowId: string, tenantId: string): Promise<Trigger[]> {
+    return db
+      .select()
+      .from(trigger)
+      .where(and(
+        eq(trigger.workflowId, workflowId),
+        eq(trigger.tenantId, tenantId)
+      ));
+  }
+  
+  async getTrigger(id: string, tenantId: string): Promise<Trigger | undefined> {
+    const [foundTrigger] = await db
+      .select()
+      .from(trigger)
+      .where(and(
+        eq(trigger.id, id),
+        eq(trigger.tenantId, tenantId)
+      ));
+    
+    return foundTrigger;
+  }
+  
+  async createTrigger(data: InsertTrigger): Promise<Trigger> {
+    const [newTrigger] = await db.insert(trigger).values(data).returning();
+    return newTrigger;
+  }
+  
+  async updateTrigger(id: string, data: Partial<Trigger>, tenantId: string): Promise<Trigger> {
+    const [updatedTrigger] = await db
+      .update(trigger)
+      .set({
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(trigger.id, id),
+        eq(trigger.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!updatedTrigger) {
+      throw new Error(`Trigger not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return updatedTrigger;
+  }
+  
+  async deleteTrigger(id: string, tenantId: string): Promise<Trigger> {
+    const [deletedTrigger] = await db
+      .delete(trigger)
+      .where(and(
+        eq(trigger.id, id),
+        eq(trigger.tenantId, tenantId)
+      ))
+      .returning();
+    
+    if (!deletedTrigger) {
+      throw new Error(`Trigger not found with id: ${id} for tenant: ${tenantId}`);
+    }
+    
+    return deletedTrigger;
+  }
+  
+  // Workflow Execution Log methods
+  async getExecutionLogs(workflowId: string, tenantId: string): Promise<ExecutionLog[]> {
+    return db
+      .select()
+      .from(executionLog)
+      .where(and(
+        eq(executionLog.workflowId, workflowId),
+        eq(executionLog.tenantId, tenantId)
+      ));
+  }
+  
+  async getExecutionLog(id: string, tenantId: string): Promise<ExecutionLog | undefined> {
+    const [foundLog] = await db
+      .select()
+      .from(executionLog)
+      .where(and(
+        eq(executionLog.id, id),
+        eq(executionLog.tenantId, tenantId)
+      ));
+    
+    return foundLog;
+  }
+  
+  async createExecutionLog(data: InsertExecutionLog): Promise<ExecutionLog> {
+    const [newLog] = await db.insert(executionLog).values(data).returning();
+    return newLog;
+  }
 }
 
 export class MemStorage implements IStorage {
@@ -1040,6 +1564,16 @@ export class MemStorage implements IStorage {
   private csvUploads: Map<number, CsvUpload>;
   private modules: Map<string, Module>;
   private communityPosts: Map<number, CommunityPost>;
+  
+  // Workflow storage
+  private workflows: Map<string, Workflow>;
+  private dataSources: Map<string, DataSource>;
+  private dataJoins: Map<string, DataJoin>;
+  private dataTransformations: Map<string, DataTransformation>;
+  private ruleConditions: Map<string, RuleCondition>;
+  private actions: Map<string, Action>;
+  private triggers: Map<string, Trigger>;
+  private executionLogs: Map<string, ExecutionLog>;
   
   currentUserId: number;
   currentAccountId: number;
@@ -1072,6 +1606,16 @@ export class MemStorage implements IStorage {
     this.csvUploads = new Map();
     this.modules = new Map();
     this.communityPosts = new Map();
+    
+    // Initialize workflow maps
+    this.workflows = new Map();
+    this.dataSources = new Map();
+    this.dataJoins = new Map();
+    this.dataTransformations = new Map();
+    this.ruleConditions = new Map();
+    this.actions = new Map();
+    this.triggers = new Map();
+    this.executionLogs = new Map();
     
     this.currentUserId = 1;
     this.currentAccountId = 1;
