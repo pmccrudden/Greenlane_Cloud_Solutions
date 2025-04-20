@@ -119,8 +119,9 @@ export default function FreeTrialSignup() {
     
     // Add selected addons
     const addonPrice = selectedAddons.reduce((total, addonId) => {
-      const addon = productsData.products[addonId as keyof typeof productsData.products];
-      return total + addon.prices[billingCycle].amount;
+      const productKey = addonId as keyof typeof productsData.products;
+      if (!productsData.products[productKey]) return total;
+      return total + productsData.products[productKey].prices[billingCycle].amount;
     }, 0);
     
     return coreCrmPrice + addonPrice;
@@ -428,12 +429,16 @@ export default function FreeTrialSignup() {
                       <span>{formatCurrency(productsData.products.coreCrm.prices[billingCycle].amount * userCount)}</span>
                     </div>
                     
-                    {selectedAddons.map(addonId => (
-                      <div className="flex justify-between mb-2" key={addonId}>
-                        <span>{productsData.products[addonId as keyof typeof productsData.products].name}</span>
-                        <span>{formatCurrency(productsData.products[addonId as keyof typeof productsData.products].prices[billingCycle].amount)}</span>
-                      </div>
-                    ))}
+                    {productsData && selectedAddons.map(addonId => {
+                      const productKey = addonId as keyof typeof productsData.products;
+                      if (!productsData.products[productKey]) return null;
+                      return (
+                        <div className="flex justify-between mb-2" key={addonId}>
+                          <span>{productsData.products[productKey].name}</span>
+                          <span>{formatCurrency(productsData.products[productKey].prices[billingCycle].amount)}</span>
+                        </div>
+                      );
+                    })}
                     
                     <Separator className="my-2" />
                     
