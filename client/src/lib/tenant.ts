@@ -8,28 +8,47 @@
  */
 export function getTenantFromUrl(): string | null {
   const host = window.location.hostname;
+  const search = window.location.search;
   
-  // For localhost development, use a custom header or query param
-  if (host.includes('localhost') || host.includes('127.0.0.1')) {
-    // Check URL query param ?tenant=name for local testing
-    const params = new URLSearchParams(window.location.search);
-    return params.get('tenant');
-  }
-
-  // Handle Replit preview URLs which shouldn't be treated as tenant URLs
-  if (host.includes('replit.dev') || host.includes('repl.co')) {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('tenant');
+  console.log('getTenantFromUrl - host:', host, 'search:', search);
+  
+  // For localhost development or Replit, use query param or sessionStorage
+  if (host.includes('localhost') || host.includes('127.0.0.1') || 
+      host.includes('replit.dev') || host.includes('repl.co')) {
+    
+    // First check URL query param ?tenant=name
+    const params = new URLSearchParams(search);
+    const tenantFromQuery = params.get('tenant');
+    
+    if (tenantFromQuery) {
+      console.log('Tenant from query param:', tenantFromQuery);
+      // Persist to sessionStorage for subsequent requests
+      sessionStorage.setItem('current_tenant', tenantFromQuery);
+      return tenantFromQuery;
+    }
+    
+    // If no query param, check sessionStorage
+    const tenantFromSession = sessionStorage.getItem('current_tenant');
+    
+    if (tenantFromSession) {
+      console.log('Tenant from sessionStorage:', tenantFromSession);
+      return tenantFromSession;
+    }
+    
+    console.log('No tenant found in query param or sessionStorage');
+    return null;
   }
 
   // For production, check subdomain
   // e.g. facebook.greenlanecloudsolutions.com -> 'facebook'
   const parts = host.split('.');
   if (parts.length >= 3 && !host.startsWith('www.')) {
+    console.log('Production subdomain detected:', parts[0]);
     return parts[0];
   }
   
   // Main domain without tenant
+  console.log('No tenant detected in URL');
   return null;
 }
 
@@ -80,14 +99,20 @@ export function redirectToMainDomain(): void {
 }
 
 /**
- * Set tenant ID in request headers for local development
+ * Set tenant ID in request headers for local development or Replit environment
  * @param headers Request headers
  * @returns Updated headers
  */
 export function setTenantHeader(headers: Record<string, string> = {}): Record<string, string> {
   const tenantId = getTenantFromUrl();
   
-  if (tenantId && (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1'))) {
+  if (tenantId && (
+    window.location.hostname.includes('localhost') || 
+    window.location.hostname.includes('127.0.0.1') ||
+    window.location.hostname.includes('replit.dev') || 
+    window.location.hostname.includes('repl.co')
+  )) {
+    console.log('Setting X-Tenant-ID header:', tenantId);
     return {
       ...headers,
       'X-Tenant-ID': tenantId
@@ -106,7 +131,10 @@ export function useTenantHeaders(): Record<string, string> {
   const headers: Record<string, string> = {};
   
   if (tenantId) {
+    console.log('useTenantHeaders setting X-Tenant-ID:', tenantId);
     headers['X-Tenant-ID'] = tenantId;
+  } else {
+    console.log('useTenantHeaders: No tenant ID available');
   }
   
   return headers;

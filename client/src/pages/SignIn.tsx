@@ -15,9 +15,28 @@ export default function SignIn() {
     if (!isTenant) {
       const urlParams = new URLSearchParams(window.location.search);
       const tenant = urlParams.get('tenant');
+      console.log("SignIn useEffect - tenant param:", tenant);
       
       if (tenant) {
-        window.location.href = `https://${tenant}.greenlanecloudsolutions.com/signin`;
+        console.log("SignIn useEffect - redirecting to tenant:", tenant);
+        
+        // For local development or Replit preview environment
+        if (window.location.hostname.includes('localhost') || 
+            window.location.hostname.includes('127.0.0.1') ||
+            window.location.hostname.includes('replit.dev') ||
+            window.location.hostname.includes('repl.co')) {
+          
+          // Set tenant as part of query parameter
+          console.log("Setting tenant in query param for:", tenant);
+          
+          // We need to store this in localStorage or sessionStorage because we're using the same origin
+          // and a hard page reload, so the query param would be lost
+          console.log("Storing tenant in sessionStorage");
+          sessionStorage.setItem('current_tenant', tenant);
+        } else {
+          // Redirect to tenant subdomain
+          window.location.href = `https://${tenant}.greenlanecloudsolutions.com/signin`;
+        }
         return;
       }
     }

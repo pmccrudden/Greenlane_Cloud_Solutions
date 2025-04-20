@@ -45,15 +45,29 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
       // If not on tenant page and tenant name is provided, redirect to tenant URL
       if (!isTenant && values.tenant) {
         const tenantName = values.tenant.trim().toLowerCase();
+        console.log('Tenant name entered:', tenantName);
         
         if (tenantName) {
-          // For local development
-          if (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1')) {
-            // Redirect to local tenant URL with query parameter
-            window.location.href = `${window.location.origin}/signin?tenant=${tenantName}`;
+          console.log('Redirecting to tenant URL...');
+          
+          // For local development or Replit preview environment
+          if (window.location.hostname.includes('localhost') || 
+              window.location.hostname.includes('127.0.0.1') ||
+              window.location.hostname.includes('replit.dev') ||
+              window.location.hostname.includes('repl.co')) {
+            
+            // Store the tenant in sessionStorage
+            console.log('Storing tenant in sessionStorage:', tenantName);
+            sessionStorage.setItem('current_tenant', tenantName);
+            
+            // Refresh the page to trigger tenant detection from sessionStorage
+            console.log('Refreshing page to use tenant from sessionStorage');
+            window.location.reload();
           } else {
-            // Redirect to tenant subdomain
-            window.location.href = `https://${tenantName}.greenlanecloudsolutions.com/signin`;
+            // Redirect to tenant subdomain in production
+            const redirectUrl = `https://${tenantName}.greenlanecloudsolutions.com/signin`;
+            console.log('Production redirect to:', redirectUrl);
+            window.location.href = redirectUrl;
           }
           return;
         }
