@@ -257,7 +257,7 @@ export default function ModuleManagement() {
   
   // Initialize support tickets settings from modules when data changes
   useEffect(() => {
-    const supportTicketsModule = modules.find((m: Module) => m.id === "supportTickets");
+    const supportTicketsModule = modules.find((m: Module) => m.id === "support-tickets");
     if (supportTicketsModule?.settings) {
       // Define default settings
       const defaultSettings = {
@@ -372,7 +372,7 @@ export default function ModuleManagement() {
         // Use defaults if no settings
         setCommunitySettings(defaultSettings);
       }
-    } else if (module.id === "supportTickets") {
+    } else if (module.id === "support-tickets") {
       const defaultSettings = {
         ticketCategories: ['Technical', 'Billing', 'Feature Request', 'General'],
         autoAssignment: true,
@@ -431,7 +431,7 @@ export default function ModuleManagement() {
         id: selectedModule.id,
         settings: communitySettings
       });
-    } else if (selectedModule.id === "supportTickets") {
+    } else if (selectedModule.id === "support-tickets") {
       updateModuleSettingsMutation.mutate({
         id: selectedModule.id,
         settings: supportTicketsSettings

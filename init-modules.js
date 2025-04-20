@@ -34,8 +34,7 @@ const modules = [
         createSupportTicketsFromPosts: false,
         notifyOnNegativeSentiment: false,
       }
-    },
-    status: 'inactive'
+    }
   },
   {
     id: 'support-tickets',
@@ -61,8 +60,7 @@ const modules = [
         syncWithCommunity: false,
         createContactsFromTickets: true
       }
-    },
-    status: 'inactive'
+    }
   },
   {
     id: 'knowledge-base',
@@ -137,12 +135,12 @@ async function initModules() {
           );
           console.log(`Updated module: ${module.id}`);
         } else {
-          // Insert new module
+          // Insert new module - note we're removing the status field as it doesn't exist in the table
           await client.query(
-            `INSERT INTO modules (id, name, description, enabled, version, settings, tenant_id, status)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            `INSERT INTO modules (id, name, description, enabled, version, settings, tenant_id)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
             [module.id, module.name, module.description, module.enabled, module.version, 
-             JSON.stringify(module.settings), TENANT_ID, module.status]
+             JSON.stringify(module.settings), TENANT_ID]
           );
           console.log(`Created module: ${module.id}`);
         }
@@ -152,10 +150,10 @@ async function initModules() {
       
       for (const module of modules) {
         await client.query(
-          `INSERT INTO modules (id, name, description, enabled, version, settings, tenant_id, status)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          `INSERT INTO modules (id, name, description, enabled, version, settings, tenant_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
           [module.id, module.name, module.description, module.enabled, module.version, 
-           JSON.stringify(module.settings), TENANT_ID, module.status]
+           JSON.stringify(module.settings), TENANT_ID]
         );
         console.log(`Created module: ${module.id}`);
       }
