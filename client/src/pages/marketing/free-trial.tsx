@@ -174,6 +174,8 @@ export default function FreeTrialSignup() {
       
       // Redirect to Stripe checkout
       if (result.url) {
+        setIsRedirecting(true);
+        // Open Stripe checkout in the current window
         window.location.href = result.url;
         return;
       }
@@ -211,7 +213,7 @@ export default function FreeTrialSignup() {
             <Button 
               variant="outline" 
               className="text-white border-white hover:bg-white/20"
-              onClick={() => setLocation('/marketing')}
+              onClick={() => setLocation('/')}
             >
               Back to Home
             </Button>
