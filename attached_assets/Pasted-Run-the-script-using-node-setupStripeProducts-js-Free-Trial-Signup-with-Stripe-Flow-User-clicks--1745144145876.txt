@@ -1,0 +1,69 @@
+Run the script using: node setupStripeProducts.js.
+Free Trial Signup with Stripe:
+Flow:
+User clicks “Start Your 14-Day Free Trial” button.
+Redirect to a signup form: fields for Name, Email, Company Name, Password, and Number of Users.
+Show a pricing summary based on selected users and add-ons (default to 3 users, no add-ons).
+Redirect to Stripe Checkout form requiring card details for a 14-day free trial.
+Post-signup, create a tenant (e.g., company1.greenlanecloudsolutions.com) and email the user with access details.
+Stripe Integration:
+Use Stripe Checkout to handle the trial signup with a $0 initial charge.
+Set a 14-day trial period, after which the user is automatically charged the selected plan unless canceled.
+Provide a “Cancel Subscription” option in the user’s account dashboard using Stripe Customer Portal.
+Display a confirmation: “Your 14-day free trial has started! You’ll be charged $[amount] on [date] unless canceled.”
+Error Handling:
+Validate form inputs and show error messages (e.g., “Invalid email”).
+Handle Stripe errors (e.g., declined card) with user-friendly messages.
+Product Packaging and Pricing:
+Core CRM:
+Priced at $25/user/month (USA base price).
+Minimum 3 users per tenant ($75/month minimum).
+Features: Contact Management, Deal Tracking, Task Management, Basic Analytics.
+Add-Ons (Flat Fee):
+Community: $40/month (Discussion forums, user groups, engagement analytics).
+Marketing Hub: $60/month (Email campaigns, drip campaigns, marketing automation).
+Support Centre: $30/month (Ticketing system, live chat, knowledge base).
+Billing Options:
+Monthly billing by default.
+Annual billing with a 10% discount (e.g., Core CRM: $22.50/user/month).
+UI Presentation:
+Show the core CRM as the foundation with a user count selector (default to 3 users).
+Display add-ons as cards with checkboxes (e.g., “Add Community: +$40/month”) and brief descriptions.
+Show a “Total: $X/month” summary that updates as users adjust users/add-ons.
+Dynamic Pricing by Location:
+Regions: Europe, Australia, USA, Canada, UK.
+Base Pricing (USA): As defined above.
+Location-Based Adjustments:
+USA: Base price (USD).
+Canada: +5% (CAD conversion).
+UK: +10% (GBP conversion).
+Europe: +15% (EUR conversion).
+Australia: +20% (AUD conversion).
+Implementation:
+Use ipapi.co to detect the user’s location on page load.
+Adjust prices using exchangerate-api.com for real-time currency conversion.
+Display prices in the user’s local currency (e.g., “$25/user/month (USD)” for USA, “€28.75/user/month (EUR)” for Europe).
+Allow manual region selection via a dropdown if geolocation is incorrect.
+In Stripe Checkout, pass the base USD price and let Stripe handle currency conversion for the user’s payment method.
+Professional Screenshots with Feature Benefits:
+Screenshots Section:
+Create a “See It in Action” section with a grid of 5 screenshots.
+Use placeholder images (e.g., from Placeit) framed in device mockups (laptop/tablet screens).
+Titles and Briefs:
+Screenshot 1: “Unified Dashboard” – “Manage contacts, deals, and tasks in one place.”
+Screenshot 2: “Engage Your Community” – “Build forums and groups to connect with customers.”
+Screenshot 3: “Automate Marketing” – “Create email campaigns and drip sequences effortlessly.”
+Screenshot 4: “Support Made Easy” – “Resolve issues with a ticketing system and live chat.”
+Screenshot 5: “Actionable Analytics” – “Track performance with real-time insights.”
+Design:
+Add subtle animations (e.g., fade-in on scroll) for engagement.
+Additional Conversion Features:
+Testimonials: Add 2-3 customer testimonials with quotes, names, and company logos.
+FAQ Section: Address objections (e.g., “What happens after the trial?” – “You’ll be charged $[amount] unless canceled.”).
+Live Demo Option: Include a “Request a Demo” button linking to a contact form.
+Social Proof: Display logos of trusted companies (e.g., “Trusted by TechCorp, Innovate Ltd”).
+Email Capture: Add a “Not ready to sign up? Join our newsletter!” form.
+Security and Compliance:
+Ensure GDPR compliance (cookie consent popup for Europe).
+Use HTTPS for all pages.
+Validate inputs to prevent XSS or injection attacks.

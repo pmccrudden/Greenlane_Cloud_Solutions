@@ -1,0 +1,94 @@
+{
+  "products": {
+    "coreCrm": {
+      "id": "prod_SAFSxDtiVfDp5j",
+      "name": "Greenlane Core CRM",
+      "description": "Contact Management, Deal Tracking, Task Management, Basic Analytics",
+      "prices": {
+        "monthly": {
+          "id": "price_1RFux6Q3SzS5zRzfNJfI6YzE",
+          "amount": 25,
+          "interval": "month",
+          "lookup_key": "core_crm_monthly"
+        },
+        "annual": {
+          "id": "price_1RFux6Q3SzS5zRzftipc8xZr",
+          "amount": 270,
+          "interval": "year",
+          "lookup_key": "core_crm_annual"
+        }
+      }
+    },
+    "community": {
+      "id": "prod_SAFSU0m7bnXJWy",
+      "name": "Community Add-On",
+      "description": "Discussion forums, user groups, engagement analytics",
+      "prices": {
+        "monthly": {
+          "id": "price_1RFux7Q3SzS5zRzfcjQma2Rb",
+          "amount": 40,
+          "interval": "month",
+          "lookup_key": "community_monthly"
+        },
+        "annual": {
+          "id": "price_1RFux7Q3SzS5zRzfhQQJTSnb",
+          "amount": 432,
+          "interval": "year",
+          "lookup_key": "community_annual"
+        }
+      }
+    },
+    "marketingHub": {
+      "id": "prod_SAFSI3eiU5N4Fc",
+      "name": "Marketing Hub Add-On",
+      "description": "Email campaigns, drip campaigns, marketing automation",
+      "prices": {
+        "monthly": {
+          "id": "price_1RFux7Q3SzS5zRzfgY2D0G9G",
+          "amount": 60,
+          "interval": "month",
+          "lookup_key": "marketingHub_monthly"
+        },
+        "annual": {
+          "id": "price_1RFux8Q3SzS5zRzfW3GITcfY",
+          "amount": 648,
+          "interval": "year",
+          "lookup_key": "marketingHub_annual"
+        }
+      }
+    },
+    "supportCentre": {
+      "id": "prod_SAFShH4popOwum",
+      "name": "Support Centre Add-On",
+      "description": "Ticketing system, live chat, knowledge base",
+      "prices": {
+        "monthly": {
+          "id": "price_1RFux8Q3SzS5zRzfhGjvZdep",
+          "amount": 30,
+          "interval": "month",
+          "lookup_key": "supportCentre_monthly"
+        },
+        "annual": {
+          "id": "price_1RFux8Q3SzS5zRzf08jOkkh8",
+          "amount": 324,
+          "interval": "year",
+          "lookup_key": "supportCentre_annual"
+        }
+      }
+    }
+  },
+  "regionMultipliers": {
+    "usa": 1,
+    "canada": 1.05,
+    "uk": 1.1,
+    "europe": 1.15,
+    "australia": 1.2
+  },
+  "currencyCodes": {
+    "usa": "USD",
+    "canada": "CAD",
+    "uk": "GBP",
+    "europe": "EUR",
+    "australia": "AUD"
+  }
+}

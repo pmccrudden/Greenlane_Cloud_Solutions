@@ -1,0 +1,109 @@
+Project: Eye-Catching Marketing Website for Greenlane Cloud Solutions with Stripe Product Setup
+
+Objective: Revamp the marketing website for Greenlane Cloud Solutions (hosted at greenlanecloudsolutions.com) to be more eye-catching, modern, and optimized for maximizing sales and lead conversions. The site should guide users to sign up for a 14-day free trial via Stripe, requiring card details upfront, with automatic charging if not canceled before the trial ends. The product packaging should include the core CRM priced by usage (number of users), with add-ons (Community, Marketing Hub, Support Centre) as optional extras. Pricing must dynamically adjust based on the user’s location (Europe, Australia, USA, Canada, UK) and ensure profitability while remaining competitive. The website should feature professional-looking screenshots of the product with short titles or briefs explaining the benefit of each feature or platform. Additionally, set up the Stripe products programmatically using the Stripe API to enable the payment flow.
+
+Requirements:
+
+1. **Tech Stack**:
+   - Frontend: React.js with Tailwind CSS for a modern, responsive UI (consistent with the existing green/white color scheme).
+   - Backend: Node.js with Express.js for handling API requests, Stripe integration, and location-based pricing.
+   - External APIs: Stripe for payment processing, IP geolocation API (e.g., ipapi.co) for detecting user location, currency conversion API (e.g., exchangerate-api.com).
+   - Hosting: Designed for deployment on Google Cloud (GKE, MongoDB Atlas, Cloud Storage, Cloud CDN).
+
+2. **Design and User Experience**:
+   - **Eye-Catching and Modern**:
+     - Use bold typography, vibrant gradients (e.g., green to white transitions), and animated elements (e.g., hover effects, scrolling animations).
+     - Incorporate rich media like animated banners or hero images to capture attention.
+     - Ensure a mobile-optimized, responsive design with a consistent brand experience.
+   - **Conversion-Driven Flow**:
+     - Place a prominent “Start Your 14-Day Free Trial” CTA button in the hero section, sticky header, and key sections (e.g., pricing, features).
+     - Use urgency cues like “Limited Offer” and “No upfront charge” (clarify Stripe charges post-trial).
+     - Add trust signals: security badges (“Secured by Stripe”), testimonials, and client logos.
+   - **Navigation**:
+     - Sticky header with links: Home, Features, Pricing, Screenshots, Sign Up, Log In.
+     - Footer with links: Contact, Privacy Policy, Terms of Service, Support.
+
+3. **Stripe Product Setup**:
+   - **Objective**: Programmatically create the products and prices in Stripe to enable the payment flow.
+   - **Stripe API Key**:
+     - Add the Stripe Secret Key as an environment variable in Replit (e.g., `STRIPE_SECRET_KEY=sk_test_xxx`). The key will be provided separately via a secure channel (e.g., direct message to the Replit team). Do not hardcode the key in the source code.
+   - **Products and Prices**:
+     - **Core CRM**:
+       - Name: "Greenlane Core CRM"
+       - Description: "Contact Management, Deal Tracking, Task Management, Basic Analytics"
+       - Pricing:
+         - Monthly: $25/user/month.
+         - Annual: $22.50/user/month ($270/year, 10% discount).
+       - Type: Per-seat licensing (recurring, per user).
+       - Lookup Keys: `core_crm_monthly`, `core_crm_annual`.
+     - **Community Add-On**:
+       - Name: "Community Add-On"
+       - Description: "Discussion forums, user groups, engagement analytics"
+       - Pricing:
+         - Monthly: $40/month.
+         - Annual: $36/month ($432/year).
+       - Type: Flat fee (recurring).
+       - Lookup Keys: `community_monthly`, `community_annual`.
+     - **Marketing Hub Add-On**:
+       - Name: "Marketing Hub Add-On"
+       - Description: "Email campaigns, drip campaigns, marketing automation"
+       - Pricing:
+         - Monthly: $60/month.
+         - Annual: $54/month ($648/year).
+       - Type: Flat fee (recurring).
+       - Lookup Keys: `marketingHub_monthly`, `marketingHub_annual`.
+     - **Support Centre Add-On**:
+       - Name: "Support Centre Add-On"
+       - Description: "Ticketing system, live chat, knowledge base"
+       - Pricing:
+         - Monthly: $30/month.
+         - Annual: $27/month ($324/year).
+       - Type: Flat fee (recurring).
+       - Lookup Keys: `supportCentre_monthly`, `supportCentre_annual`.
+   - **Implementation**:
+     - Write a Node.js script (`setupStripeProducts.js`) to create the products and prices using the Stripe API.
+     - Run the script once in Replit to populate Stripe with the products.
+     - Store the generated `price_id`s in a configuration file (e.g., `stripeConfig.json`) for use in the payment flow.
+     - Example script structure:
+       ```javascript
+       const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+       const fs = require("fs");
+
+       async function setupStripeProducts() {
+         // Create Core CRM product
+         const coreCrmProduct = await stripe.products.create({
+           name: "Greenlane Core CRM",
+           description: "Contact Management, Deal Tracking, Task Management, Basic Analytics",
+         });
+
+         // Create Core CRM prices
+         const coreCrmMonthlyPrice = await stripe.prices.create({
+           product: coreCrmProduct.id,
+           unit_amount: 2500, // $25 in cents
+           currency: "usd",
+           recurring: { interval: "month", usage_type: "licensed" },
+           lookup_key: "core_crm_monthly",
+         });
+
+         const coreCrmAnnualPrice = await stripe.prices.create({
+           product: coreCrmProduct.id,
+           unit_amount: 27000, // $270/year in cents
+           currency: "usd",
+           recurring: { interval: "year", usage_type: "licensed" },
+           lookup_key: "core_crm_annual",
+         });
+
+         // Repeat for Community, Marketing Hub, Support Centre
+         // ...
+
+         // Save price IDs to a config file
+         const config = {
+           coreCrmMonthlyPriceId: coreCrmMonthlyPrice.id,
+           coreCrmAnnualPriceId: coreCrmAnnualPrice.id,
+           // Add other price IDs
+         };
+         fs.writeFileSync("stripeConfig.json", JSON.stringify(config, null, 2));
+         console.log("Stripe products and prices created successfully!");
+       }
+
+       setupStripeProducts().catch(console.error);
