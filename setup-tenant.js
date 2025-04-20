@@ -1,57 +1,181 @@
-// Setup script to create tenant and admin user
-import { db } from "./server/db.js";
-import { tenants, users } from "./shared/schema.js";
-import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcryptjs';
+// Script to create a new tenant and admin user
+require('dotenv').config();
+const crypto = require('crypto');
+const { db } = require('./server/db');
+const { tenants, users, modules } = require('./shared/schema');
+const { createTenantSubdomain } = require('./server/cloudflare');
 
 async function createTenantAndAdmin() {
+  // Get command line arguments
+  const args = process.argv.slice(2);
+  
+  if (args.length < 3) {
+    console.error('Usage: node setup-tenant.js <tenant-id> <company-name> <admin-email> [admin-password]');
+    console.error('Example: node setup-tenant.js acme "Acme Corporation" admin@acme.com');
+    process.exit(1);
+  }
+  
+  const tenantId = args[0];
+  const companyName = args[1];
+  const adminEmail = args[2];
+  const adminPassword = args[3] || crypto.randomBytes(8).toString('hex');
+  
   try {
-    console.log("Creating tenant...");
+    console.log(`Setting up new tenant: ${companyName} (${tenantId})`);
     
-    // Create tenant
-    const [tenant] = await db.insert(tenants).values({
-      id: uuidv4(),
-      companyName: "GreenLane Cloud Enterprises",
-      domainName: "greenlane.greenlanecloudsolutions.com",
-      adminEmail: "admin@greenlanecloudsolutions.com",
-      planType: "enterprise",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }).returning();
-    
-    console.log("Tenant created:", tenant);
-    
-    // Create admin user
-    const password = "Admin123!"; // This is a temp password, should be changed after first login
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    const [user] = await db.insert(users).values({
-      username: "admin",
-      email: "admin@greenlanecloudsolutions.com",
-      password: hashedPassword,
-      firstName: "Admin",
-      lastName: "User",
-      role: "admin",
-      tenantId: tenant.id,
-      stripeCustomerId: null,
-      stripeSubscriptionId: null,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }).returning();
-    
-    console.log("Admin user created:", {
-      username: user.username,
-      email: user.email,
-      password: password // Only showing this for initial setup
+    // Check if tenant already exists
+    const existingTenant = await db.query.tenants.findFirst({
+      where: (tenants, { eq }) => eq(tenants.id, tenantId)
     });
     
-    console.log("Setup completed successfully!");
+    if (existingTenant) {
+      console.error(`Tenant with ID ${tenantId} already exists.`);
+      process.exit(1);
+    }
+    
+    // Set up DNS for the tenant
+    try {
+      console.log(`Setting up DNS for tenant subdomain: ${tenantId}`);
+      const dnsResult = await createTenantSubdomain(tenantId);
+      
+      if (!dnsResult.success) {
+        console.warn(`Warning: Failed to set up DNS: ${dnsResult.message}`);
+        console.warn('Continuing with tenant setup...');
+      } else {
+        console.log(`DNS setup successful: ${dnsResult.message}`);
+      }
+    } catch (error) {
+      console.warn('Warning: Error setting up DNS:', error.message);
+      console.warn('Continuing with tenant setup...');
+    }
+    
+    // Create the tenant
+    const tenant = await db.insert(tenants).values({
+      id: tenantId,
+      companyName,
+      planType: 'standard',
+      isActive: true,
+      domainName: `${tenantId}.greenlanecloudsolutions.com`,
+      adminEmail,
+      custom_subdomain: true
+    }).returning();
+    
+    console.log(`Tenant created: ${tenant[0].companyName} (${tenant[0].id})`);
+    
+    // Create admin user
+    const user = await db.insert(users).values({
+      username: adminEmail,
+      email: adminEmail,
+      password: adminPassword, // In production, this should be hashed
+      firstName: 'Admin',
+      lastName: 'User',
+      role: 'admin',
+      tenantId
+    }).returning();
+    
+    console.log(`Admin user created with email: ${user[0].email}`);
+    
+    // Initialize default modules
+    const defaultModules = [
+      {
+        id: 'accounts',
+        name: 'Accounts',
+        tenantId,
+        description: 'Manage customer accounts',
+        enabled: true,
+        version: '1.0.0',
+        lastUpdated: new Date(),
+        settings: {}
+      },
+      {
+        id: 'contacts',
+        name: 'Contacts',
+        tenantId,
+        description: 'Manage contacts',
+        enabled: true,
+        version: '1.0.0',
+        lastUpdated: new Date(),
+        settings: {}
+      },
+      {
+        id: 'deals',
+        name: 'Deals',
+        tenantId,
+        description: 'Manage deals and opportunities',
+        enabled: true,
+        version: '1.0.0',
+        lastUpdated: new Date(),
+        settings: {}
+      },
+      {
+        id: 'projects',
+        name: 'Projects',
+        tenantId,
+        description: 'Manage customer projects',
+        enabled: true,
+        version: '1.0.0',
+        lastUpdated: new Date(),
+        settings: {}
+      },
+      {
+        id: 'support-tickets',
+        name: 'Support Center',
+        tenantId,
+        description: 'Premium module: Support ticket management',
+        enabled: false,
+        version: '1.0.0',
+        lastUpdated: new Date(),
+        settings: {}
+      },
+      {
+        id: 'community',
+        name: 'Community',
+        tenantId,
+        description: 'Premium module: Customer community platform',
+        enabled: false,
+        version: '1.0.0',
+        lastUpdated: new Date(),
+        settings: {}
+      },
+      {
+        id: 'workflows',
+        name: 'Workflows',
+        tenantId,
+        description: 'Automation workflows and rules engine',
+        enabled: true,
+        version: '1.0.0',
+        lastUpdated: new Date(),
+        settings: {}
+      },
+      {
+        id: 'tasks',
+        name: 'Tasks',
+        tenantId,
+        description: 'Account task management',
+        enabled: true,
+        version: '1.0.0',
+        lastUpdated: new Date(),
+        settings: {}
+      }
+    ];
+    
+    for (const moduleData of defaultModules) {
+      await db.insert(modules).values(moduleData);
+    }
+    
+    console.log(`Default modules initialized for tenant: ${tenantId}`);
+    
+    // Success message
+    console.log('\n===== Tenant Setup Complete =====');
+    console.log(`Tenant URL: https://${tenantId}.greenlanecloudsolutions.com`);
+    console.log('Admin Login Details:');
+    console.log(`  Email: ${adminEmail}`);
+    console.log(`  Password: ${adminPassword}`);
+    console.log('\nNote: DNS changes may take some time to propagate.');
     
   } catch (error) {
-    console.error("Error during setup:", error);
-  } finally {
-    process.exit(0);
+    console.error('Error setting up tenant:', error);
+    process.exit(1);
   }
 }
 

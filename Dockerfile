@@ -35,6 +35,9 @@ COPY --from=builder /app/server ./server
 COPY --from=builder /app/shared ./shared
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 
+# Copy configuration files
+COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
+
 # Expose port
 EXPOSE 8080
 

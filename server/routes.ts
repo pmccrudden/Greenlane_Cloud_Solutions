@@ -845,28 +845,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: "Subdomain is required" });
         }
         
-        // Validate subdomain format
-        const subdomainPattern = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
-        if (!subdomainPattern.test(subdomain)) {
-          return res.status(400).json({
-            available: false,
-            message: "Invalid subdomain format"
-          });
+        // Import the Cloudflare integration
+        const { verifySubdomainAvailability } = require('./cloudflare');
+        
+        // Perform comprehensive subdomain validation and availability check
+        const availabilityResult = await verifySubdomainAvailability(subdomain);
+        
+        // If the subdomain is available according to Cloudflare validation,
+        // also check if it's available in our database
+        if (availabilityResult.available) {
+          // Check if the subdomain (tenant ID) is already taken in our database
+          const existingTenant = await storage.getTenant(subdomain);
+          
+          if (existingTenant) {
+            return res.json({
+              available: false,
+              message: "Subdomain is already in use"
+            });
+          }
         }
         
-        // Check if the subdomain (tenant ID) is already taken
-        const existingTenant = await storage.getTenant(subdomain);
-        
-        // Return availability status
-        res.json({
-          available: !existingTenant,
-          message: existingTenant ? "Subdomain is unavailable" : "Subdomain is available"
-        });
+        // Return the availability result from our comprehensive check
+        res.json(availabilityResult);
       } catch (error: any) {
         console.error("Error checking subdomain:", error);
         res.status(500).json({ 
-          message: "Error checking subdomain availability",
-          error: error.message 
+          available: false,
+          message: "Error checking subdomain availability"
         });
       }
     });
@@ -952,6 +957,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (customer.metadata.tenantId) {
             const tenantId = customer.metadata.tenantId;
             const companyName = customer.metadata.companyName;
+            const isCustomSubdomain = customer.metadata.customSubdomain === 'true';
+            
+            // Import the Cloudflare integration
+            const { createTenantSubdomain } = require('./cloudflare');
+            
+            // Set up DNS for the tenant if using a custom subdomain
+            if (isCustomSubdomain) {
+              try {
+                console.log(`Setting up DNS for tenant subdomain: ${tenantId}`);
+                const dnsResult = await createTenantSubdomain(tenantId);
+                
+                if (!dnsResult.success) {
+                  console.error(`Failed to set up DNS for tenant ${tenantId}:`, dnsResult.message);
+                  // We'll still create the tenant, but log the error
+                }
+              } catch (error) {
+                console.error(`Error setting up DNS for tenant ${tenantId}:`, error);
+                // Continue with tenant creation even if DNS setup fails
+              }
+            }
             
             // Create tenant
             await storage.createTenant({
@@ -961,7 +986,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               isActive: true,
               domainName: `${tenantId}.greenlanecloudsolutions.com`,
               adminEmail: customer.email || "",
-              custom_subdomain: customer.metadata.customSubdomain === 'true'
+              custom_subdomain: isCustomSubdomain
             });
             
             // Create admin user
