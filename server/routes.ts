@@ -509,48 +509,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
 
+    // Get product pricing information
+    app.get("/api/marketing/products", async (req, res) => {
+      try {
+        // Import dynamically to avoid issues with circular dependencies
+        const { default: stripeService } = await import('./stripeService.js');
+        
+        // Get region from query params or default to USA
+        const region = (req.query.region as string)?.toLowerCase() || 'usa';
+        
+        // Get products with pricing adjusted for region
+        const productsAndPricing = stripeService.getProductsAndPricing(region);
+        
+        res.json(productsAndPricing);
+      } catch (error: any) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
     app.post("/api/marketing/create-free-trial", async (req, res) => {
       try {
         const { 
           email,
           name,
-          priceId,
+          companyName,
+          password,
+          users = 3,
+          addons = [],
+          billingCycle = 'monthly',
+          region = 'usa',
           successUrl,
           cancelUrl,
           metadata = {}
         } = req.body;
 
-        if (!email || !priceId || !successUrl || !cancelUrl) {
+        if (!email || !name || !companyName || !password) {
           return res.status(400).json({ 
-            error: 'Email, price ID, success URL, and cancel URL are required' 
+            error: 'Email, name, company name, and password are required' 
           });
         }
 
-        // Create a checkout session
-        const session = await stripe.checkout.sessions.create({
-          mode: 'subscription',
-          payment_method_types: ['card'],
-          line_items: [
-            {
-              price: priceId,
-              quantity: 1,
-            },
-          ],
-          subscription_data: {
-            trial_period_days: 14,
-          },
-          customer_email: email,
-          success_url: successUrl,
-          cancel_url: cancelUrl,
-          metadata: {
-            ...metadata,
-            userName: name || '',
-          },
+        // Import dynamically to avoid issues with circular dependencies
+        const { default: stripeService } = await import('./stripeService.js');
+        
+        // Create a subscription with trial
+        const subscriptionData = await stripeService.createSubscriptionWithTrial({
+          email,
+          name,
+          company: companyName,
+          users,
+          addons,
+          billingCycle,
+          region
         });
 
+        // TODO: Here we would also create a user account and tenant,
+        // but for now we'll just return the subscription data and let
+        // the Stripe webhook handle that part
+
         res.status(200).json({ 
-          sessionId: session.id,
-          url: session.url 
+          customer: subscriptionData.customer,
+          session: subscriptionData.session,
+          url: subscriptionData.url,
+          trialEnd: subscriptionData.trialEnd
         });
       } catch (error: any) {
         console.error('Error creating Stripe checkout session:', error);
