@@ -60,8 +60,8 @@ export async function createSubscriptionWithTrial({
   try {
     console.log(`Creating subscription for ${email} with ${users} users, addons: ${addons.join(', ')}, billing: ${billingCycle}, region: ${region}`);
     
-    // Ensure minimum of 3 users
-    users = Math.max(3, users);
+    // No minimum user requirement anymore
+    users = Math.max(1, users);
     
     // Get multiplier for region
     const multiplier = stripeConfig.regionMultipliers[region] || 1.0;
