@@ -836,22 +836,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
     
+    // Check subdomain availability
+    app.get("/api/check-subdomain", async (req, res) => {
+      try {
+        const { subdomain } = req.query;
+        
+        if (!subdomain || typeof subdomain !== 'string') {
+          return res.status(400).json({ message: "Subdomain is required" });
+        }
+        
+        // Validate subdomain format
+        const subdomainPattern = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+        if (!subdomainPattern.test(subdomain)) {
+          return res.status(400).json({
+            available: false,
+            message: "Invalid subdomain format"
+          });
+        }
+        
+        // Check if the subdomain (tenant ID) is already taken
+        const existingTenant = await storage.getTenant(subdomain);
+        
+        // Return availability status
+        res.json({
+          available: !existingTenant,
+          message: existingTenant ? "Subdomain is unavailable" : "Subdomain is available"
+        });
+      } catch (error: any) {
+        console.error("Error checking subdomain:", error);
+        res.status(500).json({ 
+          message: "Error checking subdomain availability",
+          error: error.message 
+        });
+      }
+    });
+    
     // Create subscription
     app.post("/api/create-subscription", async (req, res) => {
       try {
-        const { name, email, companyName, planId } = req.body;
+        const { name, email, companyName, subdomain, planId } = req.body;
         
         if (!name || !email || !companyName || !planId) {
           return res.status(400).json({ message: "Missing required fields" });
         }
         
-        // Generate tenant ID (subdomain) from company name
-        const tenantId = companyName.toLowerCase().replace(/[^a-z0-9]/g, "");
+        // Use provided subdomain or generate from company name
+        const tenantId = subdomain || companyName.toLowerCase().replace(/[^a-z0-9]/g, "");
         
         // Check if tenant already exists
         const existingTenant = await storage.getTenant(tenantId);
         if (existingTenant) {
-          return res.status(400).json({ message: "Company already registered" });
+          return res.status(400).json({ message: "Subdomain already registered" });
         }
         
         // Create Stripe customer
@@ -860,7 +895,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email,
           metadata: {
             tenantId,
-            companyName
+            companyName,
+            customSubdomain: subdomain ? 'true' : 'false'
           }
         });
         

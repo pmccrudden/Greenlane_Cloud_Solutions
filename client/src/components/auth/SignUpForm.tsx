@@ -12,6 +12,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { CardElement, useStripe, useElements, Elements } from '@stripe/react-stripe-js';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
+// @ts-ignore
 import { debounce } from 'lodash';
 
 // Define subdomain validation pattern
@@ -208,16 +209,29 @@ export default function SignUpForm() {
   }, [form.watch]);
 
   const onSubmit = async (values: SignUpFormValues) => {
+    // Check if subdomain is available before proceeding
+    if (values.subdomain && (!subdomainAvailable || isCheckingSubdomain)) {
+      if (!subdomainAvailable) {
+        toast({
+          title: "Subdomain Unavailable",
+          description: "Please choose a different subdomain.",
+          variant: "destructive",
+        });
+      }
+      return;
+    }
+    
     try {
       const result = await registerWithStripe({
         name: values.name,
         email: values.email,
         companyName: values.companyName,
+        subdomain: values.subdomain,
         planId: selectedPlan.id
       });
       
       setClientSecret(result.clientSecret);
-      setTenantId(result.tenantId);
+      setTenantId(result.tenantId || values.subdomain);
       setSignupStep('payment');
     } catch (error) {
       toast({
@@ -292,8 +306,57 @@ export default function SignUpForm() {
                     <FormControl>
                       <Input placeholder="Acme Inc." {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="subdomain"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Subdomain</FormLabel>
+                    <div className="relative">
+                      <FormControl>
+                        <div className="flex items-center">
+                          <Input 
+                            placeholder="mycompany" 
+                            {...field} 
+                            className="rounded-r-none"
+                            onBlur={(e) => {
+                              // Convert to lowercase
+                              const lowercase = e.target.value.toLowerCase();
+                              if (lowercase !== e.target.value) {
+                                field.onChange(lowercase);
+                              }
+                              field.onBlur();
+                            }}
+                          />
+                          <div className="bg-muted px-3 py-2 border border-l-0 rounded-r-md text-muted-foreground">
+                            .greenlanecloudsolutions.com
+                          </div>
+                        </div>
+                      </FormControl>
+                      {isCheckingSubdomain && (
+                        <div className="absolute right-32 top-2.5">
+                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                        </div>
+                      )}
+                      {!isCheckingSubdomain && subdomainAvailable === true && field.value && (
+                        <div className="absolute right-32 top-2.5 flex items-center text-green-600">
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          <span className="text-xs">Available</span>
+                        </div>
+                      )}
+                      {!isCheckingSubdomain && subdomainAvailable === false && field.value && (
+                        <div className="absolute right-32 top-2.5 flex items-center text-red-600">
+                          <AlertCircle className="h-4 w-4 mr-1" />
+                          <span className="text-xs">Unavailable</span>
+                        </div>
+                      )}
+                    </div>
                     <FormDescription>
-                      This will be used to create your tenant URL: [company].greenlanecloudsolutions.com
+                      Choose a subdomain for your GreenLane account. Only lowercase letters, numbers, and hyphens are allowed.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

@@ -57,6 +57,7 @@ export async function registerWithStripe(data: {
   name: string;
   email: string;
   companyName: string;
+  subdomain: string;
   planId: string;
 }): Promise<{ clientSecret: string; tenantId: string }> {
   const response = await apiRequest('POST', '/api/create-subscription', data);
