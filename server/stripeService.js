@@ -210,13 +210,23 @@ export async function createSubscriptionWithTrial({
       console.log(`Validating line item with price ID: ${item.price}`);
     }
     
-    // Set up success and cancel URLs with fallbacks
-    const hostname = process.env.APP_URL || 'https://greenlane-crm.replit.app';
-    const success_url = `${hostname}/trial-success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancel_url = `${hostname}/free-trial`;
+    // Set up success and cancel URLs with support for custom URLs from params
+    let success_url = `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/trial-success?session_id={CHECKOUT_SESSION_ID}`;
+    let cancel_url = `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/free-trial`;
     
-    console.log("Using success URL:", success_url);
-    console.log("Using cancel URL:", cancel_url);
+    // Allow custom success and cancel URLs to be passed in params (for module subscriptions)
+    if (params.success_url) {
+      success_url = params.success_url;
+      console.log("Using custom success URL:", success_url);
+    }
+    
+    if (params.cancel_url) {
+      cancel_url = params.cancel_url;
+      console.log("Using custom cancel URL:", cancel_url);
+    } else {
+      console.log("Using default success URL:", success_url);
+      console.log("Using default cancel URL:", cancel_url);
+    }
     
     // Create the checkout session with detailed parameters
     const sessionParams = {

@@ -332,6 +332,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create subscription through Stripe with additional metadata
       console.log("Creating subscription with Stripe for module:", moduleId);
       
+      // Get hostname for success and cancel URLs
+      const hostname = process.env.APP_URL || req.headers.origin || 'https://greenlane-crm.replit.app';
+      
       const subscriptionParams = {
         email: req.user?.email || 'unknown@example.com',
         name: `${req.user?.firstName || ''} ${req.user?.lastName || ''}`.trim() || req.user?.username || 'Unknown User',
@@ -340,6 +343,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         addons: addonList,
         billingCycle,
         region: 'usa', // Default region
+        // Custom success and cancel URLs for module subscriptions
+        success_url: `${hostname}/admin/modules?success=true&module=${moduleId}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${hostname}/admin/modules?canceled=true`,
         metadata: {
           tenantId: req.tenantId!, 
           moduleId: moduleId,

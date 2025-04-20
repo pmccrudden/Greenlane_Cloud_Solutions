@@ -97,7 +97,7 @@ const PREMIUM_MODULES = ['community', 'support-tickets'];
 export default function ModuleManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [, navigate] = useLocation();
+  // We'll use location for navigation and subscription success tracking
   // State for holding modules
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -158,6 +158,35 @@ export default function ModuleManagement() {
     }
   });
 
+  // Get location for URL parameters
+  const [location] = useLocation();
+  
+  // Handle successful checkout return from Stripe
+  useEffect(() => {
+    // Parse URL search params for successful module subscription
+    const searchParams = new URLSearchParams(window.location.search);
+    const success = searchParams.get('success');
+    const moduleId = searchParams.get('module');
+    const sessionId = searchParams.get('session_id');
+    
+    if (success === 'true' && moduleId && sessionId) {
+      console.log(`Module subscription successful for ${moduleId} with session ${sessionId}`);
+      
+      // Clear URL parameters without refreshing
+      window.history.replaceState({}, '', '/admin/modules');
+      
+      // Show success message
+      toast({
+        title: "Subscription Successful!",
+        description: `You've successfully subscribed to the ${getModulePricing(moduleId).name} module. It may take a moment to activate.`,
+        duration: 5000,
+      });
+      
+      // Refetch modules to get updated status
+      queryClient.invalidateQueries({ queryKey: ['/api/modules'] });
+    }
+  }, [location]);
+  
   // Fetch modules from the API
   const { data: modules = [], isLoading } = useQuery({
     queryKey: ['/api/modules'],
