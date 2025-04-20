@@ -13,7 +13,7 @@ export default function TrialSuccessPage() {
           <div className="flex justify-between items-center">
             <div className="text-white font-bold text-xl">GreenLane Cloud Solutions</div>
             <Button variant="outline" className="text-white border-white hover:bg-white/20" asChild>
-              <Link href="/marketing">Back to Home</Link>
+              <Link href="/">Back to Home</Link>
             </Button>
           </div>
         </div>
