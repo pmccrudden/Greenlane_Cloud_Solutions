@@ -42,10 +42,11 @@ try {
  * @param {string} params.email Customer email
  * @param {string} params.name Customer name
  * @param {string} params.company Company name
- * @param {number} params.users Number of users (minimum 3)
+ * @param {number} params.users Number of users (minimum 1)
  * @param {Array<string>} params.addons Array of addon IDs
  * @param {string} params.billingCycle 'monthly' or 'annual'
  * @param {string} params.region Customer region (for price adjustment)
+ * @param {Object} params.metadata Additional metadata to include in the checkout session
  * @returns {Promise<Object>} Subscription data including checkout session
  */
 export async function createSubscriptionWithTrial({
@@ -55,7 +56,8 @@ export async function createSubscriptionWithTrial({
   users = 3,
   addons = [],
   billingCycle = 'monthly',
-  region = 'usa'
+  region = 'usa',
+  metadata = {}
 }) {
   try {
     console.log(`Creating subscription for ${email} with ${users} users, addons: ${addons.join(', ')}, billing: ${billingCycle}, region: ${region}`);
@@ -74,7 +76,8 @@ export async function createSubscriptionWithTrial({
       name,
       metadata: {
         company,
-        region
+        region,
+        ...metadata // Include any custom metadata
       }
     });
     console.log(`Created Stripe customer with ID: ${customer.id}`);
@@ -153,8 +156,12 @@ export async function createSubscriptionWithTrial({
           users,
           addons: addons.join(','),
           billingCycle,
-          region
+          region,
+          ...metadata // Include any custom metadata
         }
+      },
+      metadata: {
+        ...metadata // Include custom metadata at the session level too
       },
       success_url: `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/trial-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/free-trial`,

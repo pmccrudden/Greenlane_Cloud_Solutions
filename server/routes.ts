@@ -321,15 +321,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Tenant not found" });
       }
       
-      // Create subscription through Stripe
+      // Create subscription through Stripe with additional metadata
       const subscriptionData = await stripeService.default.createSubscriptionWithTrial({
         email: req.user?.email || 'unknown@example.com',
         name: `${req.user?.firstName || ''} ${req.user?.lastName || ''}`.trim() || req.user?.username || 'Unknown User',
-        company: tenant.name || 'Unknown Company',
+        company: tenant.companyName || 'Unknown Company',
         users: 1, // Just 1 license for the module itself
         addons: addonList,
         billingCycle,
-        region: 'usa' // Default region
+        region: 'usa', // Default region
+        metadata: {
+          tenantId: req.tenantId!, 
+          moduleId: moduleId,
+          subscriptionType: 'module-addon'
+        }
       });
       
       // Return the checkout URL
