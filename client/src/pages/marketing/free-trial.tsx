@@ -181,6 +181,13 @@ export default function FreeTrialSignup() {
           timestamp: new Date().getTime()
         }));
         
+        // Add a toast message about opening in a new tab
+        toast({
+          title: "Account created successfully!",
+          description: "You'll be redirected to provide payment details shortly.",
+          variant: "default",
+        });
+        
         // Redirect to checkout options page
         setLocation('/checkout-options');
         return;
