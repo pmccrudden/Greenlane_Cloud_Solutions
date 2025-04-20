@@ -98,7 +98,7 @@ export async function createSubscriptionWithTrial({
     
     // Create a checkout session for the subscription
     const session = await stripe.checkout.sessions.create({
-      customer: customer.id,
+      customer: customer.id, // Use the customer ID we created above
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'subscription',
@@ -111,11 +111,11 @@ export async function createSubscriptionWithTrial({
           region
         }
       },
-      success_url: `${process.env.APP_URL}/trial-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.APP_URL}/free-trial`,
+      success_url: `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/trial-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/free-trial`,
       allow_promotion_codes: true,
       billing_address_collection: 'required',
-      customer_email: email,
+      // Removed customer_email as we're already providing customer ID
       client_reference_id: company.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() // Sanitized company name
     });
     
