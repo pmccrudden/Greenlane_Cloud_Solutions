@@ -10,6 +10,14 @@ import { signIn } from '@/lib/auth';
 export default function SignIn() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
+  
+  // Clear tenant session on the main domain signin page to ensure proper tenant field display
+  const isMainDomainSignin = window.location.pathname === '/signin' && !window.location.search.includes('tenant=');
+  if (isMainDomainSignin) {
+    // We're on the main signin page, ensure no tenant is stored in session
+    sessionStorage.removeItem('current_tenant');
+  }
+  
   const isTenant = isTenantUrl();
   const [isAutoLoggingIn, setIsAutoLoggingIn] = useState(false);
   
@@ -119,7 +127,7 @@ export default function SignIn() {
           ) : (
             <>
               Or{' '}
-              <a href="/marketing/free-trial" className="font-medium text-primary-600 hover:text-primary-500">
+              <a href="/free-trial" className="font-medium text-primary-600 hover:text-primary-500">
                 start your 14-day free trial
               </a>
             </>
