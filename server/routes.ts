@@ -343,7 +343,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         metadata: {
           tenantId: req.tenantId!, 
           moduleId: moduleId,
-          subscriptionType: 'module-addon'
+          subscriptionType: 'module-addon' // This flag is crucial - indicates this is ONLY for the addon
         }
       };
       
@@ -937,34 +937,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // TODO: Send welcome email with tenant details and credentials
           }
           
-          // Check if this is for a module purchase (regardless of whether it's for a new or existing tenant)
-          // Look at the metadata in the subscription to determine which module to enable
-          if (subscription.metadata.addons) {
-            const addons = subscription.metadata.addons.split(',');
-            const tenantId = customer.metadata.tenantId || subscription.metadata.tenantId;
+          // Check what type of subscription this is
+          const subscriptionType = subscription.metadata.subscriptionType;
+          console.log(`Processing subscription of type: ${subscriptionType || 'standard'}`);
+          
+          if (subscriptionType === 'module-addon') {
+            // This is a module-specific subscription
+            const moduleId = subscription.metadata.moduleId;
+            const tenantId = subscription.metadata.tenantId;
             
-            // First make sure we have a tenant ID
-            if (tenantId) {
-              // Check available modules and enable any that were purchased
-              for (const addon of addons) {
-                if (addon === 'community' || addon === 'support-tickets') {
-                  // Try to get the existing module first
-                  const module = await storage.getModule(addon, tenantId);
-                  if (module) {
-                    // Enable the module if it exists
-                    console.log(`Enabling ${addon} module for tenant ${tenantId}`);
-                    await storage.updateModule(addon, { 
-                      enabled: true,
-                      status: 'active',
-                      stripeSubscriptionId: subscription.id
-                    }, tenantId);
-                  } else {
-                    console.error(`Module ${addon} not found for tenant ${tenantId}`);
-                  }
-                }
+            if (moduleId && tenantId) {
+              console.log(`Processing module subscription for ${moduleId} in tenant ${tenantId}`);
+              
+              // Map module ID to the corresponding addon product name if needed
+              let addonProductName = moduleId;
+              if (moduleId === 'support-tickets') {
+                addonProductName = 'supportCentre';
+              }
+              
+              // Enable the module
+              const module = await storage.getModule(moduleId, tenantId);
+              if (module) {
+                console.log(`Enabling ${moduleId} module (product: ${addonProductName}) for tenant ${tenantId}`);
+                await storage.updateModule(moduleId, { 
+                  enabled: true,
+                  status: 'active',
+                  stripeSubscriptionId: subscription.id
+                }, tenantId);
+              } else {
+                console.error(`Module ${moduleId} not found for tenant ${tenantId}`);
               }
             } else {
-              console.error('Tenant ID not found in subscription metadata');
+              console.error('Missing moduleId or tenantId in subscription metadata', subscription.metadata);
+            }
+          } else {
+            // This is a standard subscription with potentially multiple addons
+            // Check if this is for a module purchase (regardless of whether it's for a new or existing tenant)
+            // Look at the metadata in the subscription to determine which module to enable
+            if (subscription.metadata.addons) {
+              const addons = subscription.metadata.addons.split(',');
+              const tenantId = customer.metadata.tenantId || subscription.metadata.tenantId;
+              
+              // First make sure we have a tenant ID
+              if (tenantId) {
+                // Check available modules and enable any that were purchased
+                for (const addon of addons) {
+                  if (addon === 'community' || addon === 'supportCentre') {
+                    // Map addon product names to module IDs
+                    const moduleId = addon === 'community' ? 'community' : 'support-tickets';
+                    const module = await storage.getModule(moduleId, tenantId);
+                    
+                    if (module) {
+                      console.log(`Enabling ${moduleId} module (product: ${addon}) for tenant ${tenantId}`);
+                      await storage.updateModule(moduleId, { 
+                        enabled: true,
+                        status: 'active',
+                        stripeSubscriptionId: subscription.id
+                      }, tenantId);
+                    } else {
+                      console.error(`Module ${moduleId} not found for tenant ${tenantId}`);
+                    }
+                  }
+                }
+              } else {
+                console.error('Tenant ID not found in subscription metadata');
+              }
             }
           }
         }
@@ -974,8 +1011,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
         
-        // If this is a module subscription, enable the module
-        if (session.metadata?.moduleId && session.metadata?.tenantId) {
+        console.log("Processing checkout.session.completed event:", JSON.stringify({
+          sessionId: session.id,
+          metadata: session.metadata,
+          subscriptionType: session.metadata?.subscriptionType,
+          moduleId: session.metadata?.moduleId,
+          tenantId: session.metadata?.tenantId
+        }));
+        
+        // Check if this is a module-specific subscription
+        if (session.metadata?.subscriptionType === 'module-addon' && 
+            session.metadata?.moduleId && 
+            session.metadata?.tenantId) {
+          
+          const moduleId = session.metadata.moduleId;
+          const tenantId = session.metadata.tenantId;
+          
+          try {
+            // Map the module ID to the correct product name if needed
+            let addonProductName = moduleId;
+            if (moduleId === 'support-tickets') {
+              addonProductName = 'supportCentre';
+            }
+            
+            console.log(`Processing module checkout for ${moduleId} (product: ${addonProductName}) in tenant ${tenantId}`);
+            
+            // Enable the module
+            const module = await storage.getModule(moduleId, tenantId);
+            if (module) {
+              console.log(`Enabling ${moduleId} module for tenant ${tenantId} via checkout session`);
+              await storage.updateModule(moduleId, { 
+                enabled: true,
+                status: 'active',
+                stripeSubscriptionId: session.subscription as string
+              }, tenantId);
+            } else {
+              console.error(`Module ${moduleId} not found for tenant ${tenantId}`);
+            }
+          } catch (error) {
+            console.error(`Error enabling module ${moduleId} for tenant ${tenantId}:`, error);
+          }
+        } else if (session.metadata?.moduleId && session.metadata?.tenantId) {
+          // This is the original handler for backward compatibility
           const moduleId = session.metadata.moduleId;
           const tenantId = session.metadata.tenantId;
           
@@ -983,7 +1060,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Enable the module
             const module = await storage.getModule(moduleId, tenantId);
             if (module) {
-              console.log(`Enabling ${moduleId} module for tenant ${tenantId} via checkout session`);
+              console.log(`Enabling ${moduleId} module for tenant ${tenantId} via checkout session (legacy path)`);
               await storage.updateModule(moduleId, { 
                 enabled: true,
                 status: 'active',

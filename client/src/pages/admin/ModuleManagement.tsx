@@ -101,6 +101,9 @@ export default function ModuleManagement() {
   // State for holding modules
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSubscriptionDialogOpen, setIsSubscriptionDialogOpen] = useState(false);
+  const [subscriptionModuleId, setSubscriptionModuleId] = useState<string | null>(null);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [currentTab, setCurrentTab] = useState("general");
   const [dnsVerification, setDnsVerification] = useState<{ status: 'verifying' | 'success' | 'error' | null, message?: string }>({ status: null });
   
@@ -318,6 +321,91 @@ export default function ModuleManagement() {
     }
   }, [modules]);
 
+  // Get module pricing info
+  const getModulePricing = (moduleId: string): { monthly: number, annual: number, name: string } => {
+    // Default pricing and name
+    const defaults = { monthly: 0, annual: 0, name: "" };
+    
+    // Set pricing based on module ID
+    if (moduleId === 'community') {
+      return { 
+        monthly: 40, 
+        annual: 432, // 15% discount applied
+        name: 'Customer Community'
+      };
+    } else if (moduleId === 'support-tickets') {
+      return {
+        monthly: 25,
+        annual: 250, // ~16% discount applied 
+        name: 'Support Tickets'
+      };
+    }
+    
+    return defaults;
+  };
+
+  // Mutation for creating a module subscription
+  const createModuleSubscriptionMutation = useMutation({
+    mutationFn: async ({ moduleId, billingCycle }: { moduleId: string, billingCycle: 'monthly' | 'annual' }) => {
+      const response = await apiRequest("POST", "/api/create-module-subscription", {
+        moduleId,
+        billingCycle
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        const errorDetails = data.details || data.message || "Unknown error";
+        throw new Error(`Failed to create subscription checkout: ${errorDetails}`);
+      }
+      
+      if (!data.url) {
+        throw new Error("No checkout URL returned from server. Please try again later.");
+      }
+      
+      return { ...data, moduleId };
+    },
+    onSuccess: (data) => {
+      // Store checkout data in session storage
+      sessionStorage.setItem('stripeCheckoutData', JSON.stringify({ 
+        url: data.url, 
+        moduleId: data.moduleId 
+      }));
+      
+      // Redirect to Stripe checkout directly in a new tab
+      window.open(data.url, '_blank');
+      
+      // Get module name for better messaging
+      const moduleName = getModulePricing(data.moduleId).name;
+      
+      toast({
+        title: "Checkout Opened",
+        description: `We've opened the ${moduleName} subscription payment page in a new tab. If you don't see it, please check your popup blocker.`,
+      });
+    },
+    onError: (error: any) => {
+      console.error("Error creating subscription:", error);
+      toast({
+        title: "Checkout Failed",
+        description: error.message || "There was a problem creating your subscription. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Handler for subscribing to a module
+  const handleSubscribeModule = () => {
+    if (!subscriptionModuleId) return;
+    
+    createModuleSubscriptionMutation.mutate({ 
+      moduleId: subscriptionModuleId, 
+      billingCycle: billingCycle 
+    });
+    
+    // Close dialog after submitting
+    setIsSubscriptionDialogOpen(false);
+  };
+
   // Handler for toggling module state
   const handleToggleModule = (id: string) => {
     const module = modules.find((m: Module) => m.id === id);
@@ -332,8 +420,10 @@ export default function ModuleManagement() {
         variant: "default",
       });
       
-      // Redirect to checkout page for this module
-      navigate('/checkout-options?module=' + id);
+      // Open the subscription dialog for the user to select billing cycle
+      setSubscriptionModuleId(id);
+      setBillingCycle('monthly'); // Reset to default billing cycle
+      setIsSubscriptionDialogOpen(true);
       return;
     }
     
@@ -642,6 +732,131 @@ export default function ModuleManagement() {
         ))}
       </div>
 
+      {/* Subscription Dialog */}
+      <Dialog open={isSubscriptionDialogOpen} onOpenChange={setIsSubscriptionDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              {subscriptionModuleId ? 
+                `Subscribe to ${getModulePricing(subscriptionModuleId).name}` : 
+                "Subscribe to Module"}
+            </DialogTitle>
+            <DialogDescription>
+              Choose your preferred billing cycle for this module subscription.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {/* Billing Cycle Selection */}
+            <div className="space-y-3">
+              <h3 className="font-medium text-slate-700">Billing Cycle</h3>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div 
+                  className={`border rounded-md p-4 cursor-pointer transition-all ${
+                    billingCycle === 'monthly' 
+                      ? 'border-primary-600 bg-primary-50 ring-2 ring-primary-200' 
+                      : 'border-slate-200 hover:border-primary-200'
+                  }`}
+                  onClick={() => setBillingCycle('monthly')}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-medium text-slate-900">Monthly</h4>
+                      <p className="text-sm text-slate-500 mt-1">Billed monthly</p>
+                    </div>
+                    {billingCycle === 'monthly' && (
+                      <CheckCircle className="h-5 w-5 text-primary-600" />
+                    )}
+                  </div>
+                  {subscriptionModuleId && (
+                    <div className="mt-2">
+                      <span className="text-lg font-bold text-slate-900">
+                        ${getModulePricing(subscriptionModuleId).monthly}
+                      </span>
+                      <span className="text-slate-500 ml-1">/month</span>
+                    </div>
+                  )}
+                </div>
+                
+                <div 
+                  className={`border rounded-md p-4 cursor-pointer transition-all ${
+                    billingCycle === 'annual' 
+                      ? 'border-primary-600 bg-primary-50 ring-2 ring-primary-200' 
+                      : 'border-slate-200 hover:border-primary-200'
+                  }`}
+                  onClick={() => setBillingCycle('annual')}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="flex items-center">
+                        <h4 className="font-medium text-slate-900">Annual</h4>
+                        <span className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded-full">Save 15%</span>
+                      </div>
+                      <p className="text-sm text-slate-500 mt-1">Billed annually</p>
+                    </div>
+                    {billingCycle === 'annual' && (
+                      <CheckCircle className="h-5 w-5 text-primary-600" />
+                    )}
+                  </div>
+                  {subscriptionModuleId && (
+                    <div className="mt-2">
+                      <span className="text-lg font-bold text-slate-900">
+                        ${Math.round(getModulePricing(subscriptionModuleId).annual / 12)}
+                      </span>
+                      <span className="text-slate-500 ml-1">/month</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Order Summary */}
+            {subscriptionModuleId && (
+              <div className="bg-slate-100 p-4 rounded-md">
+                <h3 className="font-medium mb-2">Order Summary</h3>
+                <div className="flex justify-between mt-1">
+                  <span>{getModulePricing(subscriptionModuleId).name} Module - {billingCycle === 'monthly' ? 'Monthly' : 'Annual'}</span>
+                  <span>${billingCycle === 'monthly' ? getModulePricing(subscriptionModuleId).monthly : getModulePricing(subscriptionModuleId).annual}</span>
+                </div>
+                <div className="border-t border-slate-200 my-2"></div>
+                <div className="flex justify-between font-semibold">
+                  <span>Total</span>
+                  <span>${billingCycle === 'monthly' ? getModulePricing(subscriptionModuleId).monthly : getModulePricing(subscriptionModuleId).annual}</span>
+                </div>
+              </div>
+            )}
+            
+            <div className="text-sm text-slate-500">
+              <p>Your subscription will be added to your existing account without creating a new account.</p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsSubscriptionDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSubscribeModule}
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+              disabled={createModuleSubscriptionMutation.isPending}
+            >
+              {createModuleSubscriptionMutation.isPending ? (
+                <>
+                  <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Continue to Payment
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
       {/* Settings Dialog */}
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
