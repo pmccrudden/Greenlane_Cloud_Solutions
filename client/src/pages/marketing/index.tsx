@@ -114,8 +114,8 @@ export default function MarketingPage() {
                 close more deals, and deliver exceptional customer experiences.
               </p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8">
-                  Start Your 14-Day Free Trial
+                <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8" asChild>
+                  <Link href="/marketing/free-trial">Start Your 14-Day Free Trial</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="bg-white/10 hover:bg-white/20 border-white/30">
                   Request a Demo
@@ -539,8 +539,8 @@ export default function MarketingPage() {
               </div>
               
               <div className="mt-8 text-center">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 w-full">
-                  Start Your 14-Day Free Trial
+                <Button size="lg" className="bg-primary hover:bg-primary/90 w-full" asChild>
+                  <Link href="/marketing/free-trial">Start Your 14-Day Free Trial</Link>
                 </Button>
                 <p className="text-sm text-gray-500 mt-3">
                   No credit card required. Cancel anytime.
@@ -684,8 +684,8 @@ export default function MarketingPage() {
             Join thousands of businesses that trust GreenLane Cloud Solutions for their CRM needs.
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8">
-              Start Your 14-Day Free Trial
+            <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8" asChild>
+              <Link href="/marketing/free-trial">Start Your 14-Day Free Trial</Link>
             </Button>
             <Button size="lg" variant="outline" className="bg-transparent hover:bg-white/10 border-white">
               Request a Demo

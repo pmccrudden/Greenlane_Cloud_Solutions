@@ -39,7 +39,26 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
 
   const onSubmit = async (values: SignInFormValues) => {
     setIsSubmitting(true);
+    
     try {
+      // If not on tenant page and tenant name is provided, redirect to tenant URL
+      if (!isTenant && values.tenant) {
+        const tenantName = values.tenant.trim().toLowerCase();
+        
+        if (tenantName) {
+          // For local development
+          if (window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1')) {
+            // Redirect to local tenant URL with query parameter
+            window.location.href = `${window.location.origin}/signin?tenant=${tenantName}`;
+          } else {
+            // Redirect to tenant subdomain
+            window.location.href = `https://${tenantName}.greenlanecloudsolutions.com/signin`;
+          }
+          return;
+        }
+      }
+      
+      // Regular login if already on tenant URL or no tenant specified
       await signIn(values.username, values.password);
       
       toast({
@@ -91,6 +110,9 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
                     <FormControl>
                       <Input placeholder="Enter your tenant name (e.g., greenlane)" {...field} />
                     </FormControl>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Enter your company tenant name to sign in to your specific portal
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
