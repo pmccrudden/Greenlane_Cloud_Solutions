@@ -202,28 +202,28 @@ function Router() {
     <Switch>
       <Route path="/signin" component={SignIn} />
       <Route path="/signup" component={SignUp} />
-      <Route path="/marketing" component={() => (
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
-        </div>}>
-          <MarketingPage />
-        </Suspense>
-      )} />
-      <Route path="/marketing/free-trial" component={() => (
+      {/* Marketing pages */}
+      <Route path="/free-trial" component={() => (
         <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>}>
           <FreeTrialPage />
         </Suspense>
       )} />
-      <Route path="/marketing/trial-success" component={() => (
+      <Route path="/trial-success" component={() => (
         <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>}>
           <TrialSuccessPage />
         </Suspense>
       )} />
-      <Route path="/" component={Home} />
+      <Route path="/" component={() => (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>}>
+          <MarketingPage />
+        </Suspense>
+      )} />
       <ProtectedRoute path="/dashboard" component={DashboardWithLayout} />
       <ProtectedRoute path="/accounts/:id" component={AccountDetailWithLayout} />
       <ProtectedRoute path="/accounts" component={AccountsWithLayout} />

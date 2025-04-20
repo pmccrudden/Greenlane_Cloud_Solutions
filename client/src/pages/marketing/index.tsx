@@ -115,7 +115,7 @@ export default function MarketingPage() {
               </p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <Button size="lg" className="bg-white text-primary hover:bg-white/90 px-8" asChild>
-                  <Link href="/marketing/free-trial">Start Your 14-Day Free Trial</Link>
+                  <Link href="/free-trial">Start Your 14-Day Free Trial</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="bg-white/10 hover:bg-white/20 border-white/30">
                   Request a Demo
