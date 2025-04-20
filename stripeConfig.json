@@ -6,13 +6,13 @@
       "description": "Contact Management, Deal Tracking, Task Management, Basic Analytics",
       "prices": {
         "monthly": {
-          "id": "price_1R95OdQ3SzS5zRzfbGeQ4cJr",
+          "id": "price_1RFux6Q3SzS5zRzftipc8xZr",
           "amount": 25,
           "interval": "month",
           "lookup_key": "core_crm_monthly"
         },
         "annual": {
-          "id": "price_1R95OdQ3SzS5zRzfbGeQ4cJr",
+          "id": "price_1RFux6Q3SzS5zRzfNJfI6YzE",
           "amount": 250,
           "interval": "year",
           "lookup_key": "core_crm_annual"
