@@ -50,6 +50,13 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
         if (tenantName) {
           console.log('Redirecting to tenant URL...');
           
+          // Save credentials to sessionStorage for seamless login
+          if (values.username && values.password) {
+            console.log('Storing credentials in sessionStorage for seamless login');
+            sessionStorage.setItem('pending_username', values.username);
+            sessionStorage.setItem('pending_password', values.password);
+          }
+          
           // For local development or Replit preview environment
           if (window.location.hostname.includes('localhost') || 
               window.location.hostname.includes('127.0.0.1') ||
