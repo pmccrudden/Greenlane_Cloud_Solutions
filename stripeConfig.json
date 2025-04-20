@@ -75,6 +75,25 @@
           "lookup_key": "supportCentre_annual"
         }
       }
+    },
+    "support-tickets": {
+      "id": "prod_SAFShH4popOwum",
+      "name": "Support Tickets Module",
+      "description": "Full ticketing system to manage customer issues",
+      "prices": {
+        "monthly": {
+          "id": "price_1RFux8Q3SzS5zRzfhGjvZdep",
+          "amount": 25,
+          "interval": "month",
+          "lookup_key": "support_tickets_monthly"
+        },
+        "annual": {
+          "id": "price_1RFux8Q3SzS5zRzf08jOkkh8",
+          "amount": 250,
+          "interval": "year",
+          "lookup_key": "support_tickets_annual"
+        }
+      }
     }
   },
   "regionMultipliers": {
