@@ -96,8 +96,8 @@ export default function MarketingPage() {
               <a href="#features" className="hover:text-white/80 transition">Features</a>
               <a href="#pricing" className="hover:text-white/80 transition">Pricing</a>
               <a href="#screenshots" className="hover:text-white/80 transition">Screenshots</a>
-              <Button variant="outline" className="bg-white/10 hover:bg-white/20 border-white/30">
-                Log In
+              <Button variant="outline" className="bg-white/10 hover:bg-white/20 border-white/30" asChild>
+                <Link href="/signin">Log In</Link>
               </Button>
             </div>
           </nav>

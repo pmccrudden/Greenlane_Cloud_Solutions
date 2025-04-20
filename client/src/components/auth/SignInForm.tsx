@@ -14,6 +14,7 @@ import { isTenantUrl } from '@/lib/tenant';
 const signInSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   password: z.string().min(1, 'Password is required'),
+  tenant: z.string().optional(),
 });
 
 type SignInFormValues = z.infer<typeof signInSchema>;
@@ -32,6 +33,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
     defaultValues: {
       username: '',
       password: '',
+      tenant: '',
     },
   });
 
@@ -79,6 +81,21 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {!isTenant && (
+              <FormField
+                control={form.control}
+                name="tenant"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tenant Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter your tenant name (e.g., greenlane)" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <FormField
               control={form.control}
               name="username"
