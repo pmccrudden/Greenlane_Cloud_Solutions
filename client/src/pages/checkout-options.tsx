@@ -53,16 +53,27 @@ export default function CheckoutOptions() {
     
     try {
       // Call the API to create a checkout session for the selected module
+      console.log("Creating module subscription for module:", selectedModule, "with billing cycle:", billingCycle);
+      
       const response = await apiRequest("POST", "/api/create-module-subscription", {
         moduleId: selectedModule,
         billingCycle
       });
       
+      // Parse the response early to get error details from the server
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error("Failed to create subscription checkout");
+        const errorDetails = data.details || data.message || "Unknown error";
+        console.error("Failed to create subscription checkout:", errorDetails);
+        throw new Error(`Failed to create subscription checkout: ${errorDetails}`);
       }
       
-      const data = await response.json();
+      // Validate we received a proper URL from the server
+      if (!data.url) {
+        console.error("No checkout URL returned from server:", data);
+        throw new Error("No checkout URL returned from server. Please try again later.");
+      }
       
       // Store checkout data in session storage for the checkout page
       sessionStorage.setItem('stripeCheckoutData', JSON.stringify({ 

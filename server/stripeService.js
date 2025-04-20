@@ -163,7 +163,32 @@ export async function createSubscriptionWithTrial({
     
     // Create a checkout session for the subscription
     console.log("Creating Stripe checkout session...");
-    const session = await stripe.checkout.sessions.create({
+    
+    // Verify we have valid line items
+    if (!lineItems.length) {
+      console.error("No line items available for checkout session");
+      throw new Error("No line items available for checkout session");
+    }
+    
+    // Extra validation for line items
+    for (const item of lineItems) {
+      if (!item.price) {
+        console.error("Missing price ID in line item:", item);
+        throw new Error("Missing price ID in line item");
+      }
+      console.log(`Validating line item with price ID: ${item.price}`);
+    }
+    
+    // Set up success and cancel URLs with fallbacks
+    const hostname = process.env.APP_URL || 'https://greenlane-crm.replit.app';
+    const success_url = `${hostname}/trial-success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancel_url = `${hostname}/free-trial`;
+    
+    console.log("Using success URL:", success_url);
+    console.log("Using cancel URL:", cancel_url);
+    
+    // Create the checkout session with detailed parameters
+    const sessionParams = {
       customer: customer.id,
       payment_method_types: ['card'],
       line_items: lineItems,
@@ -181,12 +206,16 @@ export async function createSubscriptionWithTrial({
       metadata: {
         ...metadata // Include custom metadata at the session level too
       },
-      success_url: `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/trial-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/free-trial`,
+      success_url: success_url,
+      cancel_url: cancel_url,
       allow_promotion_codes: true,
       billing_address_collection: 'required',
       client_reference_id: company.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() // Sanitized company name
-    });
+    };
+    
+    console.log("Creating checkout session with params:", JSON.stringify(sessionParams, null, 2));
+    
+    const session = await stripe.checkout.sessions.create(sessionParams);
     
     console.log(`Created checkout session with ID: ${session.id}`);
     console.log(`Checkout URL: ${session.url}`);
@@ -199,16 +228,36 @@ export async function createSubscriptionWithTrial({
     };
   } catch (error) {
     console.error('Error creating subscription:', error);
+    
+    // Log different types of Stripe errors with more details
     if (error.type === 'StripeInvalidRequestError') {
-      console.error('Stripe API error details:', {
+      console.error('Stripe API Invalid Request Error details:', {
         message: error.raw?.message,
         param: error.raw?.param,
         code: error.code,
         type: error.type,
         requestId: error.requestId
       });
+    } else if (error.type === 'StripeAuthenticationError') {
+      console.error('Stripe API Authentication Error - Check your API keys');
+    } else if (error.type === 'StripeRateLimitError') {
+      console.error('Stripe API Rate Limit Error - Too many requests');
+    } else if (error.type === 'StripeConnectionError') {
+      console.error('Stripe API Connection Error - Network issue');
+    } else if (error.type === 'StripeApiError') {
+      console.error('Stripe API Error - Server error on Stripe side');
+    } else {
+      console.error('Unknown error type:', error.constructor.name);
     }
-    throw error;
+    
+    // Return a structured error instead of throwing
+    // This ensures the client gets useful information instead of crashing
+    return {
+      error: true,
+      message: error.message || 'An error occurred while creating the subscription',
+      details: error.type === 'StripeInvalidRequestError' ? error.raw?.message : null,
+      code: error.code || 'unknown_error'
+    };
   }
 }
 

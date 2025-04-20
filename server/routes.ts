@@ -353,6 +353,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log("Subscription data received:", JSON.stringify(subscriptionData));
       
+      // Check if there was an error with Stripe
+      if (subscriptionData.error) {
+        console.error("Error returned from Stripe service:", subscriptionData.message);
+        return res.status(500).json({ 
+          message: "Error creating subscription: " + subscriptionData.message, 
+          details: subscriptionData.details || "No additional details available" 
+        });
+      }
+      
       // Check if we have a valid URL
       if (!subscriptionData || !subscriptionData.url) {
         console.error("No valid checkout URL returned from Stripe");
@@ -362,7 +371,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Return the checkout URL
+      // Return the checkout URL with additional logging
+      console.log("Returning checkout URL to client:", subscriptionData.url);
       res.status(200).json({
         url: subscriptionData.url,
         sessionId: subscriptionData.session
