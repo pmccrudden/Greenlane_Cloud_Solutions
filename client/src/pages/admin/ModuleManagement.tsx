@@ -321,23 +321,40 @@ export default function ModuleManagement() {
     }
   }, [modules]);
 
-  // Get module pricing info
-  const getModulePricing = (moduleId: string): { monthly: number, annual: number, name: string } => {
+  // Get module pricing info and features
+  const getModulePricing = (moduleId: string): { 
+    monthly: number, 
+    annual: number, 
+    name: string,
+    features: string[]
+  } => {
     // Default pricing and name
-    const defaults = { monthly: 0, annual: 0, name: "" };
+    const defaults = { monthly: 0, annual: 0, name: "", features: [] };
     
-    // Set pricing based on module ID
+    // Set pricing based on module ID (match values from stripeConfig.json)
     if (moduleId === 'community') {
       return { 
         monthly: 40, 
-        annual: 432, // 15% discount applied
-        name: 'Customer Community'
+        annual: 432, // 10% discount applied
+        name: 'Customer Community',
+        features: [
+          'Customer community portal with custom branding',
+          'Discussion forums and user groups',
+          'Knowledge sharing and resource library',
+          'Community analytics and engagement insights'
+        ]
       };
     } else if (moduleId === 'support-tickets') {
       return {
-        monthly: 25,
-        annual: 250, // ~16% discount applied 
-        name: 'Support Tickets'
+        monthly: 30, // corrected to match stripeConfig.json
+        annual: 324, // 10% discount applied
+        name: 'Support Tickets',
+        features: [
+          'Full ticketing system with custom categories',
+          'SLA management and automated assignments',
+          'Email notifications and ticket updates',
+          'Integration with CRM data and contacts'
+        ]
       };
     }
     
@@ -811,18 +828,33 @@ export default function ModuleManagement() {
               </div>
             </div>
             
-            {/* Order Summary */}
+            {/* Module Features */}
             {subscriptionModuleId && (
-              <div className="bg-slate-100 p-4 rounded-md">
-                <h3 className="font-medium mb-2">Order Summary</h3>
-                <div className="flex justify-between mt-1">
-                  <span>{getModulePricing(subscriptionModuleId).name} Module - {billingCycle === 'monthly' ? 'Monthly' : 'Annual'}</span>
-                  <span>${billingCycle === 'monthly' ? getModulePricing(subscriptionModuleId).monthly : getModulePricing(subscriptionModuleId).annual}</span>
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
+                  <h3 className="font-medium text-blue-800 mb-2">What's Included</h3>
+                  <ul className="space-y-2">
+                    {getModulePricing(subscriptionModuleId).features.map((feature, index) => (
+                      <li key={index} className="flex items-start text-sm">
+                        <CheckCircle className="h-4 w-4 text-blue-500 mr-2 mt-0.5 flex-shrink-0" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="border-t border-slate-200 my-2"></div>
-                <div className="flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>${billingCycle === 'monthly' ? getModulePricing(subscriptionModuleId).monthly : getModulePricing(subscriptionModuleId).annual}</span>
+                
+                {/* Order Summary */}
+                <div className="bg-slate-100 p-4 rounded-md">
+                  <h3 className="font-medium mb-2">Order Summary</h3>
+                  <div className="flex justify-between mt-1">
+                    <span>{getModulePricing(subscriptionModuleId).name} Module - {billingCycle === 'monthly' ? 'Monthly' : 'Annual'}</span>
+                    <span>${billingCycle === 'monthly' ? getModulePricing(subscriptionModuleId).monthly : getModulePricing(subscriptionModuleId).annual}</span>
+                  </div>
+                  <div className="border-t border-slate-200 my-2"></div>
+                  <div className="flex justify-between font-semibold">
+                    <span>Total</span>
+                    <span>${billingCycle === 'monthly' ? getModulePricing(subscriptionModuleId).monthly : getModulePricing(subscriptionModuleId).annual}</span>
+                  </div>
                 </div>
               </div>
             )}
