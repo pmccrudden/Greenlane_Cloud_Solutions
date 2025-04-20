@@ -105,9 +105,14 @@ export async function createSubscriptionWithTrial({
       throw new Error(`Invalid price ID for Core CRM: ${coreCrmPriceId}`);
     }
     
+    // Check if the price is metered
+    const isMetered = priceMap[coreCrmPriceId]?.recurring?.usage_type === 'metered';
+    console.log(`Price ${coreCrmPriceId} is metered: ${isMetered}`);
+    
     lineItems.push({
       price: coreCrmPriceId,
-      quantity: users
+      // Only include quantity if not metered
+      ...(isMetered ? {} : { quantity: users })
     });
     
     // Add selected addons
@@ -121,9 +126,14 @@ export async function createSubscriptionWithTrial({
           throw new Error(`Invalid price ID for ${addon}: ${addonPriceId}`);
         }
         
+        // Check if the addon price is metered
+        const isAddonMetered = priceMap[addonPriceId]?.recurring?.usage_type === 'metered';
+        console.log(`Addon price ${addonPriceId} for ${addon} is metered: ${isAddonMetered}`);
+        
         lineItems.push({
           price: addonPriceId,
-          quantity: 1
+          // Only include quantity if not metered
+          ...(isAddonMetered ? {} : { quantity: 1 })
         });
       }
     }
