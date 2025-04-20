@@ -75,7 +75,7 @@ export default function FreeTrialSignup() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   
   // User configuration state
-  const [userCount, setUserCount] = useState<number>(3);
+  const [userCount, setUserCount] = useState<number>(1);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
   const [region, setRegion] = useState<string>('usa');
@@ -141,14 +141,7 @@ export default function FreeTrialSignup() {
   };
   
   const handleSubmit = async (data: FormValues) => {
-    if (selectedAddons.length === 0) {
-      toast({
-        title: "Please select at least one product",
-        description: "You need to select which add-ons you want with your Core CRM.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // No longer require add-ons
     
     try {
       setIsCreatingAccount(true);
@@ -290,8 +283,8 @@ export default function FreeTrialSignup() {
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => setUserCount(Math.max(3, userCount - 1))}
-                        disabled={userCount <= 3}
+                        onClick={() => setUserCount(Math.max(1, userCount - 1))}
+                        disabled={userCount <= 1}
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
@@ -307,7 +300,7 @@ export default function FreeTrialSignup() {
                         <Plus className="h-4 w-4" />
                       </Button>
                       <div className="ml-4 text-gray-500 text-sm">
-                        Min. 3 users required
+                        Per user licensing
                       </div>
                     </div>
                   </div>

@@ -7,15 +7,15 @@
       "prices": {
         "monthly": {
           "id": "price_1R95OdQ3SzS5zRzfbGeQ4cJr",
-          "amount": 49.99,
+          "amount": 25,
           "interval": "month",
-          "lookup_key": "Starter_plan_monthly"
+          "lookup_key": "core_crm_monthly"
         },
         "annual": {
           "id": "price_1R95OdQ3SzS5zRzfbGeQ4cJr",
-          "amount": 499.99,
+          "amount": 250,
           "interval": "year",
-          "lookup_key": "Starter_plan_monthly"
+          "lookup_key": "core_crm_annual"
         }
       }
     },
