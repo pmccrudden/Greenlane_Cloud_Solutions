@@ -8,7 +8,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Initialize Stripe client
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.error('STRIPE_SECRET_KEY environment variable is missing! Stripe functionality will not work.');
+}
+
+// Initialize Stripe with proper error handling
+const stripe = process.env.STRIPE_SECRET_KEY ? 
+  new Stripe(process.env.STRIPE_SECRET_KEY) : 
+  {
+    // Stub implementation to prevent crashes
+    customers: { create: () => { throw new Error('Stripe API key not configured'); }},
+    prices: { list: () => { throw new Error('Stripe API key not configured'); }},
+    checkout: { sessions: { create: () => { throw new Error('Stripe API key not configured'); }}},
+    subscriptions: { list: () => { throw new Error('Stripe API key not configured'); }}
+  };
 
 // Load Stripe configuration
 let stripeConfig;
@@ -60,6 +73,11 @@ export async function createSubscriptionWithTrial({
   metadata = {}
 }) {
   try {
+    // Check for Stripe API key
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is not set! Cannot create Stripe subscription.');
+    }
+    
     console.log(`Creating subscription for ${email} with ${users} users, addons: ${addons.join(', ')}, billing: ${billingCycle}, region: ${region}`);
     
     // No minimum user requirement anymore

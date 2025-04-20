@@ -291,6 +291,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Module subscription endpoint
   app.post("/api/create-module-subscription", requireAuth, requireTenant, async (req: Request, res: Response) => {
     try {
+      console.log("Creating module subscription. Request body:", JSON.stringify(req.body));
       const { moduleId, billingCycle = 'monthly' } = req.body;
       
       if (!moduleId) {
@@ -298,8 +299,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (!process.env.STRIPE_SECRET_KEY) {
+        console.error("Stripe secret key not set");
         return res.status(500).json({ message: "Stripe secret key not set" });
       }
+      
+      console.log("Stripe secret key is set:", !!process.env.STRIPE_SECRET_KEY);
       
       // Import Stripe service
       const stripeService = await import('./stripeService.js');
@@ -322,7 +326,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create subscription through Stripe with additional metadata
-      const subscriptionData = await stripeService.default.createSubscriptionWithTrial({
+      console.log("Creating subscription with Stripe for module:", moduleId);
+      
+      const subscriptionParams = {
         email: req.user?.email || 'unknown@example.com',
         name: `${req.user?.firstName || ''} ${req.user?.lastName || ''}`.trim() || req.user?.username || 'Unknown User',
         company: tenant.companyName || 'Unknown Company',
@@ -335,7 +341,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
           moduleId: moduleId,
           subscriptionType: 'module-addon'
         }
-      });
+      };
+      
+      console.log("Subscription parameters:", JSON.stringify(subscriptionParams));
+      
+      const subscriptionData = await stripeService.default.createSubscriptionWithTrial(subscriptionParams);
+      
+      console.log("Subscription data received:", JSON.stringify(subscriptionData));
+      
+      // Check if we have a valid URL
+      if (!subscriptionData || !subscriptionData.url) {
+        console.error("No valid checkout URL returned from Stripe");
+        return res.status(500).json({ 
+          message: "Error creating subscription: No checkout URL available", 
+          details: JSON.stringify(subscriptionData) 
+        });
+      }
       
       // Return the checkout URL
       res.status(200).json({
