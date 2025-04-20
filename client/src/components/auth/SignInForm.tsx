@@ -155,8 +155,8 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
         {!isTenant && (
           <p className="text-sm text-slate-600">
             Don't have an account?{" "}
-            <a href="/signup" className="text-primary-600 hover:text-primary-800 font-medium">
-              Sign up
+            <a href="/marketing/free-trial" className="text-primary-600 hover:text-primary-800 font-medium">
+              Start your 14-day free trial
             </a>
           </p>
         )}
