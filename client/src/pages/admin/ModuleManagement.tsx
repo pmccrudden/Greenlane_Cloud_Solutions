@@ -26,7 +26,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // Import icons
-import { Shield, Globe, Users, Settings, Archive, Info, MessageSquare, CheckCircle, AlertCircle, ExternalLink } from "lucide-react";
+import { Shield, Globe, Users, Settings, Archive, Info, MessageSquare, CheckCircle, AlertCircle, ExternalLink, Plus, Trash2, CreditCard, PaintBucket, Check, ChevronRight, Zap } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import { SiMongodb, SiNodedotjs, SiReact, SiTailwindcss, SiExpress } from "react-icons/si";
 
 // Define module type
@@ -430,6 +431,11 @@ export default function ModuleManagement() {
         id: selectedModule.id,
         settings: communitySettings
       });
+    } else if (selectedModule.id === "supportTickets") {
+      updateModuleSettingsMutation.mutate({
+        id: selectedModule.id,
+        settings: supportTicketsSettings
+      });
     }
   };
   
@@ -597,7 +603,7 @@ export default function ModuleManagement() {
         ))}
       </div>
 
-      {/* Settings Dialog for Community Module */}
+      {/* Settings Dialog */}
       <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -1178,7 +1184,319 @@ export default function ModuleManagement() {
             </Tabs>
           )}
 
-          {/* Settings for other modules would go here, conditionally rendered based on selectedModule.id */}
+          {selectedModule?.id === "supportTickets" && (
+            <Tabs defaultValue="general" value={currentTab} onValueChange={setCurrentTab}>
+              <div className="sticky top-0 z-10 bg-white pt-2 pb-4 border-b">
+                <TabsList className="grid grid-cols-4">
+                  <TabsTrigger value="general">General</TabsTrigger>
+                  <TabsTrigger value="sla">SLA Settings</TabsTrigger>
+                  <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                  <TabsTrigger value="integration">Integration</TabsTrigger>
+                </TabsList>
+              </div>
+              
+              {/* General Settings */}
+              <TabsContent value="general" className="space-y-4 py-4">
+                <div className="bg-white border rounded-md p-4 shadow-sm">
+                  <h3 className="font-semibold text-lg mb-4">Ticket Categories</h3>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Configure the categories available when creating support tickets.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    {supportTicketsSettings.ticketCategories.map((category, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <Input 
+                          value={category}
+                          onChange={(e) => {
+                            const newCategories = [...supportTicketsSettings.ticketCategories];
+                            newCategories[index] = e.target.value;
+                            handleSupportTicketsInputChange("ticketCategories", "", newCategories);
+                          }}
+                          className="flex-1"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            const newCategories = supportTicketsSettings.ticketCategories.filter((_, i) => i !== index);
+                            handleSupportTicketsInputChange("ticketCategories", "", newCategories);
+                          }}
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newCategories = [...supportTicketsSettings.ticketCategories, ""];
+                        handleSupportTicketsInputChange("ticketCategories", "", newCategories);
+                      }}
+                      className="mt-2"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Category
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="bg-white border rounded-md p-4 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-semibold text-lg">Automatic Assignment</h3>
+                      <p className="text-sm text-slate-600 mt-1">
+                        Enable automatic assignment of tickets to available support staff
+                      </p>
+                    </div>
+                    <Switch
+                      checked={supportTicketsSettings.autoAssignment}
+                      onCheckedChange={(checked) => {
+                        handleSupportTicketsInputChange("autoAssignment", "autoAssignment", checked);
+                      }}
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+              
+              {/* SLA Settings */}
+              <TabsContent value="sla" className="space-y-4 py-4">
+                <div className="bg-white border rounded-md p-4 shadow-sm">
+                  <h3 className="font-semibold text-lg mb-2">Service Level Agreement Settings</h3>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Configure response time expectations based on ticket priority.
+                  </p>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <Label htmlFor="lowPriority">Low Priority Response Time (hours)</Label>
+                      <div className="flex items-center mt-1">
+                        <Input
+                          id="lowPriority"
+                          type="number"
+                          min="1"
+                          value={supportTicketsSettings.slaSettings.lowPriority}
+                          onChange={(e) => {
+                            handleSupportTicketsInputChange(
+                              "slaSettings",
+                              "lowPriority",
+                              parseInt(e.target.value) || 0
+                            );
+                          }}
+                        />
+                        <span className="ml-2 text-sm text-slate-500">hours</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="mediumPriority">Medium Priority Response Time (hours)</Label>
+                      <div className="flex items-center mt-1">
+                        <Input
+                          id="mediumPriority"
+                          type="number"
+                          min="1"
+                          value={supportTicketsSettings.slaSettings.mediumPriority}
+                          onChange={(e) => {
+                            handleSupportTicketsInputChange(
+                              "slaSettings",
+                              "mediumPriority",
+                              parseInt(e.target.value) || 0
+                            );
+                          }}
+                        />
+                        <span className="ml-2 text-sm text-slate-500">hours</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="highPriority">High Priority Response Time (hours)</Label>
+                      <div className="flex items-center mt-1">
+                        <Input
+                          id="highPriority"
+                          type="number"
+                          min="1"
+                          value={supportTicketsSettings.slaSettings.highPriority}
+                          onChange={(e) => {
+                            handleSupportTicketsInputChange(
+                              "slaSettings",
+                              "highPriority",
+                              parseInt(e.target.value) || 0
+                            );
+                          }}
+                        />
+                        <span className="ml-2 text-sm text-slate-500">hours</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="criticalPriority">Critical Priority Response Time (hours)</Label>
+                      <div className="flex items-center mt-1">
+                        <Input
+                          id="criticalPriority"
+                          type="number"
+                          min="1"
+                          value={supportTicketsSettings.slaSettings.criticalPriority}
+                          onChange={(e) => {
+                            handleSupportTicketsInputChange(
+                              "slaSettings",
+                              "criticalPriority",
+                              parseInt(e.target.value) || 0
+                            );
+                          }}
+                        />
+                        <span className="ml-2 text-sm text-slate-500">hours</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+              
+              {/* Notifications Settings */}
+              <TabsContent value="notifications" className="space-y-4 py-4">
+                <div className="bg-white border rounded-md p-4 shadow-sm">
+                  <h3 className="font-semibold text-lg mb-4">Email Notifications</h3>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Configure when email notifications should be sent to support team members.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label htmlFor="emailOnNewTicket" className="text-base font-medium">
+                          New Ticket Notification
+                        </Label>
+                        <p className="text-sm text-slate-500 mt-1">
+                          Send email when a new support ticket is created
+                        </p>
+                      </div>
+                      <Switch
+                        id="emailOnNewTicket"
+                        checked={supportTicketsSettings.notifications.emailOnNewTicket}
+                        onCheckedChange={(checked) => {
+                          handleSupportTicketsInputChange(
+                            "notifications",
+                            "emailOnNewTicket",
+                            checked
+                          );
+                        }}
+                      />
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label htmlFor="emailOnTicketUpdate" className="text-base font-medium">
+                          Ticket Update Notification
+                        </Label>
+                        <p className="text-sm text-slate-500 mt-1">
+                          Send email when a support ticket is updated
+                        </p>
+                      </div>
+                      <Switch
+                        id="emailOnTicketUpdate"
+                        checked={supportTicketsSettings.notifications.emailOnTicketUpdate}
+                        onCheckedChange={(checked) => {
+                          handleSupportTicketsInputChange(
+                            "notifications",
+                            "emailOnTicketUpdate",
+                            checked
+                          );
+                        }}
+                      />
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label htmlFor="emailOnTicketResolution" className="text-base font-medium">
+                          Ticket Resolution Notification
+                        </Label>
+                        <p className="text-sm text-slate-500 mt-1">
+                          Send email when a support ticket is resolved
+                        </p>
+                      </div>
+                      <Switch
+                        id="emailOnTicketResolution"
+                        checked={supportTicketsSettings.notifications.emailOnTicketResolution}
+                        onCheckedChange={(checked) => {
+                          handleSupportTicketsInputChange(
+                            "notifications",
+                            "emailOnTicketResolution",
+                            checked
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+              
+              {/* Integration Settings */}
+              <TabsContent value="integration" className="space-y-4 py-4">
+                <div className="bg-white border rounded-md p-4 shadow-sm">
+                  <h3 className="font-semibold text-lg mb-4">Integration Options</h3>
+                  <p className="text-sm text-slate-600 mb-4">
+                    Configure how the Support Tickets module integrates with other parts of the system.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label htmlFor="syncWithCommunity" className="text-base font-medium">
+                          Sync with Community
+                        </Label>
+                        <p className="text-sm text-slate-500 mt-1">
+                          Allow converting community posts to support tickets
+                        </p>
+                      </div>
+                      <Switch
+                        id="syncWithCommunity"
+                        checked={supportTicketsSettings.integration.syncWithCommunity}
+                        onCheckedChange={(checked) => {
+                          handleSupportTicketsInputChange(
+                            "integration",
+                            "syncWithCommunity",
+                            checked
+                          );
+                        }}
+                      />
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <Label htmlFor="createContactsFromTickets" className="text-base font-medium">
+                          Create Contacts from Tickets
+                        </Label>
+                        <p className="text-sm text-slate-500 mt-1">
+                          Automatically create contact records for new ticket submitters
+                        </p>
+                      </div>
+                      <Switch
+                        id="createContactsFromTickets"
+                        checked={supportTicketsSettings.integration.createContactsFromTickets}
+                        onCheckedChange={(checked) => {
+                          handleSupportTicketsInputChange(
+                            "integration",
+                            "createContactsFromTickets",
+                            checked
+                          );
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          )}
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsSettingsOpen(false)}>
