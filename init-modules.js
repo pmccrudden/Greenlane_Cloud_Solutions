@@ -68,8 +68,7 @@ const modules = [
     description: 'Create and share knowledge articles with your customers',
     enabled: false,
     version: '1.0.0',
-    settings: {},
-    status: 'inactive'
+    settings: {}
   },
   {
     id: 'api-gateway',
@@ -77,8 +76,7 @@ const modules = [
     description: 'Connect external services through a unified API gateway',
     enabled: false,
     version: '1.0.0',
-    settings: {},
-    status: 'inactive'
+    settings: {}
   }
 ];
 
