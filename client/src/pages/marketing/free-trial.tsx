@@ -605,20 +605,20 @@ export default function FreeTrialSignup() {
                               </div>
                             </FormControl>
                             {isCheckingSubdomain && (
-                              <div className="absolute right-32 top-2.5">
+                              <div className="absolute right-4 top-2.5">
                                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                               </div>
                             )}
                             {!isCheckingSubdomain && subdomainAvailable === true && field.value && (
-                              <div className="absolute right-32 top-2.5 flex items-center text-green-600">
+                              <div className="mt-1 flex items-center text-green-600">
                                 <CheckCircle className="h-4 w-4 mr-1" />
-                                <span className="text-xs">Available</span>
+                                <span className="text-xs">Subdomain available</span>
                               </div>
                             )}
                             {!isCheckingSubdomain && subdomainAvailable === false && field.value && (
-                              <div className="absolute right-32 top-2.5 flex items-center text-red-600">
+                              <div className="mt-1 flex items-center text-red-600">
                                 <AlertCircle className="h-4 w-4 mr-1" />
-                                <span className="text-xs">Unavailable</span>
+                                <span className="text-xs">Subdomain unavailable</span>
                               </div>
                             )}
                           </div>
