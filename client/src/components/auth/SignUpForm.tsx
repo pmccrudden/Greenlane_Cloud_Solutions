@@ -10,13 +10,23 @@ import { registerWithStripe, confirmStripePayment } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { loadStripe } from '@stripe/stripe-js';
 import { CardElement, useStripe, useElements, Elements } from '@stripe/react-stripe-js';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
+import { debounce } from 'lodash';
+
+// Define subdomain validation pattern
+const subdomainPattern = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
 
 // Define form validation schema
 const signUpSchema = z.object({
   name: z.string().min(1, 'Full name is required'),
   email: z.string().email('Invalid email address'),
   companyName: z.string().min(1, 'Company name is required'),
+  subdomain: z.string()
+    .min(3, 'Subdomain must be at least 3 characters')
+    .max(63, 'Subdomain must be less than 63 characters')
+    .regex(subdomainPattern, 'Only lowercase letters, numbers, and hyphens are allowed. Cannot start or end with a hyphen.')
+    .refine(value => value.trim() !== '', { message: 'Subdomain is required' }),
 });
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
@@ -150,6 +160,8 @@ export default function SignUpForm() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [tenantId, setTenantId] = useState<string | null>(null);
   const [signupStep, setSignupStep] = useState<'details' | 'payment'>('details');
+  const [isCheckingSubdomain, setIsCheckingSubdomain] = useState(false);
+  const [subdomainAvailable, setSubdomainAvailable] = useState<boolean | null>(null);
   const { toast } = useToast();
 
   const form = useForm<SignUpFormValues>({
@@ -157,9 +169,43 @@ export default function SignUpForm() {
     defaultValues: {
       name: '',
       email: '',
-      companyName: ''
+      companyName: '',
+      subdomain: ''
     },
   });
+  
+  // Check if subdomain is available
+  const checkSubdomainAvailability = async (subdomain: string) => {
+    if (!subdomain || subdomain.length < 3 || !subdomainPattern.test(subdomain)) {
+      setSubdomainAvailable(null);
+      return;
+    }
+    
+    setIsCheckingSubdomain(true);
+    try {
+      const response = await apiRequest('GET', `/api/check-subdomain?subdomain=${subdomain}`);
+      const data = await response.json();
+      setSubdomainAvailable(data.available);
+    } catch (error) {
+      console.error('Error checking subdomain:', error);
+      setSubdomainAvailable(null);
+    } finally {
+      setIsCheckingSubdomain(false);
+    }
+  };
+  
+  // Debounce subdomain check to avoid excessive API calls
+  const debouncedCheckSubdomain = debounce(checkSubdomainAvailability, 500);
+  
+  // Watch for changes to the subdomain field
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'subdomain' && value.subdomain) {
+        debouncedCheckSubdomain(value.subdomain as string);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
 
   const onSubmit = async (values: SignUpFormValues) => {
     try {
