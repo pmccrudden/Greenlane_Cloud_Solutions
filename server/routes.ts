@@ -626,6 +626,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
     
+    // Advanced test route for Stripe subscription creation
+    app.get("/api/stripe-subscription-test", async (req, res) => {
+      try {
+        // Import dynamically to avoid issues with circular dependencies
+        const stripeService = await import('./stripeService.js');
+        
+        console.log("Testing Stripe subscription creation with test route");
+        
+        // Use test data specifically for module subscriptions
+        const testParams = {
+          email: 'test@example.com',
+          name: 'Test User',
+          company: 'Test Company',
+          users: 1,
+          addons: ['community'], // Test with community addon only
+          billingCycle: 'monthly',
+          region: 'usa',
+          metadata: {
+            isTest: true,
+            testRoute: true,
+            subscriptionType: 'module-addon', // This is key - marks it as addon-only subscription
+            tenantId: 'test-tenant-123',
+            moduleId: 'community'
+          }
+        };
+        
+        console.log("Creating test subscription with params:", JSON.stringify(testParams));
+        
+        // Call the actual function but with test data
+        const result = await stripeService.default.createSubscriptionWithTrial(testParams);
+        
+        console.log("Test subscription creation result:", JSON.stringify(result));
+        
+        res.json({
+          success: true,
+          message: "Successfully tested subscription creation",
+          result: {
+            url: result.url,
+            customerId: result.customer,
+            sessionId: result.session
+          }
+        });
+      } catch (error: any) {
+        console.error("Stripe subscription test error:", error);
+        res.status(500).json({
+          success: false,
+          message: "Error testing Stripe subscription creation",
+          error: error.message,
+          type: error.type,
+          stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+        });
+      }
+    });
+    
     // Marketing website routes
     app.post("/api/marketing/create-customer", async (req, res) => {
       try {

@@ -117,45 +117,76 @@ export async function createSubscriptionWithTrial({
       priceMap[price.id] = price;
     });
     
-    // Add core CRM product (per user)
-    const coreCrmPriceId = stripeConfig.products.coreCrm.prices[billingCycle].id;
-    console.log(`Using Core CRM price ID: ${coreCrmPriceId}`);
-    
-    if (!priceMap[coreCrmPriceId]) {
-      console.error(`Core CRM price ID ${coreCrmPriceId} not found in Stripe`);
-      throw new Error(`Invalid price ID for Core CRM: ${coreCrmPriceId}`);
-    }
-    
-    // Check if the price is metered
-    const isMetered = priceMap[coreCrmPriceId]?.recurring?.usage_type === 'metered';
-    console.log(`Price ${coreCrmPriceId} is metered: ${isMetered}`);
-    
-    lineItems.push({
-      price: coreCrmPriceId,
-      // Only include quantity if not metered
-      ...(isMetered ? {} : { quantity: users })
-    });
-    
-    // Add selected addons
-    for (const addon of addons) {
-      if (stripeConfig.products[addon]) {
-        const addonPriceId = stripeConfig.products[addon].prices[billingCycle].id;
-        console.log(`Using ${addon} addon price ID: ${addonPriceId}`);
-        
-        if (!priceMap[addonPriceId]) {
-          console.error(`Addon price ID ${addonPriceId} for ${addon} not found in Stripe`);
-          throw new Error(`Invalid price ID for ${addon}: ${addonPriceId}`);
+    // Only add addon products for module subscriptions, not Core CRM
+    if (metadata && metadata.subscriptionType === 'module-addon') {
+      console.log("This is a module subscription for an addon only");
+      
+      // For module subscriptions, we only need the add-on, not Core CRM
+      for (const addon of addons) {
+        if (stripeConfig.products[addon]) {
+          const addonPriceId = stripeConfig.products[addon].prices[billingCycle].id;
+          console.log(`Using ${addon} addon price ID: ${addonPriceId}`);
+          
+          if (!priceMap[addonPriceId]) {
+            console.error(`Addon price ID ${addonPriceId} for ${addon} not found in Stripe`);
+            throw new Error(`Invalid price ID for ${addon}: ${addonPriceId}`);
+          }
+          
+          // Check if the addon price is metered
+          const isAddonMetered = priceMap[addonPriceId]?.recurring?.usage_type === 'metered';
+          console.log(`Addon price ${addonPriceId} for ${addon} is metered: ${isAddonMetered}`);
+          
+          lineItems.push({
+            price: addonPriceId,
+            // Only include quantity if not metered
+            ...(isAddonMetered ? {} : { quantity: 1 })
+          });
         }
-        
-        // Check if the addon price is metered
-        const isAddonMetered = priceMap[addonPriceId]?.recurring?.usage_type === 'metered';
-        console.log(`Addon price ${addonPriceId} for ${addon} is metered: ${isAddonMetered}`);
-        
-        lineItems.push({
-          price: addonPriceId,
-          // Only include quantity if not metered
-          ...(isAddonMetered ? {} : { quantity: 1 })
-        });
+      }
+    } else {
+      // This is a full subscription with Core CRM
+      console.log("This is a full subscription including Core CRM");
+      
+      // Add core CRM product (per user)
+      const coreCrmPriceId = stripeConfig.products.coreCrm.prices[billingCycle].id;
+      console.log(`Using Core CRM price ID: ${coreCrmPriceId}`);
+      
+      if (!priceMap[coreCrmPriceId]) {
+        console.error(`Core CRM price ID ${coreCrmPriceId} not found in Stripe`);
+        throw new Error(`Invalid price ID for Core CRM: ${coreCrmPriceId}`);
+      }
+      
+      // Check if the price is metered
+      const isMetered = priceMap[coreCrmPriceId]?.recurring?.usage_type === 'metered';
+      console.log(`Price ${coreCrmPriceId} is metered: ${isMetered}`);
+      
+      lineItems.push({
+        price: coreCrmPriceId,
+        // Only include quantity if not metered
+        ...(isMetered ? {} : { quantity: users })
+      });
+      
+      // Add selected addons (only for full subscriptions)
+      for (const addon of addons) {
+        if (stripeConfig.products[addon]) {
+          const addonPriceId = stripeConfig.products[addon].prices[billingCycle].id;
+          console.log(`Using ${addon} addon price ID: ${addonPriceId}`);
+          
+          if (!priceMap[addonPriceId]) {
+            console.error(`Addon price ID ${addonPriceId} for ${addon} not found in Stripe`);
+            throw new Error(`Invalid price ID for ${addon}: ${addonPriceId}`);
+          }
+          
+          // Check if the addon price is metered
+          const isAddonMetered = priceMap[addonPriceId]?.recurring?.usage_type === 'metered';
+          console.log(`Addon price ${addonPriceId} for ${addon} is metered: ${isAddonMetered}`);
+          
+          lineItems.push({
+            price: addonPriceId,
+            // Only include quantity if not metered
+            ...(isAddonMetered ? {} : { quantity: 1 })
+          });
+        }
       }
     }
     
