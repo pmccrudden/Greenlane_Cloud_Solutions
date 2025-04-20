@@ -151,16 +151,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center border-t pt-6">
-        {!isTenant && (
-          <p className="text-sm text-slate-600">
-            Don't have an account?{" "}
-            <a href="/marketing/free-trial" className="text-primary-600 hover:text-primary-800 font-medium">
-              Start your 14-day free trial
-            </a>
-          </p>
-        )}
-      </CardFooter>
+      {/* Footer removed as requested */}
     </Card>
   );
 }
