@@ -288,6 +288,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Module subscription endpoint
+  app.post("/api/create-module-subscription", requireAuth, requireTenant, async (req: Request, res: Response) => {
+    try {
+      const { moduleId, billingCycle = 'monthly' } = req.body;
+      
+      if (!moduleId) {
+        return res.status(400).json({ message: "Module ID is required" });
+      }
+      
+      if (!process.env.STRIPE_SECRET_KEY) {
+        return res.status(500).json({ message: "Stripe secret key not set" });
+      }
+      
+      // Import Stripe service
+      const stripeService = await import('./stripeService.js');
+      
+      // Determine which Stripe product to use based on the module ID
+      let addonList = [];
+      if (moduleId === 'community') {
+        addonList.push('community');
+      } else if (moduleId === 'support-tickets') {
+        addonList.push('support-tickets');
+      } else {
+        return res.status(400).json({ message: "Invalid module ID" });
+      }
+      
+      // Get tenant and user information
+      const tenant = await storage.getTenant(req.tenantId!);
+      
+      if (!tenant) {
+        return res.status(404).json({ message: "Tenant not found" });
+      }
+      
+      // Create subscription through Stripe
+      const subscriptionData = await stripeService.default.createSubscriptionWithTrial({
+        email: req.user?.email || 'unknown@example.com',
+        name: `${req.user?.firstName || ''} ${req.user?.lastName || ''}`.trim() || req.user?.username || 'Unknown User',
+        company: tenant.name || 'Unknown Company',
+        users: 1, // Just 1 license for the module itself
+        addons: addonList,
+        billingCycle,
+        region: 'usa' // Default region
+      });
+      
+      // Return the checkout URL
+      res.status(200).json({
+        url: subscriptionData.url,
+        sessionId: subscriptionData.session
+      });
+    } catch (error: any) {
+      console.error("Error creating module subscription:", error);
+      res.status(500).json({ 
+        message: "Error creating subscription", 
+        details: error.message 
+      });
+    }
+  });
+
   // Community-specific endpoints
   app.get("/api/community/posts", requireAuth, requireTenant, async (req: Request, res: Response) => {
     try {
