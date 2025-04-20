@@ -23,7 +23,28 @@ Before deployment, make sure you have the following:
 4. Cloudflare API token with appropriate permissions
 5. Stripe account for payment processing
 
-## Environment Setup
+## Quick Start Deployment
+
+For a complete automated deployment including demo tenants, use:
+
+```bash
+# Set up Cloudflare configuration first
+./setup-cloudflare-secrets.sh
+
+# Then run the full deployment with demo tenants
+./deploy-production-with-demo.sh
+```
+
+This script handles everything including:
+- Setting up GCP project and services
+- Building and deploying to Cloud Run
+- Configuring Cloudflare DNS
+- Creating demo tenants with sample data
+- Verifying the deployment
+
+## Manual Deployment Steps
+
+### Environment Setup
 
 Create two environment files:
 
@@ -37,6 +58,8 @@ GOOGLE_PROJECT_ID=greenlane-crm
 GOOGLE_REGION=us-central1
 CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
 CLOUDFLARE_ZONE_ID=your_cloudflare_zone_id
+BASE_DOMAIN=greenlanecloudsolutions.com
+SERVICE_HOSTNAME=your-service-hostname.a.run.app
 ```
 
 ### .env.production Example
@@ -47,20 +70,28 @@ PORT=8080
 DATABASE_URL=postgresql://user:password@host:port/dbname
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_ID_MONTHLY=price_...
+STRIPE_PRICE_ID_ANNUAL=price_...
 ANTHROPIC_API_KEY=sk-ant-...
 BASE_DOMAIN=greenlanecloudsolutions.com
 SESSION_SECRET=a_long_random_string
 ```
 
-## Cloudflare DNS Setup
+### Cloudflare DNS Setup
 
-1. Obtain your Cloudflare Zone ID using the provided script:
+1. Set up Cloudflare secrets with the provided helper script:
+
+```bash
+./setup-cloudflare-secrets.sh
+```
+
+2. Or manually obtain your Cloudflare Zone ID using:
 
 ```bash
 node get-cloudflare-zone-info.js greenlanecloudsolutions.com
 ```
 
-2. Set up the DNS records for your domain:
+3. Set up the DNS records for your domain:
 
 ```bash
 node setup-cloudflare-dns.js
@@ -71,7 +102,7 @@ This will create:
 - `api.greenlanecloudsolutions.com` - API endpoint
 - `*.greenlanecloudsolutions.com` - Wildcard for tenant subdomains
 
-## Building and Deploying
+### Building and Deploying
 
 1. Create a Google Secret for your environment variables:
 
@@ -85,18 +116,41 @@ gcloud secrets create greenlane-env --data-file=.env.production
 bash deploy-multi-tenant.sh
 ```
 
-## Testing Tenant Creation
+## Tenant Management
 
-1. Use the tenant setup script to create a test tenant:
+### Creating a Standard Tenant
+
+Use the tenant setup script to create a standard tenant:
 
 ```bash
 node setup-tenant.js acme "Acme Corporation" admin@acme.com
 ```
 
-2. Verify that the subdomain works by visiting:
-   - `https://acme.greenlanecloudsolutions.com`
+### Creating a Demo Tenant with Sample Data
 
-## Stripe Webhook Configuration
+To create a demo tenant with comprehensive sample data for demos and prospects:
+
+```bash
+node setup-demo-tenant.js demo "Demo Account" demo@example.com
+```
+
+This creates a fully populated tenant with:
+- Sample accounts, contacts, deals, and projects
+- Demo support tickets
+- All premium modules enabled
+- Realistic data relationships
+
+### Subdomain Validation
+
+When creating tenants, the system performs comprehensive subdomain validation:
+- Format validation (3-20 chars, alphanumeric + hyphens)
+- Reserved name checking (app, api, admin, etc.)
+- DNS record verification
+- Database tenant verification
+
+## Stripe Integration
+
+### Webhook Configuration
 
 1. In your Stripe Dashboard, create a webhook endpoint:
    - URL: `https://api.greenlanecloudsolutions.com/api/stripe-webhook`
@@ -110,6 +164,15 @@ node setup-tenant.js acme "Acme Corporation" admin@acme.com
    ```
    STRIPE_WEBHOOK_SECRET=whsec_...
    ```
+
+### Product Configuration
+
+Set up your Stripe products and add their IDs to your environment variables:
+
+```
+STRIPE_PRICE_ID_MONTHLY=price_...
+STRIPE_PRICE_ID_ANNUAL=price_...
+```
 
 ## Monitoring and Maintenance
 
@@ -136,8 +199,7 @@ When new tenants sign up through the application:
 1. The system verifies subdomain availability using Cloudflare API
 2. After payment, the system creates the tenant record and configures modules
 3. The tenant is immediately accessible via their subdomain
-
-You can also manually create tenants using the `setup-tenant.js` script.
+4. Cloudflare DNS is automatically updated with the new tenant subdomain
 
 ## Troubleshooting
 
@@ -172,6 +234,7 @@ gcloud compute ssh your-postgres-instance --command="psql -h localhost -U postgr
 1. All tenant subdomains use HTTPS enforced by Cloudflare
 2. Database access is restricted by tenant ID in queries
 3. Cross-Origin Resource Sharing (CORS) is configured to restrict access
+4. Environment secrets are stored in Google Secret Manager
 
 ## Scaling Considerations
 
@@ -185,3 +248,19 @@ For very high traffic, consider:
 - Dedicated database instances for high-traffic tenants
 - CDN caching for static assets
 - Regional deployments for reduced latency
+
+## Advanced Features
+
+### Custom Domain Support (Future)
+
+The architecture is designed to support future custom domain capabilities:
+- Tenant admins can provide their own domain
+- DNS verification and certificate management
+- Custom domain mapping in the application
+
+### Tenant Data Migration
+
+For moving data between tenants or environments:
+- Use the database export/import features
+- Ensure tenant IDs are properly updated
+- Verify relationships are maintained
