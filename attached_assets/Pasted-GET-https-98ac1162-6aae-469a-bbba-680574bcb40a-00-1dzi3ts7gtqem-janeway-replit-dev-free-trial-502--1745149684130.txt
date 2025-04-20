@@ -1,0 +1,26 @@
+GET https://98ac1162-6aae-469a-bbba-680574bcb40a-00-1dzi3ts7gtqem.janeway.replit.dev/free-trial 502 (Bad Gateway)
+(anonymous) @ 98ac1162-6aae-469a-b…ev/@vite/client:562Understand this error
+lockdown-install.js:1 Removing unpermitted intrinsics
+lockdown-install.js:1 Removing unpermitted intrinsics
+lockdown-install.js:1 Removing unpermitted intrinsics
+VM4939 lockdown-install.js:1 Removing unpermitted intrinsics
+VM4943 eruda.js:2 Making GET request to /api/marketing/products?region=usa with tenant ID: 572c77d7-e838-44ca-8adb-7ddef5f199bb
+lockdown-install.js:1 Removing unpermitted intrinsics
+lockdown-install.js:1 Removing unpermitted intrinsics
+lockdown-install.js:1 Removing unpermitted intrinsics
+VM4943 eruda.js:2 Making POST request to /api/marketing/create-free-trial with tenant ID: 572c77d7-e838-44ca-8adb-7ddef5f199bb
+lockdown-install.js:1 Removing unpermitted intrinsics
+checkout.stripe.com/c/pay/cs_test_b1rUUf8lIibWJBmNiHxP1RWAYYL9zq2jCybzibbdIByDS4XRXLIysv2L5d#fid2cGd2ZndsdXFsamtQa2x0cGBrYHZ2QGtkZ2lgYSc%2FY2RpdmApJ2R1bE5gfCc%2FJ3VuWnFgdnFaMDRXPDZJSFQ2Vn9WMH9Xf2NMQ0pDVHJpSkZOX1BDd2xBaHVsfWhKUHMxcEdGTmc3NGdiZ31KbH1zVG9EY0kzUTZkV0pRak9KZmhNT0h8cl9PTjI2f1dQXHc1NTRif3VwYFdBJyknY3dqaFZgd3Ngdyc%2FcXdwYCknaWR8anBxUXx1YCc%2FJ2hwaXFsWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl:1 <link rel=preload> uses an unsupported `as` valueUnderstand this warning
+checkout.stripe.com/c/pay/cs_test_b1rUUf8lIibWJBmNiHxP1RWAYYL9zq2jCybzibbdIByDS4XRXLIysv2L5d#fid2cGd2ZndsdXFsamtQa2x0cGBrYHZ2QGtkZ2lgYSc%2FY2RpdmApJ2R1bE5gfCc%2FJ3VuWnFgdnFaMDRXPDZJSFQ2Vn9WMH9Xf2NMQ0pDVHJpSkZOX1BDd2xBaHVsfWhKUHMxcEdGTmc3NGdiZ31KbH1zVG9EY0kzUTZkV0pRak9KZmhNT0h8cl9PTjI2f1dQXHc1NTRif3VwYFdBJyknY3dqaFZgd3Ngdyc%2FcXdwYCknaWR8anBxUXx1YCc%2FJ2hwaXFsWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl:1 <link rel=preload> uses an unsupported `as` valueUnderstand this warning
+lockdown-install.js:1 Removing unpermitted intrinsics
+checkout-app-init-293ca1f2e4292e60ae963d3ce8a59d42.js:1 Stripe Checkout is not able to run in an iFrame. Please redirect to Checkout at the top level.
+Ya @ checkout-app-init-293ca1f2e4292e60ae963d3ce8a59d42.js:1
+Wa @ checkout-app-init-293ca1f2e4292e60ae963d3ce8a59d42.js:1
+Oq @ checkout-app-init-293ca1f2e4292e60ae963d3ce8a59d42.js:1
+(anonymous) @ cs_test_b1rUUf8lIibWJBmNiHxP1RWAYYL9zq2jCybzibbdIByDS4XRXLIysv2L5d:6
+Promise.then
+ne @ cs_test_b1rUUf8lIibWJBmNiHxP1RWAYYL9zq2jCybzibbdIByDS4XRXLIysv2L5d:6
+Promise.then
+(anonymous) @ cs_test_b1rUUf8lIibWJBmNiHxP1RWAYYL9zq2jCybzibbdIByDS4XRXLIysv2L5d:6
+(anonymous) @ cs_test_b1rUUf8lIibWJBmNiHxP1RWAYYL9zq2jCybzibbdIByDS4XRXLIysv2L5d:6
+(anonymous) @ cs_test_b1rUUf8lIibWJBmNiHxP1RWAYYL9zq2jCybzibbdIByDS4XRXLIysv2L5d:6Understand this error

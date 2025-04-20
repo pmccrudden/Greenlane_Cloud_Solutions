@@ -41,8 +41,14 @@ export default function CheckoutOptions() {
       return;
     }
     
-    // Redirect to Stripe checkout
-    window.location.href = checkoutUrl;
+    // Open Stripe checkout in a new tab instead of redirecting in the same window
+    // This fixes the iframe security restriction from Stripe
+    window.open(checkoutUrl, '_blank');
+    
+    toast({
+      title: "Checkout Opened",
+      description: "We've opened Stripe checkout in a new tab. If you don't see it, please check your popup blocker.",
+    });
   };
   
   const handleCancelAndGoBack = () => {
@@ -105,7 +111,7 @@ export default function CheckoutOptions() {
                       <div>
                         <h3 className="text-lg font-medium">Complete Payment Setup Now</h3>
                         <p className="text-gray-600 mt-1">
-                          Proceed to Stripe to securely provide your payment details. 
+                          Click below to open Stripe checkout in a new tab. 
                           You won't be charged until your 14-day free trial ends.
                         </p>
                         <p className="text-gray-600 mt-1">
@@ -116,7 +122,7 @@ export default function CheckoutOptions() {
                           e.stopPropagation();
                           handleContinueToStripe();
                         }}>
-                          Continue to Stripe <ArrowRightIcon className="ml-2 h-4 w-4" />
+                          Open Stripe Checkout <ArrowRightIcon className="ml-2 h-4 w-4" />
                         </Button>
                       </div>
                     </div>
