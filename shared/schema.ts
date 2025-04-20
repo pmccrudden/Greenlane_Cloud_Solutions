@@ -30,6 +30,7 @@ export const tenants = pgTable("tenants", {
   isActive: boolean("is_active").default(true).notNull(),
   domainName: text("domain_name").notNull(),
   adminEmail: text("admin_email").notNull(),
+  custom_subdomain: boolean("custom_subdomain").default(false).notNull(), // Tracks if user specified a custom subdomain
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

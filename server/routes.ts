@@ -960,7 +960,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               planType: "standard",
               isActive: true,
               domainName: `${tenantId}.greenlanecloudsolutions.com`,
-              adminEmail: customer.email || ""
+              adminEmail: customer.email || "",
+              custom_subdomain: customer.metadata.customSubdomain === 'true'
             });
             
             // Create admin user
