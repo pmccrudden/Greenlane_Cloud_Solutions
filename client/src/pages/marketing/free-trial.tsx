@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { loadStripe } from '@stripe/stripe-js';
-import { Loader2, Users, CheckSquare, Minus, Plus } from 'lucide-react';
+import { Loader2, Users, CheckSquare, Minus, Plus, CheckCircle, AlertCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
@@ -55,6 +55,13 @@ const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
   email: z.string().email({ message: 'Please enter a valid email address' }),
   companyName: z.string().min(2, { message: 'Company name must be at least 2 characters' }),
+  subdomain: z.string()
+    .min(3, { message: 'Subdomain must be at least 3 characters' })
+    .max(20, { message: 'Subdomain must be less than 20 characters' })
+    .regex(/^[a-z0-9-]+$/, { message: 'Subdomain can only contain lowercase letters, numbers, and hyphens' })
+    .refine(val => !val.startsWith('-') && !val.endsWith('-'), {
+      message: 'Subdomain cannot start or end with a hyphen',
+    }),
   password: z.string()
     .min(8, { message: 'Password must be at least 8 characters' })
     .regex(/[a-z]/, { message: 'Password must contain at least one lowercase letter' })
@@ -96,10 +103,44 @@ export default function FreeTrialSignup() {
       name: '',
       email: '',
       companyName: '',
+      subdomain: '',
       password: '',
       confirmPassword: '',
     },
   });
+  
+  // State for subdomain availability check
+  const [isCheckingSubdomain, setIsCheckingSubdomain] = useState(false);
+  const [subdomainAvailable, setSubdomainAvailable] = useState<boolean | null>(null);
+  
+  // Function to check subdomain availability
+  const checkSubdomainAvailability = async (subdomain: string) => {
+    if (!subdomain || subdomain.length < 3) return;
+    
+    try {
+      setIsCheckingSubdomain(true);
+      const response = await apiRequest('GET', `/api/check-subdomain?subdomain=${subdomain}`);
+      const data = await response.json();
+      setSubdomainAvailable(data.available);
+    } catch (error) {
+      console.error('Error checking subdomain:', error);
+      setSubdomainAvailable(false);
+    } finally {
+      setIsCheckingSubdomain(false);
+    }
+  };
+  
+  // Watch the subdomain field to check availability
+  const subdomain = form.watch('subdomain');
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (subdomain) {
+        checkSubdomainAvailability(subdomain);
+      }
+    }, 500); // Debounce
+    
+    return () => clearTimeout(timeoutId);
+  }, [subdomain]);
   
   // Toggle addon selection
   const toggleAddon = (addonId: string) => {
@@ -146,11 +187,25 @@ export default function FreeTrialSignup() {
     try {
       setIsCreatingAccount(true);
       
+      // Check if subdomain is available before proceeding
+      if (data.subdomain && (!subdomainAvailable || isCheckingSubdomain)) {
+        if (!subdomainAvailable) {
+          toast({
+            title: "Subdomain Unavailable",
+            description: "Please choose a different subdomain.",
+            variant: "destructive",
+          });
+        }
+        setIsCreatingAccount(false);
+        return;
+      }
+      
       // Create subscription with trial
       const response = await apiRequest('POST', '/api/marketing/create-free-trial', {
         email: data.email,
         name: data.name,
         companyName: data.companyName,
+        subdomain: data.subdomain,
         password: data.password, // Will be hashed on the server
         users: userCount,
         addons: selectedAddons,
@@ -516,6 +571,59 @@ export default function FreeTrialSignup() {
                           </FormControl>
                           <FormDescription>
                             This will be used to set up your company portal.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="subdomain"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Choose Your Subdomain</FormLabel>
+                          <div className="relative">
+                            <FormControl>
+                              <div className="flex items-center">
+                                <Input 
+                                  placeholder="mycompany" 
+                                  {...field} 
+                                  className="rounded-r-none"
+                                  onBlur={(e) => {
+                                    // Convert to lowercase
+                                    const lowercase = e.target.value.toLowerCase();
+                                    if (lowercase !== e.target.value) {
+                                      field.onChange(lowercase);
+                                    }
+                                    field.onBlur();
+                                  }}
+                                />
+                                <div className="bg-muted px-3 py-2 border border-l-0 rounded-r-md text-muted-foreground">
+                                  .greenlanecloudsolutions.com
+                                </div>
+                              </div>
+                            </FormControl>
+                            {isCheckingSubdomain && (
+                              <div className="absolute right-32 top-2.5">
+                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                              </div>
+                            )}
+                            {!isCheckingSubdomain && subdomainAvailable === true && field.value && (
+                              <div className="absolute right-32 top-2.5 flex items-center text-green-600">
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                <span className="text-xs">Available</span>
+                              </div>
+                            )}
+                            {!isCheckingSubdomain && subdomainAvailable === false && field.value && (
+                              <div className="absolute right-32 top-2.5 flex items-center text-red-600">
+                                <AlertCircle className="h-4 w-4 mr-1" />
+                                <span className="text-xs">Unavailable</span>
+                              </div>
+                            )}
+                          </div>
+                          <FormDescription>
+                            Choose a subdomain for your GreenLane account. Only lowercase letters, numbers, and hyphens are allowed.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
