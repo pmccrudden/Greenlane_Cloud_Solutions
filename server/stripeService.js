@@ -59,6 +59,8 @@ try {
  * @param {Array<string>} params.addons Array of addon IDs
  * @param {string} params.billingCycle 'monthly' or 'annual'
  * @param {string} params.region Customer region (for price adjustment)
+ * @param {string} [params.success_url] Custom success URL for redirect after checkout
+ * @param {string} [params.cancel_url] Custom cancel URL for redirect if checkout is abandoned
  * @param {Object} params.metadata Additional metadata to include in the checkout session
  * @returns {Promise<Object>} Subscription data including checkout session
  */
@@ -70,6 +72,8 @@ export async function createSubscriptionWithTrial({
   addons = [],
   billingCycle = 'monthly',
   region = 'usa',
+  success_url,
+  cancel_url,
   metadata = {}
 }) {
   try {
@@ -210,23 +214,16 @@ export async function createSubscriptionWithTrial({
       console.log(`Validating line item with price ID: ${item.price}`);
     }
     
-    // Set up success and cancel URLs with support for custom URLs from params
-    let success_url = `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/trial-success?session_id={CHECKOUT_SESSION_ID}`;
-    let cancel_url = `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/free-trial`;
+    // Set up default success and cancel URLs
+    let default_success_url = `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/trial-success?session_id={CHECKOUT_SESSION_ID}`;
+    let default_cancel_url = `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/free-trial`;
     
-    // Allow custom success and cancel URLs to be passed in params (for module subscriptions)
-    if (params.success_url) {
-      success_url = params.success_url;
-      console.log("Using custom success URL:", success_url);
-    }
+    // Use custom URLs if provided, otherwise use defaults
+    let final_success_url = success_url || default_success_url;
+    let final_cancel_url = cancel_url || default_cancel_url;
     
-    if (params.cancel_url) {
-      cancel_url = params.cancel_url;
-      console.log("Using custom cancel URL:", cancel_url);
-    } else {
-      console.log("Using default success URL:", success_url);
-      console.log("Using default cancel URL:", cancel_url);
-    }
+    console.log("Using success URL:", final_success_url);
+    console.log("Using cancel URL:", final_cancel_url);
     
     // Create the checkout session with detailed parameters
     const sessionParams = {
@@ -247,8 +244,8 @@ export async function createSubscriptionWithTrial({
       metadata: {
         ...metadata // Include custom metadata at the session level too
       },
-      success_url: success_url,
-      cancel_url: cancel_url,
+      success_url: final_success_url,
+      cancel_url: final_cancel_url,
       allow_promotion_codes: true,
       billing_address_collection: 'required',
       client_reference_id: company.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() // Sanitized company name
