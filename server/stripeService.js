@@ -250,14 +250,9 @@ export async function createSubscriptionWithTrial({
       console.error('Unknown error type:', error.constructor.name);
     }
     
-    // Return a structured error instead of throwing
-    // This ensures the client gets useful information instead of crashing
-    return {
-      error: true,
-      message: error.message || 'An error occurred while creating the subscription',
-      details: error.type === 'StripeInvalidRequestError' ? error.raw?.message : null,
-      code: error.code || 'unknown_error'
-    };
+    // Re-throw the error for proper handling upstream
+    // We're finding that returning error objects is causing issues with the checkout flow
+    throw error;
   }
 }
 

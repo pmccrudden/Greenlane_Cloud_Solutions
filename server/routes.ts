@@ -353,12 +353,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log("Subscription data received:", JSON.stringify(subscriptionData));
       
-      // Check if there was an error with Stripe
-      if (subscriptionData.error) {
-        console.error("Error returned from Stripe service:", subscriptionData.message);
+      // Only proceed if subscriptionData exists
+      if (!subscriptionData) {
+        console.error("No valid subscription data returned from Stripe");
         return res.status(500).json({ 
-          message: "Error creating subscription: " + subscriptionData.message, 
-          details: subscriptionData.details || "No additional details available" 
+          message: "Error creating subscription: No subscription data returned", 
+          details: "The Stripe service did not return a valid subscription response" 
         });
       }
       
@@ -586,6 +586,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ===== Stripe Integration =====
   if (stripe) {
+    // Test route for Stripe connection
+    app.get("/api/stripe-test", async (req, res) => {
+      try {
+        // Import dynamically to avoid issues with circular dependencies
+        const stripeService = await import('./stripeService.js');
+        
+        // Test if we can communicate with Stripe and get prices
+        console.log("Testing Stripe connection with test route");
+        
+        // Check Stripe connection by listing prices
+        const prices = await stripe.prices.list({
+          active: true,
+          limit: 3 // Just get a few for testing
+        });
+        
+        // Log and return basic info
+        console.log("Successfully connected to Stripe. Found prices:", prices.data.length);
+        
+        res.json({
+          success: true,
+          message: "Connected to Stripe successfully",
+          count: prices.data.length,
+          firstPrice: prices.data[0] ? {
+            id: prices.data[0].id,
+            nickname: prices.data[0].nickname,
+            active: prices.data[0].active
+          } : null
+        });
+      } catch (error: any) {
+        console.error("Stripe test connection error:", error);
+        res.status(500).json({
+          success: false,
+          message: "Error connecting to Stripe",
+          error: error.message,
+          type: error.type,
+          stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+        });
+      }
+    });
+    
     // Marketing website routes
     app.post("/api/marketing/create-customer", async (req, res) => {
       try {
