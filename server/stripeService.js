@@ -58,6 +58,8 @@ export async function createSubscriptionWithTrial({
   region = 'usa'
 }) {
   try {
+    console.log(`Creating subscription for ${email} with ${users} users, addons: ${addons.join(', ')}, billing: ${billingCycle}, region: ${region}`);
+    
     // Ensure minimum of 3 users
     users = Math.max(3, users);
     
@@ -66,6 +68,7 @@ export async function createSubscriptionWithTrial({
     const currencyCode = stripeConfig.currencyCodes[region] || 'USD';
     
     // Create customer
+    console.log("Creating Stripe customer...");
     const customer = await stripe.customers.create({
       email,
       name,
@@ -74,12 +77,34 @@ export async function createSubscriptionWithTrial({
         region
       }
     });
+    console.log(`Created Stripe customer with ID: ${customer.id}`);
     
     // Calculate line items for the subscription
     const lineItems = [];
     
+    // First, verify all price IDs exist in Stripe
+    console.log("Fetching all active prices from Stripe...");
+    const allPrices = await stripe.prices.list({
+      active: true,
+      limit: 100
+    });
+    console.log(`Found ${allPrices.data.length} active prices in Stripe`);
+    
+    // Map of price IDs to their full price objects
+    const priceMap = {};
+    allPrices.data.forEach(price => {
+      priceMap[price.id] = price;
+    });
+    
     // Add core CRM product (per user)
     const coreCrmPriceId = stripeConfig.products.coreCrm.prices[billingCycle].id;
+    console.log(`Using Core CRM price ID: ${coreCrmPriceId}`);
+    
+    if (!priceMap[coreCrmPriceId]) {
+      console.error(`Core CRM price ID ${coreCrmPriceId} not found in Stripe`);
+      throw new Error(`Invalid price ID for Core CRM: ${coreCrmPriceId}`);
+    }
+    
     lineItems.push({
       price: coreCrmPriceId,
       quantity: users
@@ -89,6 +114,13 @@ export async function createSubscriptionWithTrial({
     for (const addon of addons) {
       if (stripeConfig.products[addon]) {
         const addonPriceId = stripeConfig.products[addon].prices[billingCycle].id;
+        console.log(`Using ${addon} addon price ID: ${addonPriceId}`);
+        
+        if (!priceMap[addonPriceId]) {
+          console.error(`Addon price ID ${addonPriceId} for ${addon} not found in Stripe`);
+          throw new Error(`Invalid price ID for ${addon}: ${addonPriceId}`);
+        }
+        
         lineItems.push({
           price: addonPriceId,
           quantity: 1
@@ -96,26 +128,12 @@ export async function createSubscriptionWithTrial({
       }
     }
     
-    // Fetch all prices first to make sure they exist
-    const allPrices = await stripe.prices.list({
-      active: true,
-      limit: 100
-    });
-    
-    console.log("Preparing line items for checkout session:", lineItems);
-    
-    // Verify that the price IDs are valid
-    for (const item of lineItems) {
-      const priceExists = allPrices.data.some(price => price.id === item.price);
-      if (!priceExists) {
-        console.error(`Price ID ${item.price} not found in Stripe`);
-        throw new Error(`Invalid price ID: ${item.price}`);
-      }
-    }
+    console.log("Preparing line items for checkout session:", JSON.stringify(lineItems, null, 2));
     
     // Create a checkout session for the subscription
+    console.log("Creating Stripe checkout session...");
     const session = await stripe.checkout.sessions.create({
-      customer: customer.id, // Use the customer ID we created above
+      customer: customer.id,
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'subscription',
@@ -135,6 +153,9 @@ export async function createSubscriptionWithTrial({
       client_reference_id: company.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() // Sanitized company name
     });
     
+    console.log(`Created checkout session with ID: ${session.id}`);
+    console.log(`Checkout URL: ${session.url}`);
+    
     return {
       customer: customer.id,
       session: session.id,
@@ -143,6 +164,15 @@ export async function createSubscriptionWithTrial({
     };
   } catch (error) {
     console.error('Error creating subscription:', error);
+    if (error.type === 'StripeInvalidRequestError') {
+      console.error('Stripe API error details:', {
+        message: error.raw?.message,
+        param: error.raw?.param,
+        code: error.code,
+        type: error.type,
+        requestId: error.requestId
+      });
+    }
     throw error;
   }
 }
