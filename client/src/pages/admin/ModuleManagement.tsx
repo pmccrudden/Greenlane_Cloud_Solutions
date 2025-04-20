@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 // Import icons
 import { Shield, Globe, Users, Settings, Archive, Info, MessageSquare, CheckCircle, AlertCircle, ExternalLink, Plus, Trash2, CreditCard, PaintBucket, Check, ChevronRight, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -90,14 +91,23 @@ type SupportTicketsModuleSettings = {
   };
 };
 
+// List of premium modules that require payment
+const PREMIUM_MODULES = ['community', 'support-tickets'];
+
 export default function ModuleManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
   // State for holding modules
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [currentTab, setCurrentTab] = useState("general");
   const [dnsVerification, setDnsVerification] = useState<{ status: 'verifying' | 'success' | 'error' | null, message?: string }>({ status: null });
+  
+  // Check if a module is a premium module requiring payment
+  const isPremiumModule = (moduleId: string): boolean => {
+    return PREMIUM_MODULES.includes(moduleId);
+  };
   
   // Community settings state
   const [communitySettings, setCommunitySettings] = useState<CommunityModuleSettings>({
@@ -311,12 +321,27 @@ export default function ModuleManagement() {
   // Handler for toggling module state
   const handleToggleModule = (id: string) => {
     const module = modules.find((m: Module) => m.id === id);
-    if (module) {
-      toggleModuleMutation.mutate({ 
-        id, 
-        enabled: !module.enabled 
+    if (!module) return;
+    
+    // If it's a premium module and trying to enable it, check if it's allowed
+    if (isPremiumModule(id) && !module.enabled) {
+      // Show toast notification about subscription requirement
+      toast({
+        title: "Subscription Required",
+        description: `The ${module.name} module requires a subscription. Please subscribe to enable this feature.`,
+        variant: "default",
       });
+      
+      // Redirect to checkout page for this module
+      navigate('/checkout-options?module=' + id);
+      return;
     }
+    
+    // Only allow toggle if it's not a premium module or it's being disabled
+    toggleModuleMutation.mutate({ 
+      id, 
+      enabled: !module.enabled 
+    });
   };
 
   const handleOpenSettings = (module: Module) => {
@@ -580,14 +605,28 @@ export default function ModuleManagement() {
             </CardContent>
             <CardFooter className="flex justify-between">
               <div className="flex items-center space-x-2">
-                <Switch 
-                  checked={module.enabled}
-                  onCheckedChange={() => handleToggleModule(module.id)}
-                  id={`switch-${module.id}`}
-                />
-                <Label htmlFor={`switch-${module.id}`}>
-                  {module.enabled ? "Enabled" : "Disabled"}
-                </Label>
+                {isPremiumModule(module.id) && !module.enabled ? (
+                  <Button 
+                    variant="default" 
+                    size="sm"
+                    onClick={() => handleToggleModule(module.id)}
+                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                  >
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    Subscribe
+                  </Button>
+                ) : (
+                  <>
+                    <Switch 
+                      checked={module.enabled}
+                      onCheckedChange={() => handleToggleModule(module.id)}
+                      id={`switch-${module.id}`}
+                    />
+                    <Label htmlFor={`switch-${module.id}`}>
+                      {module.enabled ? "Enabled" : "Disabled"}
+                    </Label>
+                  </>
+                )}
               </div>
               <Button 
                 variant="outline" 

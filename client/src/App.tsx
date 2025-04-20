@@ -8,6 +8,7 @@ import Home from "@/pages/Home";
 import SignIn from "@/pages/SignIn";
 import SignUp from "@/pages/SignUp";
 import Checkout from "@/pages/checkout";
+import CheckoutOptions from "@/pages/checkout-options";
 import PaymentSuccess from "@/pages/payment-success";
 import Dashboard from "@/pages/Dashboard";
 import Accounts from "@/pages/Accounts";
@@ -258,6 +259,7 @@ function Router() {
       <ProtectedRoute path="/community/settings" component={CommunitySettingsWithLayout} />
       <ProtectedRoute path="/community/preview" component={CommunityPreviewComponent} />
       <ProtectedRoute path="/community" component={CommunityWithLayout} />
+      <ProtectedRoute path="/checkout-options" component={CheckoutOptions} />
       <ProtectedRoute path="/checkout" component={Checkout} />
       <ProtectedRoute path="/payment-success" component={PaymentSuccess} />
       <Route component={NotFound} />
