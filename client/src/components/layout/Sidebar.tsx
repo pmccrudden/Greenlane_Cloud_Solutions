@@ -48,17 +48,22 @@ type SidebarNavItemWithSub = {
   isAdminOnly?: boolean;
 };
 
-const navItems: SidebarNavItem[] = [
+// Core navigation items that are always shown
+const coreNavItems: SidebarNavItem[] = [
   { title: "Home", path: "/dashboard", icon: <LayoutDashboard className="w-5 h-5 mr-3" /> },
   { title: "Accounts", path: "/accounts", icon: <Building2 className="w-5 h-5 mr-3" /> },
   { title: "Contacts", path: "/contacts", icon: <Users className="w-5 h-5 mr-3" /> },
   { title: "Deals", path: "/deals", icon: <DollarSign className="w-5 h-5 mr-3" /> },
   { title: "Projects", path: "/projects", icon: <ClipboardList className="w-5 h-5 mr-3" /> },
   { title: "Tasks", path: "/tasks", icon: <CheckSquare className="w-5 h-5 mr-3" /> },
-  { title: "Support Tickets", path: "/support-tickets", icon: <MessageSquare className="w-5 h-5 mr-3" /> },
   { title: "AI Analytics", path: "/ai-analytics", icon: <PieChart className="w-5 h-5 mr-3" /> },
   { title: "Digital Journey", path: "/digital-journey", icon: <Mail className="w-5 h-5 mr-3" /> },
 ];
+
+// Optional module-based navigation items
+const moduleNavItems: Record<string, SidebarNavItem> = {
+  'support-tickets': { title: "Support Tickets", path: "/support-tickets", icon: <MessageSquare className="w-5 h-5 mr-3" /> },
+};
 
 const navItemsWithSubs: SidebarNavItemWithSub[] = [
   {
@@ -116,10 +121,15 @@ export default function Sidebar({ user }: SidebarProps) {
     enabled: !!user, // Only fetch if user is authenticated
   });
 
-  // Find if community module is enabled and its settings
+  // Find if modules are enabled and their settings
   const communityModule = modules?.find((module: any) => module.id === 'community');
+  const supportTicketsModule = modules?.find((module: any) => module.id === 'support-tickets');
+  
   const isCommunityEnabled = communityModule?.enabled ?? false;
+  const isSupportTicketsEnabled = supportTicketsModule?.enabled ?? false;
+  
   const communitySettings = communityModule?.settings || {};
+  const supportTicketsSettings = supportTicketsModule?.settings || {};
 
   useEffect(() => {
     // Close sidebar on location change for mobile
@@ -183,8 +193,8 @@ export default function Sidebar({ user }: SidebarProps) {
         
         <div className="overflow-y-auto flex-1">
           <nav className="p-2 space-y-1">
-            {/* Regular menu items */}
-            {navItems.map((item) => {
+            {/* Core navigation items - always visible */}
+            {coreNavItems.map((item: SidebarNavItem) => {
               const isActive = location === item.path || 
                 (item.path !== "/" && location.startsWith(item.path));
               
@@ -203,6 +213,23 @@ export default function Sidebar({ user }: SidebarProps) {
                 </Link>
               );
             })}
+            
+            {/* Support Tickets module (conditionally displayed) */}
+            {isSupportTicketsEnabled && moduleNavItems['support-tickets'] && (
+              <Link 
+                key={moduleNavItems['support-tickets'].path} 
+                href={moduleNavItems['support-tickets'].path}
+                className={`flex items-center p-2 rounded-md ${
+                  location === moduleNavItems['support-tickets'].path || 
+                  location.startsWith(moduleNavItems['support-tickets'].path)
+                    ? 'bg-primary-700 text-white' 
+                    : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                }`}
+              >
+                {moduleNavItems['support-tickets'].icon}
+                {moduleNavItems['support-tickets'].title}
+              </Link>
+            )}
             
             {/* Community module menu (conditionally displayed) */}
             {isCommunityEnabled && (
@@ -272,7 +299,7 @@ export default function Sidebar({ user }: SidebarProps) {
             )}
             
             {/* Items with submenus */}
-            {navItemsWithSubs.map((item) => {
+            {navItemsWithSubs.map((item: SidebarNavItemWithSub) => {
               // Skip admin-only sections for non-admin users
               if (item.isAdminOnly && user?.role !== 'admin') {
                 return null;

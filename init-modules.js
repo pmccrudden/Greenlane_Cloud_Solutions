@@ -38,6 +38,33 @@ const modules = [
     status: 'inactive'
   },
   {
+    id: 'support-tickets',
+    name: 'Support Tickets',
+    description: 'Streamline customer support with a dedicated ticketing system',
+    enabled: false,
+    version: '1.0.0',
+    settings: {
+      ticketCategories: ['Technical', 'Billing', 'Feature Request', 'General'],
+      autoAssignment: true,
+      slaSettings: {
+        lowPriority: 72, // hours
+        mediumPriority: 24, // hours
+        highPriority: 4, // hours
+        criticalPriority: 1 // hour
+      },
+      notifications: {
+        emailOnNewTicket: true,
+        emailOnTicketUpdate: true,
+        emailOnTicketResolution: true
+      },
+      integration: {
+        syncWithCommunity: false,
+        createContactsFromTickets: true
+      }
+    },
+    status: 'inactive'
+  },
+  {
     id: 'knowledge-base',
     name: 'Knowledge Base',
     description: 'Create and share knowledge articles with your customers',
