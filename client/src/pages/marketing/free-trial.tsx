@@ -172,11 +172,17 @@ export default function FreeTrialSignup() {
       
       const result = await response.json();
       
-      // Redirect to Stripe checkout
+      // Store Stripe checkout URL and redirect to checkout options
       if (result.url) {
         setIsRedirecting(true);
-        // Open Stripe checkout in the current window
-        window.location.href = result.url;
+        // Store the checkout URL in session storage
+        sessionStorage.setItem('stripeCheckoutData', JSON.stringify({
+          url: result.url,
+          timestamp: new Date().getTime()
+        }));
+        
+        // Redirect to checkout options page
+        setLocation('/checkout-options');
         return;
       }
       

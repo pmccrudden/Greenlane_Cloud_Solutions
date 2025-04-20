@@ -46,6 +46,7 @@ function Router() {
   const MarketingPage = React.lazy(() => import('./pages/marketing/index'));
   const FreeTrialPage = React.lazy(() => import('./pages/marketing/free-trial'));
   const TrialSuccessPage = React.lazy(() => import('./pages/marketing/trial-success'));
+  const CheckoutOptionsPage = React.lazy(() => import('./pages/marketing/checkout-options'));
   
   // Creating a protected dashboard component with MainLayout
   const DashboardWithLayout = () => (
@@ -215,6 +216,13 @@ function Router() {
           <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
         </div>}>
           <TrialSuccessPage />
+        </Suspense>
+      )} />
+      <Route path="/checkout-options" component={() => (
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full"></div>
+        </div>}>
+          <CheckoutOptionsPage />
         </Suspense>
       )} />
       <Route path="/" component={() => (
