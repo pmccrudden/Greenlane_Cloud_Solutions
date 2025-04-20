@@ -27,6 +27,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const isTenant = isTenantUrl();
+  console.log("isTenant:", isTenant, "hostname:", window.location.hostname, "search:", window.location.search);
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
