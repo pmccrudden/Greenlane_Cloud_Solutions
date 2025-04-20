@@ -161,6 +161,28 @@ export default function ModuleManagement() {
   // Get location for URL parameters
   const [location] = useLocation();
   
+  // Mutation for directly enabling a module after successful payment
+  const enableModuleMutation = useMutation({
+    mutationFn: async ({ moduleId }: { moduleId: string }) => {
+      const response = await apiRequest('PATCH', `/api/modules/${moduleId}`, {
+        enabled: true,
+        status: 'active'
+      });
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/modules'] });
+    },
+    onError: (error: any) => {
+      console.error("Error enabling module:", error);
+      toast({
+        title: "Error",
+        description: `Failed to enable module: ${error.message}`,
+        variant: "destructive"
+      });
+    }
+  });
+
   // Handle successful checkout return from Stripe
   useEffect(() => {
     // Parse URL search params for successful module subscription
@@ -175,10 +197,13 @@ export default function ModuleManagement() {
       // Clear URL parameters without refreshing
       window.history.replaceState({}, '', '/admin/modules');
       
+      // Directly enable the module here since webhook might not have processed yet
+      enableModuleMutation.mutate({ moduleId });
+      
       // Show success message
       toast({
         title: "Subscription Successful!",
-        description: `You've successfully subscribed to the ${getModulePricing(moduleId).name} module. It may take a moment to activate.`,
+        description: `You've successfully subscribed to the ${getModulePricing(moduleId).name} module. It has been activated for your account.`,
         duration: 5000,
       });
       
@@ -742,15 +767,26 @@ export default function ModuleManagement() {
             <CardFooter className="flex justify-between">
               <div className="flex items-center space-x-2">
                 {isPremiumModule(module.id) && !module.enabled ? (
-                  <Button 
-                    variant="default" 
-                    size="sm"
-                    onClick={() => handleToggleModule(module.id)}
-                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-                  >
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    Subscribe
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => handleToggleModule(module.id)}
+                      className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                    >
+                      <CreditCard className="w-4 h-4 mr-2" />
+                      Subscribe
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => enableModuleMutation.mutate({ moduleId: module.id })}
+                      className="border-green-500 text-green-600 hover:bg-green-50"
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      Activate
+                    </Button>
+                  </div>
                 ) : (
                   <>
                     <Switch 
