@@ -16,6 +16,12 @@ export function getTenantFromUrl(): string | null {
     return params.get('tenant');
   }
 
+  // Handle Replit preview URLs which shouldn't be treated as tenant URLs
+  if (host.includes('replit.dev') || host.includes('repl.co')) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('tenant');
+  }
+
   // For production, check subdomain
   // e.g. facebook.greenlanecloudsolutions.com -> 'facebook'
   const parts = host.split('.');
