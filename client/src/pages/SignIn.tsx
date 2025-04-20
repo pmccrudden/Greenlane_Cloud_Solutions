@@ -11,10 +11,19 @@ export default function SignIn() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   
-  // Clear tenant session on the main domain signin page to ensure proper tenant field display
-  const isMainDomainSignin = window.location.pathname === '/signin' && !window.location.search.includes('tenant=');
+  // Only clear tenant if there's no pending SSO
+  const hasPendingCredentials = sessionStorage.getItem('pending_username') && 
+                                sessionStorage.getItem('pending_password');
+  
+  // Clear tenant session on the main domain signin page to ensure proper tenant field display,
+  // but only if there's no pending SSO attempt
+  const isMainDomainSignin = window.location.pathname === '/signin' && 
+                            !window.location.search.includes('tenant=') &&
+                            !hasPendingCredentials;
+  
   if (isMainDomainSignin) {
-    // We're on the main signin page, ensure no tenant is stored in session
+    // We're on the main signin page with no pending login, ensure no tenant is stored in session
+    console.log("Clearing tenant from session to show tenant field");
     sessionStorage.removeItem('current_tenant');
   }
   
@@ -24,12 +33,21 @@ export default function SignIn() {
   useEffect(() => {
     // Check for pending login credentials when in tenant context
     const attemptAutomaticLogin = async () => {
-      if (isTenant) {
-        const pendingUsername = sessionStorage.getItem('pending_username');
-        const pendingPassword = sessionStorage.getItem('pending_password');
+      // Check for pending credentials regardless of tenant status
+      const pendingUsername = sessionStorage.getItem('pending_username');
+      const pendingPassword = sessionStorage.getItem('pending_password');
+      const pendingTenant = sessionStorage.getItem('current_tenant');
+      
+      console.log("Auto-login check - isTenant:", isTenant, 
+                  "hasPendingCredentials:", !!(pendingUsername && pendingPassword),
+                  "pendingTenant:", pendingTenant);
+      
+      if (pendingUsername && pendingPassword) {
+        // We have pending credentials
         
-        if (pendingUsername && pendingPassword) {
-          console.log("Found pending credentials, attempting automatic login");
+        if (isTenant) {
+          // We're in tenant context, attempt login
+          console.log("Found pending credentials in tenant context, attempting automatic login");
           setIsAutoLoggingIn(true);
           
           try {
@@ -55,6 +73,31 @@ export default function SignIn() {
               variant: "destructive",
             });
           }
+        } else if (pendingTenant) {
+          // We have credentials but aren't in tenant context yet 
+          // and we know which tenant to go to
+          console.log("Have pending credentials but not in tenant context, redirecting to tenant");
+          
+          // For local development or Replit preview environment
+          if (window.location.hostname.includes('localhost') || 
+              window.location.hostname.includes('127.0.0.1') ||
+              window.location.hostname.includes('replit.dev') ||
+              window.location.hostname.includes('repl.co')) {
+                
+            console.log("Setting tenant in sessionStorage:", pendingTenant);
+            // Force refresh to trigger tenant context detection
+            window.location.reload();
+          } else {
+            // Redirect to tenant subdomain in production
+            const redirectUrl = `https://${pendingTenant}.greenlanecloudsolutions.com/signin`;
+            console.log('Production redirect to:', redirectUrl);
+            window.location.href = redirectUrl;
+          }
+        } else {
+          console.log("Have pending credentials but no tenant - unusual state");
+          // This is an unusual state - clear credentials to avoid confusion
+          sessionStorage.removeItem('pending_username');
+          sessionStorage.removeItem('pending_password');
         }
       }
     };
