@@ -772,6 +772,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const customerId = subscription.customer as string;
           const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer;
           
+          // Handle the initial subscription creation case (for new tenants)
           if (customer.metadata.tenantId) {
             const tenantId = customer.metadata.tenantId;
             const companyName = customer.metadata.companyName;
@@ -800,6 +801,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
             
             // TODO: Send welcome email with tenant details and credentials
+          }
+          
+          // Check if this is for a module purchase (regardless of whether it's for a new or existing tenant)
+          // Look at the metadata in the subscription to determine which module to enable
+          if (subscription.metadata.addons) {
+            const addons = subscription.metadata.addons.split(',');
+            const tenantId = customer.metadata.tenantId || subscription.metadata.tenantId;
+            
+            // First make sure we have a tenant ID
+            if (tenantId) {
+              // Check available modules and enable any that were purchased
+              for (const addon of addons) {
+                if (addon === 'community' || addon === 'support-tickets') {
+                  // Try to get the existing module first
+                  const module = await storage.getModule(addon, tenantId);
+                  if (module) {
+                    // Enable the module if it exists
+                    console.log(`Enabling ${addon} module for tenant ${tenantId}`);
+                    await storage.updateModule(addon, { 
+                      enabled: true,
+                      status: 'active',
+                      stripeSubscriptionId: subscription.id
+                    }, tenantId);
+                  } else {
+                    console.error(`Module ${addon} not found for tenant ${tenantId}`);
+                  }
+                }
+              }
+            } else {
+              console.error('Tenant ID not found in subscription metadata');
+            }
+          }
+        }
+      }
+      
+      // Handle checkout.session.completed events for module subscriptions
+      if (event.type === "checkout.session.completed") {
+        const session = event.data.object as Stripe.Checkout.Session;
+        
+        // If this is a module subscription, enable the module
+        if (session.metadata?.moduleId && session.metadata?.tenantId) {
+          const moduleId = session.metadata.moduleId;
+          const tenantId = session.metadata.tenantId;
+          
+          try {
+            // Enable the module
+            const module = await storage.getModule(moduleId, tenantId);
+            if (module) {
+              console.log(`Enabling ${moduleId} module for tenant ${tenantId} via checkout session`);
+              await storage.updateModule(moduleId, { 
+                enabled: true,
+                status: 'active',
+                stripeSubscriptionId: session.subscription as string
+              }, tenantId);
+            } else {
+              console.error(`Module ${moduleId} not found for tenant ${tenantId}`);
+            }
+          } catch (error) {
+            console.error(`Error enabling module ${moduleId} for tenant ${tenantId}:`, error);
           }
         }
       }
