@@ -188,7 +188,7 @@ export default function FreeTrialSignup() {
       // Redirect to success page
       setIsRedirecting(true);
       setTimeout(() => {
-        setLocation('/marketing/trial-success');
+        setLocation('/trial-success');
       }, 2000);
       
     } catch (error: any) {
@@ -208,7 +208,11 @@ export default function FreeTrialSignup() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             <div className="text-white font-bold text-xl">GreenLane Cloud Solutions</div>
-            <Button variant="outline" className="text-white border-white hover:bg-white/20">
+            <Button 
+              variant="outline" 
+              className="text-white border-white hover:bg-white/20"
+              onClick={() => setLocation('/marketing')}
+            >
               Back to Home
             </Button>
           </div>
