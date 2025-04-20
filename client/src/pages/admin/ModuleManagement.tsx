@@ -68,6 +68,27 @@ type CommunityModuleSettings = {
   };
 };
 
+// Define the support tickets module settings type
+type SupportTicketsModuleSettings = {
+  ticketCategories: string[];
+  autoAssignment: boolean;
+  slaSettings: {
+    lowPriority: number; // hours
+    mediumPriority: number; // hours
+    highPriority: number; // hours
+    criticalPriority: number; // hour
+  };
+  notifications: {
+    emailOnNewTicket: boolean;
+    emailOnTicketUpdate: boolean;
+    emailOnTicketResolution: boolean;
+  };
+  integration: {
+    syncWithCommunity: boolean;
+    createContactsFromTickets: boolean;
+  };
+};
+
 export default function ModuleManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -99,6 +120,27 @@ export default function ModuleManagement() {
       syncCustomerData: true,
       createSupportTicketsFromPosts: false,
       notifyOnNegativeSentiment: false,
+    }
+  });
+  
+  // Support Tickets settings state
+  const [supportTicketsSettings, setSupportTicketsSettings] = useState<SupportTicketsModuleSettings>({
+    ticketCategories: ['Technical', 'Billing', 'Feature Request', 'General'],
+    autoAssignment: true,
+    slaSettings: {
+      lowPriority: 72, // hours
+      mediumPriority: 24, // hours
+      highPriority: 4, // hours
+      criticalPriority: 1 // hour
+    },
+    notifications: {
+      emailOnNewTicket: true,
+      emailOnTicketUpdate: true,
+      emailOnTicketResolution: true
+    },
+    integration: {
+      syncWithCommunity: false,
+      createContactsFromTickets: true
     }
   });
 
@@ -211,6 +253,59 @@ export default function ModuleManagement() {
       setCommunitySettings(mergedSettings);
     }
   }, [modules]);
+  
+  // Initialize support tickets settings from modules when data changes
+  useEffect(() => {
+    const supportTicketsModule = modules.find((m: Module) => m.id === "supportTickets");
+    if (supportTicketsModule?.settings) {
+      // Define default settings
+      const defaultSettings = {
+        ticketCategories: ['Technical', 'Billing', 'Feature Request', 'General'],
+        autoAssignment: true,
+        slaSettings: {
+          lowPriority: 72, // hours
+          mediumPriority: 24, // hours
+          highPriority: 4, // hours
+          criticalPriority: 1 // hour
+        },
+        notifications: {
+          emailOnNewTicket: true,
+          emailOnTicketUpdate: true,
+          emailOnTicketResolution: true
+        },
+        integration: {
+          syncWithCommunity: false,
+          createContactsFromTickets: true
+        }
+      };
+      
+      // Safely access nested objects with fallbacks
+      const settings = supportTicketsModule.settings as Partial<SupportTicketsModuleSettings>;
+      const slaSettings = settings.slaSettings || {};
+      const notifications = settings.notifications || {};
+      const integration = settings.integration || {};
+      
+      // Create merged settings object
+      const mergedSettings = {
+        ...defaultSettings,
+        ...settings,
+        slaSettings: {
+          ...defaultSettings.slaSettings,
+          ...slaSettings
+        },
+        notifications: {
+          ...defaultSettings.notifications,
+          ...notifications
+        },
+        integration: {
+          ...defaultSettings.integration,
+          ...integration
+        }
+      };
+      
+      setSupportTicketsSettings(mergedSettings);
+    }
+  }, [modules]);
 
   // Handler for toggling module state
   const handleToggleModule = (id: string) => {
@@ -275,6 +370,51 @@ export default function ModuleManagement() {
       } else {
         // Use defaults if no settings
         setCommunitySettings(defaultSettings);
+      }
+    } else if (module.id === "supportTickets") {
+      const defaultSettings = {
+        ticketCategories: ['Technical', 'Billing', 'Feature Request', 'General'],
+        autoAssignment: true,
+        slaSettings: {
+          lowPriority: 72, // hours
+          mediumPriority: 24, // hours
+          highPriority: 4, // hours
+          criticalPriority: 1 // hour
+        },
+        notifications: {
+          emailOnNewTicket: true,
+          emailOnTicketUpdate: true,
+          emailOnTicketResolution: true
+        },
+        integration: {
+          syncWithCommunity: false,
+          createContactsFromTickets: true
+        }
+      };
+      
+      if (module.settings) {
+        // Merge with defaults for proper initialization
+        const settings = module.settings as Partial<SupportTicketsModuleSettings>;
+        setSupportTicketsSettings({
+          ...defaultSettings,
+          ...settings,
+          // Ensure nested objects are properly merged
+          slaSettings: {
+            ...defaultSettings.slaSettings,
+            ...(settings.slaSettings || {})
+          },
+          notifications: {
+            ...defaultSettings.notifications,
+            ...(settings.notifications || {})
+          },
+          integration: {
+            ...defaultSettings.integration,
+            ...(settings.integration || {})
+          }
+        });
+      } else {
+        // Use defaults if no settings
+        setSupportTicketsSettings(defaultSettings);
       }
     }
     
@@ -348,6 +488,35 @@ export default function ModuleManagement() {
       }));
     } else {
       setCommunitySettings(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+  };
+  
+  const handleSupportTicketsInputChange = (
+    section: keyof SupportTicketsModuleSettings,
+    field: string,
+    value: any
+  ) => {
+    if (section === "slaSettings" || section === "notifications" || section === "integration") {
+      setSupportTicketsSettings(prev => ({
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [field]: value
+        }
+      }));
+    } else if (section === "ticketCategories") {
+      // Handle array updates
+      if (Array.isArray(value)) {
+        setSupportTicketsSettings(prev => ({
+          ...prev,
+          ticketCategories: value
+        }));
+      }
+    } else {
+      setSupportTicketsSettings(prev => ({
         ...prev,
         [field]: value
       }));
