@@ -96,6 +96,23 @@ export async function createSubscriptionWithTrial({
       }
     }
     
+    // Fetch all prices first to make sure they exist
+    const allPrices = await stripe.prices.list({
+      active: true,
+      limit: 100
+    });
+    
+    console.log("Preparing line items for checkout session:", lineItems);
+    
+    // Verify that the price IDs are valid
+    for (const item of lineItems) {
+      const priceExists = allPrices.data.some(price => price.id === item.price);
+      if (!priceExists) {
+        console.error(`Price ID ${item.price} not found in Stripe`);
+        throw new Error(`Invalid price ID: ${item.price}`);
+      }
+    }
+    
     // Create a checkout session for the subscription
     const session = await stripe.checkout.sessions.create({
       customer: customer.id, // Use the customer ID we created above
@@ -115,7 +132,6 @@ export async function createSubscriptionWithTrial({
       cancel_url: `${process.env.APP_URL || 'https://greenlane-crm.replit.app'}/free-trial`,
       allow_promotion_codes: true,
       billing_address_collection: 'required',
-      // Removed customer_email as we're already providing customer ID
       client_reference_id: company.replace(/[^a-zA-Z0-9]/g, '').toLowerCase() // Sanitized company name
     });
     

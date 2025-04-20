@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, ArrowRightIcon, CheckCircle, CreditCard, PauseCircle } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, CheckCircle, CreditCard } from "lucide-react";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,13 +53,7 @@ export default function CheckoutOptions() {
     setLocation('/free-trial');
   };
   
-  const handleSkipPaymentInfo = () => {
-    // Clear the checkout data from session storage
-    sessionStorage.removeItem('stripeCheckoutData');
-    
-    // Redirect to success page
-    setLocation('/trial-success');
-  };
+  // No skip payment option as per requirements
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -87,7 +81,7 @@ export default function CheckoutOptions() {
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-bold">Complete Your Free Trial Setup</CardTitle>
                 <CardDescription className="text-lg mt-2">
-                  Your account has been created! Choose how to continue:
+                  Your account has been created! Please complete the payment setup:
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -114,37 +108,15 @@ export default function CheckoutOptions() {
                           Proceed to Stripe to securely provide your payment details. 
                           You won't be charged until your 14-day free trial ends.
                         </p>
+                        <p className="text-gray-600 mt-1">
+                          <strong>Note:</strong> Payment details are required to activate your free trial.
+                          You won't be charged until your trial period ends.
+                        </p>
                         <Button className="mt-3" onClick={(e) => {
                           e.stopPropagation();
                           handleContinueToStripe();
                         }}>
                           Continue to Stripe <ArrowRightIcon className="ml-2 h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white rounded-md border p-4 hover:border-primary/50 transition-colors cursor-pointer"
-                    onClick={handleSkipPaymentInfo}>
-                    <div className="flex items-start">
-                      <div className="mr-4">
-                        <PauseCircle className="h-10 w-10 text-amber-500" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-medium">Skip Payment Details for Now</h3>
-                        <p className="text-gray-600 mt-1">
-                          Start exploring your free trial right away. You can provide payment
-                          details later before your trial ends.
-                        </p>
-                        <Button 
-                          variant="outline" 
-                          className="mt-3"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSkipPaymentInfo();
-                          }}
-                        >
-                          Skip for Now <ArrowRightIcon className="ml-2 h-4 w-4" />
                         </Button>
                       </div>
                     </div>
