@@ -312,8 +312,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let addonList = [];
       if (moduleId === 'community') {
         addonList.push('community');
+        console.log("Adding community addon to checkout");
       } else if (moduleId === 'support-tickets') {
-        addonList.push('support-tickets');
+        // Use the correct product ID that matches stripeConfig.json
+        // The support-tickets module uses the supportCentre product in Stripe
+        addonList.push('supportCentre');
+        console.log("Adding supportCentre addon to checkout (for support-tickets module)");
       } else {
         return res.status(400).json({ message: "Invalid module ID" });
       }
