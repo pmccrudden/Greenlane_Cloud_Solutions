@@ -1,6 +1,7 @@
 // Script to get Cloudflare Zone ID and other information for a domain
-const fetch = require('node-fetch');
-require('dotenv').config();
+import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Get the domain from command line arguments or use default
 const args = process.argv.slice(2);
