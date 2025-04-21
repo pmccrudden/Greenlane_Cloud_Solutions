@@ -14,7 +14,7 @@ TIMEOUT="300s"
 BASE_DOMAIN="greenlanecloudsolutions.com"
 PRIMARY_DOMAIN="app.${BASE_DOMAIN}"
 API_DOMAIN="api.${BASE_DOMAIN}"
-CLOUDFLARE_ZONE_ID=""  # Your Cloudflare Zone ID for the domain
+CLOUDFLARE_ZONE_ID="${CLOUDFLARE_ZONE_ID}"  # Your Cloudflare Zone ID for the domain
 
 # Load secrets from environment
 if [ -f ".env.deploy" ]; then
