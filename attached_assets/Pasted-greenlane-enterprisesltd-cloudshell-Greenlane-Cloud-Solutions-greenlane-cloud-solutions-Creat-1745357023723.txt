@@ -1,0 +1,294 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ # Create updated cloudbuild.debug.yaml that preserves the build artifacts
+cat > cloudbuild.debug.yaml << 'EOF'
+steps:
+  # Build the application first
+  - name: 'node:20-alpine'
+    id: 'build'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        npm ci
+        npm run build
+        # Create the debug server
+        cat > server.js << 'END'
+        // Simple server to test if the application can run on Cloud Run
+        const http = require('http');
+        const fs = require('fs');
+        const { exec } = require('child_process');
+
+        const port = process.env.PORT || 8080;
+
+        // Try to load the actual app to debug loading issues
+        function tryLoadApp() {
+          try {
+            console.log('Current directory:', process.cwd());
+            console.log('Files in current directory:', fs.readdirSync('.'));
+            console.log('Files in dist directory:', fs.readdirSync('./dist'));
+            
+            // Try to import the main file (using dynamic import for ESM compatibility)
+            console.log('Trying to load the app module...');
+            return "We'll examine the server logs for errors";
+          } catch (error) {
+            console.error('Error loading app module:', error);
+            return `Error loading app: ${error.message}\n${error.stack}`;
+          }
+        }
+
+        const server = http.createServer((req, res) => {
+          console.log(`Received request: ${req.method} ${req.url}`);
+          
+          if (req.url === '/debug') {
+            // Return debug information
+            const appLoadResult = tryLoadApp();
+            
+gcloud builds submit --config cloudbuild.debug.yaml-debug'bug'-crm-debug']debug', '.']ation.\n');
+Creating temporary archive of 202 file(s) totalling 4.0 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.JosACCegeZ/logs/2025.04.22/21.19.45.801164.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745356786.083633-554320d9d3a144f98d338abfa144fc75.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/e781cf61-5319-4fc2-8a74-8184a2b18c5b].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/e781cf61-5319-4fc2-8a74-8184a2b18c5b?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "e781cf61-5319-4fc2-8a74-8184a2b18c5b"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745356786.083633-554320d9d3a144f98d338abfa144fc75.tgz#1745356788560336
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745356786.083633-554320d9d3a144f98d338abfa144fc75.tgz#1745356788560336...
+/ [1 files][  2.4 MiB/  2.4 MiB]                                                
+Operation completed over 1 objects/2.4 MiB.
+BUILD
+Starting Step #0 - "build"
+Step #0 - "build": Pulling image: node:20-alpine
+Step #0 - "build": 20-alpine: Pulling from library/node
+Step #0 - "build": f18232174bc9: Already exists
+Step #0 - "build": a54ab62fca2d: Pulling fs layer
+Step #0 - "build": 6bf3eed75316: Pulling fs layer
+Step #0 - "build": efb51bda5e87: Pulling fs layer
+Step #0 - "build": efb51bda5e87: Verifying Checksum
+Step #0 - "build": efb51bda5e87: Download complete
+Step #0 - "build": 6bf3eed75316: Verifying Checksum
+Step #0 - "build": 6bf3eed75316: Download complete
+Step #0 - "build": a54ab62fca2d: Verifying Checksum
+Step #0 - "build": a54ab62fca2d: Download complete
+Step #0 - "build": a54ab62fca2d: Pull complete
+Step #0 - "build": 6bf3eed75316: Pull complete
+Step #0 - "build": efb51bda5e87: Pull complete
+Step #0 - "build": Digest: sha256:ce05c148e5e9d4fadcb25ea81236590142cb7982cd5732273cbcdcffd3420b6b
+Step #0 - "build": Status: Downloaded newer image for node:20-alpine
+Step #0 - "build": docker.io/library/node:20-alpine
+Step #0 - "build": npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+Step #0 - "build": npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+Step #0 - "build": npm warn deprecated react-beautiful-dnd@13.1.1: react-beautiful-dnd is now deprecated. Context and options: https://github.com/atlassian/react-beautiful-dnd/issues/2672
+Step #0 - "build": 
+Step #0 - "build": added 520 packages, and audited 521 packages in 18s
+Step #0 - "build": 
+Step #0 - "build": 63 packages are looking for funding
+Step #0 - "build":   run `npm fund` for details
+Step #0 - "build": 
+Step #0 - "build": 8 moderate severity vulnerabilities
+Step #0 - "build": 
+Step #0 - "build": To address issues that do not require attention, run:
+Step #0 - "build":   npm audit fix
+Step #0 - "build": 
+Step #0 - "build": To address all issues (including breaking changes), run:
+Step #0 - "build":   npm audit fix --force
+Step #0 - "build": 
+Step #0 - "build": Run `npm audit` for details.
+Step #0 - "build": 
+Step #0 - "build": > rest-express@1.0.0 build
+Step #0 - "build": > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+Step #0 - "build":
+Step #0 - "build": vite v5.4.18 building for production...
+Step #0 - "build": transforming...
+Step #0 - "build": Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+Step #0 - "build":   npx update-browserslist-db@latest
+Step #0 - "build":   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Step #0 - "build": ✓ 2708 modules transformed.
+Step #0 - "build": rendering chunks...
+Step #0 - "build": computing gzip size...
+Step #0 - "build": ../dist/public/index.html                               1.80 kB │ gzip:   0.73 kB
+Step #0 - "build": ../dist/public/assets/index-Bf-DU6lz.css              100.67 kB │ gzip:  16.04 kB
+Step #0 - "build": ../dist/public/assets/trial-success-uVYQUo9s.js         3.49 kB │ gzip:   1.16 kB
+Step #0 - "build": ../dist/public/assets/checkout-options-BuCIW42n.js      4.06 kB │ gzip:   1.56 kB
+Step #0 - "build": ../dist/public/assets/free-trial-CH-a5N1F.js           15.60 kB │ gzip:   4.42 kB
+Step #0 - "build": ../dist/public/assets/index-xDqY7kHJ.js                28.90 kB │ gzip:   5.98 kB
+Step #0 - "build": ../dist/public/assets/index-B83W84I1.js             1,215.72 kB │ gzip: 326.08 kB
+Step #0 - "build": 
+Step #0 - "build": (!) Some chunks are larger than 500 kB after minification. Consider:
+Step #0 - "build": - Using dynamic import() to code-split the application
+Step #0 - "build": - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+Step #0 - "build": - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+Step #0 - "build": ✓ built in 17.34s
+Step #0 - "build": ▲ [WARNING] The CommonJS "module" variable is treated as a global variable in an ECMAScript module and may not work as expected [commonjs-variable-in-esm]
+Step #0 - "build": 
+Step #0 - "build":     server/cloudflare.js:202:0:
+Step #0 - "build":       202 │ module.exports = {
+Step #0 - "build":           ╵ ~~~~~~
+Step #0 - "build": 
+Step #0 - "build":   This file is considered to be an ECMAScript module because the enclosing "package.json" file sets the type of this file to "module":
+Step #0 - "build": 
+Step #0 - "build":     package.json:4:10:
+Step #0 - "build":       4 │   "type": "module",
+Step #0 - "build":         ╵           ~~~~~~~~
+Step #0 - "build": 
+Step #0 - "build":   Node's package format requires that CommonJS files in a "type": "module" package use the ".cjs" file extension.
+Step #0 - "build":
+Step #0 - "build": 1 warning
+Step #0 - "build": 
+Step #0 - "build":   dist/index.js  196.1kb
+Step #0 - "build": 
+Step #0 - "build": ⚡ Done in 38ms
+Finished Step #0 - "build"
+Starting Step #1 - "create-dockerfile"
+Step #1 - "create-dockerfile": Pulling image: bash
+Step #1 - "create-dockerfile": Using default tag: latest
+Step #1 - "create-dockerfile": latest: Pulling from library/bash
+Step #1 - "create-dockerfile": f18232174bc9: Already exists
+Step #1 - "create-dockerfile": c0cbbbdde11b: Pulling fs layer
+Step #1 - "create-dockerfile": 0c953549fc9a: Pulling fs layer
+Step #1 - "create-dockerfile": 0c953549fc9a: Verifying Checksum
+Step #1 - "create-dockerfile": 0c953549fc9a: Download complete
+Step #1 - "create-dockerfile": c0cbbbdde11b: Verifying Checksum
+Step #1 - "create-dockerfile": c0cbbbdde11b: Download complete
+Step #1 - "create-dockerfile": c0cbbbdde11b: Pull complete
+Step #1 - "create-dockerfile": 0c953549fc9a: Pull complete
+Step #1 - "create-dockerfile": Digest: sha256:64defcbc5126c2d81122b4fb78a629a6d27068f0842c4a8302b8273415b12e30
+Step #1 - "create-dockerfile": Status: Downloaded newer image for bash:latest
+Step #1 - "create-dockerfile": docker.io/library/bash:latest
+Finished Step #1 - "create-dockerfile"
+Starting Step #2
+Step #2: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #2: Sending build context to Docker daemon   4.39MB
+Step #2: Step 1/9 : FROM node:20-alpine
+Step #2:  ---> 0160beacba2d
+Step #2: Step 2/9 : WORKDIR /app
+Step #2:  ---> Running in 3cbecd39b5db
+Step #2: Removing intermediate container 3cbecd39b5db
+Step #2:  ---> 54a6940861fe
+Step #2: Step 3/9 : COPY . .
+Step #2:  ---> 15412c651520
+Step #2: Step 4/9 : RUN npm ci --omit=dev
+Step #2:  ---> Running in de661988d18e
+Step #2: npm warn deprecated react-beautiful-dnd@13.1.1: react-beautiful-dnd is now deprecated. Context and options: https://github.com/atlassian/react-beautiful-dnd/issues/2672
+Step #2: 
+Step #2: added 428 packages, and audited 429 packages in 14s
+Step #2: 
+Step #2: 54 packages are looking for funding
+Step #2:   run `npm fund` for details
+Step #2: 
+Step #2: 1 moderate severity vulnerability
+Step #2: 
+Step #2: To address all issues, run:
+Step #2:   npm audit fix
+Step #2: 
+Step #2: Run `npm audit` for details.
+Step #2: npm notice
+Step #2: npm notice New major version of npm available! 10.8.2 -> 11.3.0
+Step #2: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.3.0
+Step #2: npm notice To update run: npm install -g npm@11.3.0
+Step #2: npm notice
+Step #2: Removing intermediate container de661988d18e
+Step #2:  ---> 3cd5f0ecdad2
+Step #2: Step 5/9 : ENV PORT=8080
+Step #2:  ---> Running in 5c117d774e62
+Step #2: Removing intermediate container 5c117d774e62
+Step #2:  ---> fc81013f67b9
+Step #2: Step 6/9 : ENV HOST=0.0.0.0
+Step #2:  ---> Running in 681001693d90
+Step #2: Removing intermediate container 681001693d90
+Step #2:  ---> 8eaa4089e837
+Step #2: Step 7/9 : ENV NODE_ENV=production
+Step #2:  ---> Running in c08f459306ed
+Step #2: Removing intermediate container c08f459306ed
+Step #2:  ---> 3a2c7b2a67e8
+Step #2: Step 8/9 : EXPOSE 8080
+Step #2:  ---> Running in 6980f8f671d4
+Step #2: Removing intermediate container 6980f8f671d4
+Step #2:  ---> 283d8d5068fc
+Step #2: Step 9/9 : CMD ["./start.sh"]
+Step #2:  ---> Running in 0a1aae5dc57a
+Step #2: Removing intermediate container 0a1aae5dc57a
+Step #2:  ---> 5531a27198d7
+Step #2: Successfully built 5531a27198d7
+Step #2: Successfully tagged gcr.io/greenlane-cloud-solutions/greenlane-crm-debug:latest
+Finished Step #2
+Starting Step #3
+Step #3: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #3: Using default tag: latest
+Step #3: The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-debug]
+Step #3: 51928c8310f4: Preparing
+Step #3: 884f1031e657: Preparing
+Step #3: 29834993a5b3: Preparing
+Step #3: b8185dcc9be5: Preparing
+Step #3: 2c9cabe10289: Preparing
+Step #3: 75228a052fed: Preparing
+Step #3: 08000c18d16d: Preparing
+Step #3: 75228a052fed: Waiting
+Step #3: 08000c18d16d: Waiting
+Step #3: 2c9cabe10289: Layer already exists
+Step #3: b8185dcc9be5: Layer already exists
+Step #3: 75228a052fed: Layer already exists
+Step #3: 08000c18d16d: Layer already exists
+Step #3: 29834993a5b3: Pushed
+Step #3: 884f1031e657: Pushed
+Step #3: 51928c8310f4: Pushed
+Step #3: latest: digest: sha256:a3127a57f489bbe90feae0fa3ff020a8048a2a6eee6b65dc302b1520399b3bd9 size: 1788
+Finished Step #3
+Starting Step #4
+Step #4: Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk
+Step #4: Using default tag: latest
+Step #4: latest: Pulling from google.com/cloudsdktool/cloud-sdk
+Step #4: 23b7d26ef1d2: Already exists
+Step #4: 414194ec006b: Pulling fs layer
+Step #4: 119ced87cd2b: Pulling fs layer
+Step #4: c12f750fbaf0: Pulling fs layer
+Step #4: 2c9f1e00705a: Pulling fs layer
+Step #4: 92c27e79463e: Pulling fs layer
+Step #4: 6b0559dc4a91: Pulling fs layer
+Step #4: 2c9f1e00705a: Waiting
+Step #4: 92c27e79463e: Waiting
+Step #4: 6b0559dc4a91: Waiting
+Step #4: c12f750fbaf0: Verifying Checksum
+Step #4: c12f750fbaf0: Download complete
+Step #4: 414194ec006b: Verifying Checksum
+Step #4: 414194ec006b: Download complete
+Step #4: 119ced87cd2b: Verifying Checksum
+Step #4: 119ced87cd2b: Download complete
+Step #4: 6b0559dc4a91: Verifying Checksum
+Step #4: 6b0559dc4a91: Download complete
+Step #4: 92c27e79463e: Verifying Checksum
+Step #4: 92c27e79463e: Download complete
+Step #4: 414194ec006b: Pull complete
+Step #4: 119ced87cd2b: Pull complete
+Step #4: c12f750fbaf0: Pull complete
+Step #4: 2c9f1e00705a: Verifying Checksum
+Step #4: 2c9f1e00705a: Download complete
+Step #4: 2c9f1e00705a: Pull complete
+Step #4: 92c27e79463e: Pull complete
+Step #4: 6b0559dc4a91: Pull complete
+Step #4: Digest: sha256:348ebedf45eb6979ec93359df987ecb007ad570ae9279d1fe46e7f2f3da651b5
+Step #4: Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #4: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #4: Deploying container to Cloud Run service [greenlane-crm-debug] in project [greenlane-cloud-solutions] region [us-central1]
+Step #4: Deploying new service...
+Step #4: Setting IAM Policy........warning
+Step #4: Creating Revision.................................................................................................failed
+Step #4: Deployment failed
+Step #4:   Setting IAM policy failed, try "gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker greenlane-crm-debug"
+Step #4: ERROR: (gcloud.run.deploy) Revision 'greenlane-crm-debug-00001-94t' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+Step #4: 
+Step #4: Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-debug/revision_name/greenlane-crm-debug-00001-94t&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-debug%22%0Aresource.labels.revision_name%3D%22greenlane-crm-debug-00001-94t%22 
+Step #4: For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+Finished Step #4
+ERROR
+ERROR: build step 4 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 4 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build e781cf61-5319-4fc2-8a74-8184a2b18c5b completed with status "FAILURE"

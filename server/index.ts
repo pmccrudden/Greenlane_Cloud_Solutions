@@ -2,6 +2,21 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { join } from "path";
 
+// Define the missing functions
+function serveStatic(app: express.Express) {
+  const staticPath = join(process.cwd(), "dist", "public");
+  console.log('Serving static files from:', staticPath);
+  app.use(express.static(staticPath));
+  
+  // Serve index.html for all non-API routes to support client-side routing
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(join(staticPath, "index.html"));
+  });
+}
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -46,24 +61,15 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
+  // In production, we always serve static files 
+  // (The Vite integration is handled differently in development)
+  serveStatic(app);
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
+  // Use PORT environment variable for Cloud Run compatibility
+  const port = process.env.PORT || 5000;
+  console.log(`Starting server on port ${port}`);
+  
+  server.listen(Number(port), "0.0.0.0", () => {
+    console.log(`Server listening on port ${port}`);
   });
 })();

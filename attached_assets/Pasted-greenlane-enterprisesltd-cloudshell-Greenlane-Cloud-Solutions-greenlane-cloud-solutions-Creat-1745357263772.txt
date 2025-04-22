@@ -1,0 +1,152 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ # Create a simple Node.js application that will definitely work
+mkdir -p test-app
+cd test-app
+
+# Create package.json
+cat > package.json << 'EOF'
+{
+  "name": "test-app",
+  "version": "1.0.0",
+  "description": "Test Cloud Run app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+EOF
+
+# Create index.js
+cat > index.js << 'EOF'
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 8080;
+
+app.get('/', (req, res) => {
+  console.log('Received request to root');
+  res.send('Hello from Greenlane CRM Test!');
+});
+
+app.get('/debug', (req, res) => {
+  console.log('Received request to /debug');
+  const debugInfo = {
+    nodeVersion: process.version,
+    environment: process.env.NODE_ENV,
+    port: process.env.PORT,
+    environment: process.env
+  };
+  
+  res.json(debugInfo);
+});
+
+app.listen(port, '0.0.0.0', () => {
+cd ..llow-unauthenticatede-cloud-solutions/express-test \ns/express-test
+Creating temporary archive of 3 file(s) totalling 921 bytes before compression.
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745357145.275742-52872b32b8c6423cb00e1584a0d1cfa6.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/510608da-2a32-4be1-841f-902dcb500bdc].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/510608da-2a32-4be1-841f-902dcb500bdc?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "510608da-2a32-4be1-841f-902dcb500bdc"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745357145.275742-52872b32b8c6423cb00e1584a0d1cfa6.tgz#1745357145915991
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745357145.275742-52872b32b8c6423cb00e1584a0d1cfa6.tgz#1745357145915991...
+/ [1 files][  752.0 B/  752.0 B]                                                
+Operation completed over 1 objects/752.0 B.
+BUILD
+Already have image (with digest): gcr.io/cloud-builders/docker
+Sending build context to Docker daemon  4.608kB
+Step 1/8 : FROM node:20-alpine
+20-alpine: Pulling from library/node
+f18232174bc9: Already exists
+a54ab62fca2d: Pulling fs layer
+6bf3eed75316: Pulling fs layer
+efb51bda5e87: Pulling fs layer
+6bf3eed75316: Verifying Checksum
+6bf3eed75316: Download complete
+efb51bda5e87: Verifying Checksum
+efb51bda5e87: Download complete
+a54ab62fca2d: Verifying Checksum
+a54ab62fca2d: Download complete
+a54ab62fca2d: Pull complete
+6bf3eed75316: Pull complete
+efb51bda5e87: Pull complete
+Digest: sha256:ce05c148e5e9d4fadcb25ea81236590142cb7982cd5732273cbcdcffd3420b6b
+Status: Downloaded newer image for node:20-alpine
+ ---> 0160beacba2d
+Step 2/8 : WORKDIR /app
+ ---> Running in 936ec169c071
+Removing intermediate container 936ec169c071
+ ---> 6bbc4ef8fc88
+Step 3/8 : COPY package*.json ./
+ ---> 82fe741dccda
+Step 4/8 : RUN npm install
+ ---> Running in 343efdcd3026
+
+added 69 packages, and audited 70 packages in 5s
+
+14 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.3.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.3.0
+npm notice To update run: npm install -g npm@11.3.0
+npm notice
+Removing intermediate container 343efdcd3026
+ ---> 24ffdcd81d3a
+Step 5/8 : COPY . .
+ ---> 0cb438037283
+Step 6/8 : ENV PORT=8080
+ ---> Running in c94441615fc1
+Removing intermediate container c94441615fc1
+ ---> 461f10e515a7
+Step 7/8 : EXPOSE 8080
+ ---> Running in 2fb3db283ff7
+Removing intermediate container 2fb3db283ff7
+ ---> 12cabb70497b
+Step 8/8 : CMD ["npm", "start"]
+ ---> Running in c4742b3a8aa0
+Removing intermediate container c4742b3a8aa0
+ ---> 2917123e7cde
+Successfully built 2917123e7cde
+Successfully tagged gcr.io/greenlane-cloud-solutions/express-test:latest
+PUSH
+Pushing gcr.io/greenlane-cloud-solutions/express-test
+The push refers to repository [gcr.io/greenlane-cloud-solutions/express-test]
+40da6137886c: Preparing
+49f86f178820: Preparing
+7a17d9b3863e: Preparing
+b2357f29fc78: Preparing
+b8185dcc9be5: Preparing
+2c9cabe10289: Preparing
+75228a052fed: Preparing
+08000c18d16d: Preparing
+2c9cabe10289: Waiting
+75228a052fed: Waiting
+08000c18d16d: Waiting
+b8185dcc9be5: Layer already exists
+2c9cabe10289: Layer already exists
+75228a052fed: Layer already exists
+08000c18d16d: Layer already exists
+b2357f29fc78: Pushed
+7a17d9b3863e: Pushed
+40da6137886c: Pushed
+49f86f178820: Pushed
+latest: digest: sha256:fc37328b447955e157ae8ca3b68219f60d1c9287dda6234fface8c7c5da3e422 size: 1990
+DONE
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ID                                    CREATE_TIME                DURATION  SOURCE                                                                                                   IMAGES                                                   STATUS
+510608da-2a32-4be1-841f-902dcb500bdc  2025-04-22T21:25:46+00:00  27S       gs://greenlane-cloud-solutions_cloudbuild/source/1745357145.275742-52872b32b8c6423cb00e1584a0d1cfa6.tgz  gcr.io/greenlane-cloud-solutions/express-test (+1 more)  SUCCESS
+Deploying container to Cloud Run service [express-test] in project [greenlane-cloud-solutions] region [us-central1]
+✓ Deploying new service... Done.                                                                                                                                                  
+  ✓ Creating Revision...                                                                                                                                                          
+  ✓ Routing traffic...                                                                                                                                                            
+  ✓ Setting IAM Policy...                                                                                                                                                         
+Done.                                                                                                                                                                             
+Service [express-test] revision [express-test-00001-69b] has been deployed and is serving 100 percent of traffic.
+Service URL: https://express-test-869018523985.us-central1.run.app
