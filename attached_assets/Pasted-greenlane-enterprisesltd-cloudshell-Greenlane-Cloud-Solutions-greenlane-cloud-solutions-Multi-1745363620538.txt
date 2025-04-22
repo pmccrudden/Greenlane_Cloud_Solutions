@@ -1,0 +1,410 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ # Multi-stage build for optimized production deployment
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+# Stage 2: Production stage
+FROM node:20-alpine AS production
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
+# Important: Add a simple Express server that immediately binds to PORT
+RUN echo '#!/usr/bin/env node\n\
+console.log("Starting server...");\n\
+const express = require("express");\n\
+const app = express();\n\
+const port = process.env.PORT || 8080;\n\
+const fs = require("fs");\n\
+const path = require("path");\n\
+\n\
+app.get("/health", (req, res) => {\n\
+  res.json({ status: "ok" });\n\
+});\n\
+\n\
+try {\n\
+  // Static files\n\
+  const staticPath = path.join(__dirname, "dist", "public");\n\
+  if (fs.existsSync(staticPath)) {\n\
+    app.use(express.static(staticPath));\n\
+  }\n\
+  \n\
+  // API routes\n\
+  const importPromise = import("./dist/index.js");\n\
+  \n\
+  // Default route\n\
+  app.get("*", (req, res) => {\n\
+    const indexPath = path.join(staticPath, "index.html");\n\
+    if (fs.existsSync(indexPath)) {\n\
+      res.sendFile(indexPath);\n\
+    } else {\n\
+CMD ["node", "server.js"]ntry point => console.error("Failed to import main app:", err));\n\
+-bash: FROM: command not found
+-bash: WORKDIR: command not found
+-bash: COPY: command not found
+-bash: RUN: command not found
+-bash: COPY: command not found
+-bash: RUN: command not found
+-bash: FROM: command not found
+-bash: WORKDIR: command not found
+-bash: COPY: command not found
+-bash: RUN: command not found
+-bash: COPY: command not found
+-bash: COPY: command not found
+-bash: syntax error near unexpected token `)'
+-bash: syntax error near unexpected token `"./dist/index.js"'
+> ^C
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ # Build the Docker image locally
+docker build -t gcr.io/greenlane-cloud-solutions/greenlane-crm-app:test .
+
+# Run the container with the same environment setup as Cloud Run
+docker run -p 8080:8080 -e PORT=8080 gcr.io/greenlane-cloud-solutions/greenlane-crm-app:test
+[+] Building 46.1s (15/15) FINISHED                                                                                                                                 docker:default
+ => [internal] load build definition from Dockerfile                                                                                                                          0.0s
+ => => transferring dockerfile: 940B                                                                                                                                          0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                                             1.2s
+ => [internal] load .dockerignore                                                                                                                                             0.0s
+ => => transferring context: 482B                                                                                                                                             0.0s
+ => [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                               2.9s
+ => => resolve docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                       0.0s
+ => => sha256:a54ab62fca2da06cf1bd0418fcd2dbb09ba6f43db517f705291fdfb723fbc642 42.95MB / 42.95MB                                                                              0.8s
+ => => sha256:6bf3eed75316cc1c58cc9bd678ce26260a7aacf7847462efa4a1cbf240a7c4d8 1.26MB / 1.26MB                                                                                0.3s
+ => => sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f 7.67kB / 7.67kB                                                                                0.0s
+ => => sha256:b18325f01afbb59e65e32609c3337f46358ebcb13784103e6d4e41cee6180fa0 1.72kB / 1.72kB                                                                                0.0s
+ => => sha256:0160beacba2dcf6695e3cf292ed8003aa36f538b6a6fd931878bfc4ea7914555 6.21kB / 6.21kB                                                                                0.0s
+ => => sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 3.64MB / 3.64MB                                                                                0.2s
+ => => extracting sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870                                                                                     0.1s
+ => => sha256:efb51bda5e8760a6e79d8bf56d88f21d5255ac614cb6dd14ee65a868e7aa8387 445B / 445B                                                                                    0.4s
+ => => extracting sha256:a54ab62fca2da06cf1bd0418fcd2dbb09ba6f43db517f705291fdfb723fbc642                                                                                     1.8s
+ => => extracting sha256:6bf3eed75316cc1c58cc9bd678ce26260a7aacf7847462efa4a1cbf240a7c4d8                                                                                     0.1s
+ => => extracting sha256:efb51bda5e8760a6e79d8bf56d88f21d5255ac614cb6dd14ee65a868e7aa8387                                                                                     0.0s
+ => [internal] load build context                                                                                                                                             0.1s
+ => => transferring context: 4.37MB                                                                                                                                           0.1s
+ => [builder 2/6] WORKDIR /app                                                                                                                                                0.8s
+ => [builder 3/6] COPY package*.json ./                                                                                                                                       0.0s
+ => [production 4/7] RUN npm ci --omit=dev                                                                                                                                   20.7s
+ => [builder 4/6] RUN npm ci                                                                                                                                                 20.7s
+ => [builder 5/6] COPY . .                                                                                                                                                    0.1s
+ => [builder 6/6] RUN npm run build                                                                                                                                          14.7s
+ => [production 5/7] COPY --from=builder /app/dist ./dist                                                                                                                     0.0s 
+ => [production 6/7] COPY --from=builder /app/server.js ./server.js                                                                                                           0.0s 
+ => [production 7/7] COPY --from=builder /app/stripeConfig.json ./stripeConfig.json                                                                                           0.0s 
+ => exporting to image                                                                                                                                                        5.0s 
+ => => exporting layers                                                                                                                                                       5.0s 
+ => => writing image sha256:a419dae47cf08ae5a575904ab8feec92d96f8818a4ca369f05c8e51d2b32f7f4                                                                                  0.0s 
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-app:test                                                                                                      0.0s 
+Starting Greenlane CRM server                                                                                                                                                      
+Environment: { NODE_ENV: 'production', PORT: '8080', HOST: '0.0.0.0' }                                                                                                             
+Current directory: /app                                                                                                                                                            
+Files in directory: [
+  'dist',
+  'node_modules',
+  'package-lock.json',
+  'package.json',
+  'server.js',
+  'stripeConfig.json'
+]
+Setting up static file serving from dist/public
+Static path exists: /app/dist/public
+Files in static path: [ 'assets', 'index.html' ]
+Server listening on port 8080
+Attempting to import main application...
+Warning: STRIPE_SECRET_KEY is not set, Stripe functionality will be unavailable
+Warning: connect.session() MemoryStore is not
+designed for a production environment, as it will leak
+memory, and will not scale past a single process.
+Serving static files from: /app/dist/public
+Static path exists, serving files...
+Starting server on port 8080
+Main application imported successfully
+node:events:502
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:8080
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1944:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 8080
+}
+
+Node.js v20.19.1
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ gcloud builds submit --config cloudbuild.yaml
+Creating temporary archive of 216 file(s) totalling 4.2 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.iLBx9JpWhP/logs/2025.04.22/23.09.06.315214.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745363346.588357-5d439254f6a74e0f9210370a5a88c5d2.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/107d39f6-169d-4659-80d0-23a3dc33eba0].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/107d39f6-169d-4659-80d0-23a3dc33eba0?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "107d39f6-169d-4659-80d0-23a3dc33eba0"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745363346.588357-5d439254f6a74e0f9210370a5a88c5d2.tgz#1745363348617065
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745363346.588357-5d439254f6a74e0f9210370a5a88c5d2.tgz#1745363348617065...
+/ [1 files][  2.4 MiB/  2.4 MiB]                                                
+Operation completed over 1 objects/2.4 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: Sending build context to Docker daemon  4.558MB
+Step #0: Step 1/18 : FROM node:20-alpine AS builder
+Step #0: 20-alpine: Pulling from library/node
+Step #0: f18232174bc9: Already exists
+Step #0: a54ab62fca2d: Pulling fs layer
+Step #0: 6bf3eed75316: Pulling fs layer
+Step #0: efb51bda5e87: Pulling fs layer
+Step #0: efb51bda5e87: Verifying Checksum
+Step #0: efb51bda5e87: Download complete
+Step #0: 6bf3eed75316: Verifying Checksum
+Step #0: 6bf3eed75316: Download complete
+Step #0: a54ab62fca2d: Verifying Checksum
+Step #0: a54ab62fca2d: Download complete
+Step #0: a54ab62fca2d: Pull complete
+Step #0: 6bf3eed75316: Pull complete
+Step #0: efb51bda5e87: Pull complete
+Step #0: Digest: sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f
+Step #0: Status: Downloaded newer image for node:20-alpine
+Step #0:  ---> 0160beacba2d
+Step #0: Step 2/18 : WORKDIR /app
+Step #0:  ---> Running in 277bcf87bb24
+Step #0: Removing intermediate container 277bcf87bb24
+Step #0:  ---> 81c76a9913f8
+Step #0: Step 3/18 : COPY package*.json ./
+Step #0:  ---> 52d5c6450c05
+Step #0: Step 4/18 : RUN npm ci
+Step #0:  ---> Running in af45b605ec97
+Step #0: npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+Step #0: npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+Step #0: npm warn deprecated react-beautiful-dnd@13.1.1: react-beautiful-dnd is now deprecated. Context and options: https://github.com/atlassian/react-beautiful-dnd/issues/2672
+Step #0: 
+Step #0: added 520 packages, and audited 521 packages in 17s
+Step #0: 
+Step #0: 63 packages are looking for funding
+Step #0:   run `npm fund` for details
+Step #0: 
+Step #0: 8 moderate severity vulnerabilities
+Step #0: 
+Step #0: To address issues that do not require attention, run:
+Step #0:   npm audit fix
+Step #0: 
+Step #0: To address all issues (including breaking changes), run:
+Step #0:   npm audit fix --force
+Step #0: 
+Step #0: Run `npm audit` for details.
+Step #0: npm notice
+Step #0: npm notice New major version of npm available! 10.8.2 -> 11.3.0
+Step #0: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.3.0
+Step #0: npm notice To update run: npm install -g npm@11.3.0
+Step #0: npm notice
+Step #0: Removing intermediate container af45b605ec97
+Step #0:  ---> 5a037847ad2f
+Step #0: Step 5/18 : COPY . .
+Step #0:  ---> 2c5f413c64ab
+Step #0: Step 6/18 : RUN npm run build
+Step #0:  ---> Running in 4dcb42f8b0d2
+Step #0: 
+Step #0: > rest-express@1.0.0 build
+Step #0: > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+Step #0:
+Step #0: vite v5.4.18 building for production...
+Step #0: transforming...
+Step #0: Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+Step #0:   npx update-browserslist-db@latest
+Step #0:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Step #0: ✓ 2708 modules transformed.
+Step #0: rendering chunks...
+Step #0: computing gzip size...
+Step #0: ../dist/public/index.html                               1.80 kB │ gzip:   0.73 kB
+Step #0: ../dist/public/assets/index-Bf-DU6lz.css              100.67 kB │ gzip:  16.04 kB
+Step #0: ../dist/public/assets/trial-success-uVYQUo9s.js         3.49 kB │ gzip:   1.16 kB
+Step #0: ../dist/public/assets/checkout-options-BuCIW42n.js      4.06 kB │ gzip:   1.56 kB
+Step #0: ../dist/public/assets/free-trial-CH-a5N1F.js           15.60 kB │ gzip:   4.42 kB
+Step #0: ../dist/public/assets/index-xDqY7kHJ.js                28.90 kB │ gzip:   5.98 kB
+Step #0: ../dist/public/assets/index-B83W84I1.js             1,215.72 kB │ gzip: 326.08 kB
+Step #0: 
+Step #0: (!) Some chunks are larger than 500 kB after minification. Consider:
+Step #0: - Using dynamic import() to code-split the application
+Step #0: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+Step #0: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+Step #0: ✓ built in 17.18s
+Step #0: ▲ [WARNING] The CommonJS "module" variable is treated as a global variable in an ECMAScript module and may not work as expected [commonjs-variable-in-esm]
+Step #0: 
+Step #0:     server/cloudflare.js:202:0:
+Step #0:       202 │ module.exports = {
+Step #0:           ╵ ~~~~~~
+Step #0: 
+Step #0:   This file is considered to be an ECMAScript module because the enclosing "package.json" file sets the type of this file to "module":
+Step #0: 
+Step #0:     package.json:4:10:
+Step #0:       4 │   "type": "module",
+Step #0:         ╵           ~~~~~~~~
+Step #0: 
+Step #0:   Node's package format requires that CommonJS files in a "type": "module" package use the ".cjs" file extension.
+Step #0: 
+Step #0: 1 warning
+Step #0: 
+Step #0:   dist/index.js  197.7kb
+Step #0: 
+Step #0: ⚡ Done in 30ms
+Step #0: Removing intermediate container 4dcb42f8b0d2
+Step #0:  ---> dad65184dd61
+Step #0: Step 7/18 : FROM node:20-alpine AS production
+Step #0:  ---> 0160beacba2d
+Step #0: Step 8/18 : WORKDIR /app
+Step #0:  ---> Using cache
+Step #0:  ---> 81c76a9913f8
+Step #0: Step 9/18 : COPY package*.json ./
+Step #0:  ---> Using cache
+Step #0:  ---> 52d5c6450c05
+Step #0: Step 10/18 : RUN npm ci --omit=dev
+Step #0:  ---> Running in 28f846f9f7c5
+Step #0: npm warn deprecated react-beautiful-dnd@13.1.1: react-beautiful-dnd is now deprecated. Context and options: https://github.com/atlassian/react-beautiful-dnd/issues/2672
+Step #0: 
+Step #0: added 428 packages, and audited 429 packages in 13s
+Step #0: 
+Step #0: 54 packages are looking for funding
+Step #0:   run `npm fund` for details
+Step #0: 
+Step #0: 1 moderate severity vulnerability
+Step #0: 
+Step #0: To address all issues, run:
+Step #0:   npm audit fix
+Step #0: 
+Step #0: Run `npm audit` for details.
+Step #0: npm notice
+Step #0: npm notice New major version of npm available! 10.8.2 -> 11.3.0
+Step #0: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.3.0
+Step #0: npm notice To update run: npm install -g npm@11.3.0
+Step #0: npm notice
+Step #0: Removing intermediate container 28f846f9f7c5
+Step #0:  ---> 6c1cd8a791e4
+Step #0: Step 11/18 : COPY --from=builder /app/dist ./dist
+Step #0:  ---> 92bd62e864da
+Step #0: Step 12/18 : COPY --from=builder /app/server.js ./server.js
+Step #0:  ---> ae65def77ad1
+Step #0: Step 13/18 : COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
+Step #0:  ---> 477a0c739b1d
+Step #0: Step 14/18 : ENV NODE_ENV=production
+Step #0:  ---> Running in ab599a46c206
+Step #0: Removing intermediate container ab599a46c206
+Step #0:  ---> 1a620e5af89c
+Step #0: Step 15/18 : ENV PORT=8080
+Step #0:  ---> Running in 0b5a6fc00328
+Step #0: Removing intermediate container 0b5a6fc00328
+Step #0:  ---> d20f73b5ae0e
+Step #0: Step 16/18 : ENV HOST=0.0.0.0
+Step #0:  ---> Running in e94e526bd0fb
+Step #0: Removing intermediate container e94e526bd0fb
+Step #0:  ---> b4acb60d7288
+Step #0: Step 17/18 : EXPOSE 8080
+Step #0:  ---> Running in 3aa1618cff23
+Step #0: Removing intermediate container 3aa1618cff23
+Step #0:  ---> a2727b6df66e
+Step #0: Step 18/18 : CMD ["node", "server.js"]
+Step #0:  ---> Running in 15854b627e24
+Step #0: Removing intermediate container 15854b627e24
+Step #0:  ---> ee6af2e40479
+Step #0: Successfully built ee6af2e40479
+Step #0: Successfully tagged gcr.io/greenlane-cloud-solutions/greenlane-crm-app:latest
+Finished Step #0
+Starting Step #1
+Step #1: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #1: Using default tag: latest
+Step #1: The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-app]
+Step #1: 41cbe89a6a06: Preparing
+Step #1: 6c7709071474: Preparing
+Step #1: 97577909e29a: Preparing
+Step #1: 2a6b590d8c91: Preparing
+Step #1: 24b457bb3fd6: Preparing
+Step #1: b6c08a6638df: Preparing
+Step #1: b8185dcc9be5: Preparing
+Step #1: 2c9cabe10289: Preparing
+Step #1: 75228a052fed: Preparing
+Step #1: 08000c18d16d: Preparing
+Step #1: b6c08a6638df: Waiting
+Step #1: b8185dcc9be5: Waiting
+Step #1: 08000c18d16d: Waiting
+Step #1: 75228a052fed: Waiting
+Step #1: 2c9cabe10289: Waiting
+Step #1: 6c7709071474: Pushed
+Step #1: 24b457bb3fd6: Pushed
+Step #1: 41cbe89a6a06: Pushed
+Step #1: 97577909e29a: Pushed
+Step #1: 2c9cabe10289: Layer already exists
+Step #1: b8185dcc9be5: Layer already exists
+Step #1: 75228a052fed: Layer already exists
+Step #1: 08000c18d16d: Layer already exists
+Step #1: b6c08a6638df: Pushed
+Step #1: 2a6b590d8c91: Pushed
+Step #1: latest: digest: sha256:354767926efeed2a6881f22687284b225d789ac66745e75d9e2577001fdc319b size: 2411
+Finished Step #1
+Starting Step #2
+Step #2: Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk
+Step #2: Using default tag: latest
+Step #2: latest: Pulling from google.com/cloudsdktool/cloud-sdk
+Step #2: 23b7d26ef1d2: Already exists
+Step #2: 414194ec006b: Pulling fs layer
+Step #2: 119ced87cd2b: Pulling fs layer
+Step #2: c12f750fbaf0: Pulling fs layer
+Step #2: 2c9f1e00705a: Pulling fs layer
+Step #2: 92c27e79463e: Pulling fs layer
+Step #2: 6b0559dc4a91: Pulling fs layer
+Step #2: 2c9f1e00705a: Waiting
+Step #2: 92c27e79463e: Waiting
+Step #2: 6b0559dc4a91: Waiting
+Step #2: c12f750fbaf0: Verifying Checksum
+Step #2: c12f750fbaf0: Download complete
+Step #2: 414194ec006b: Verifying Checksum
+Step #2: 119ced87cd2b: Verifying Checksum
+Step #2: 119ced87cd2b: Download complete
+Step #2: 414194ec006b: Download complete
+Step #2: 6b0559dc4a91: Verifying Checksum
+Step #2: 6b0559dc4a91: Download complete
+Step #2: 92c27e79463e: Verifying Checksum
+Step #2: 92c27e79463e: Download complete
+Step #2: 414194ec006b: Pull complete
+Step #2: 119ced87cd2b: Pull complete
+Step #2: c12f750fbaf0: Pull complete
+Step #2: 2c9f1e00705a: Verifying Checksum
+Step #2: 2c9f1e00705a: Download complete
+Step #2: 2c9f1e00705a: Pull complete
+Step #2: 92c27e79463e: Pull complete
+Step #2: 6b0559dc4a91: Pull complete
+Step #2: Digest: sha256:348ebedf45eb6979ec93359df987ecb007ad570ae9279d1fe46e7f2f3da651b5
+Step #2: Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: Deploying container to Cloud Run service [greenlane-crm-app] in project [greenlane-cloud-solutions] region [us-central1]
+Step #2: Deploying...
+Step #2: Setting IAM Policy........warning
+Step #2: Creating Revision.........................................................................................................................................................................failed
+Step #2: Deployment failed
+Step #2:   Setting IAM policy failed, try "gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker greenlane-crm-app"
+Step #2: ERROR: (gcloud.run.deploy) Revision 'greenlane-crm-app-00015-tkd' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+Step #2: 
+Step #2: Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00015-tkd&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00015-tkd%22 
+Step #2: For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+Finished Step #2
+ERROR
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build 107d39f6-169d-4659-80d0-23a3dc33eba0 completed with status "FAILURE"

@@ -107,11 +107,20 @@ app.use((req, res, next) => {
   // (The Vite integration is handled differently in development)
   serveStatic(app);
 
-  // Use PORT environment variable for Cloud Run compatibility
-  const port = process.env.PORT || 5000;
-  console.log(`Starting server on port ${port}`);
+  // Check if this is being run directly or imported (ESM compatible)
+  const isDirectRun = process.argv[1]?.endsWith('server/index.ts') || 
+                     process.argv[1]?.endsWith('dist/index.js');
   
-  server.listen(Number(port), "0.0.0.0", () => {
-    console.log(`Server listening on port ${port}`);
-  });
+  // Only start the server if running directly (not imported by bootstrap.js)
+  if (isDirectRun) {
+    // Use PORT environment variable for Cloud Run compatibility
+    const port = process.env.PORT || 5000;
+    console.log(`Starting server on port ${port}`);
+    
+    server.listen(Number(port), "0.0.0.0", () => {
+      console.log(`Server listening on port ${port}`);
+    });
+  } else {
+    console.log('Server imported as module - not starting listener (already running via bootstrap)');
+  }
 })();
