@@ -71,13 +71,58 @@ try {
     app.use(express.static(staticPath));
   }
 
+  // Add some basic routes
+  app.get('/api/status', (req, res) => {
+    res.json({
+      status: 'ok',
+      environment: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    });
+  });
+  
   // Route for any other requests - catch-all SPA route
   app.get('*', (req, res) => {
     const indexPath = path.join(staticPath, 'index.html');
     if (fs.existsSync(indexPath)) {
       res.sendFile(path.resolve(indexPath));
     } else {
-      res.send('<h1>Application is starting...</h1><p>Please try again in a moment.</p>');
+      res.send(`
+        <html>
+          <head>
+            <title>Greenlane CRM</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; padding: 3rem 1rem; max-width: 800px; margin: 0 auto; color: #333; }
+              h1 { color: #21c983; }
+              .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(33, 201, 131, 0.3); border-radius: 50%; border-top-color: #21c983; animation: spin 1s ease-in-out infinite; margin-right: 10px; vertical-align: middle; }
+              @keyframes spin { to { transform: rotate(360deg); } }
+              .card { background: #f9f9f9; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+              .api { background: #f5f5f5; border-radius: 4px; padding: 0.5rem; font-family: monospace; }
+            </style>
+          </head>
+          <body>
+            <h1>Greenlane Cloud Solutions</h1>
+            <div class="loading"></div> Server is running successfully!
+            
+            <div class="card">
+              <h2>API Endpoints Available:</h2>
+              <ul>
+                <li><span class="api">/health</span> - Health check endpoint</li>
+                <li><span class="api">/debug</span> - Debug information</li>
+                <li><span class="api">/api/status</span> - API status information</li>
+              </ul>
+            </div>
+            
+            <div class="card">
+              <h2>Server Information:</h2>
+              <ul>
+                <li>Environment: ${process.env.NODE_ENV || 'development'}</li>
+                <li>Server Started: ${new Date().toLocaleString()}</li>
+                <li>Node.js Version: ${process.version}</li>
+              </ul>
+            </div>
+          </body>
+        </html>
+      `);
     }
   });
 
@@ -89,7 +134,19 @@ try {
     try {
       // For CommonJS we use a different approach to dynamically import ES modules
       const { pathToFileURL } = require('url');
-      const modulePath = pathToFileURL('./dist/index.js').href;
+      
+      // Check if we're in production (dist/index.js exists) or development
+      let modulePath;
+      if (fs.existsSync('./dist/index.js')) {
+        modulePath = pathToFileURL('./dist/index.js').href;
+      } else if (fs.existsSync('./server/index.ts')) {
+        // In development, we might not have dist/index.js
+        console.log('Running in development mode. Using server/index.ts...');
+        modulePath = pathToFileURL('./server/index.ts').href;
+      } else {
+        console.log('No main application found. Running standalone bootstrap server.');
+        return; // Exit early
+      }
       
       console.log('Attempting to import main application:', modulePath);
       import(modulePath)
@@ -98,9 +155,11 @@ try {
         })
         .catch(err => {
           console.error('Error importing main application:', err);
+          console.log('Running standalone bootstrap server without main application.');
         });
     } catch (err) {
       console.error('Failed to import main application:', err);
+      console.log('Running standalone bootstrap server without main application.');
     }
   });
 } catch (err) {
