@@ -45,5 +45,14 @@ EXPOSE 8080
 ENV PORT=8080
 ENV HOST=0.0.0.0
 
+# Create a debug startup script
+RUN echo '#!/bin/sh' > start.sh && \
+    echo 'echo "Current environment:"' >> start.sh && \
+    echo 'echo "PORT=$PORT"' >> start.sh && \
+    echo 'echo "NODE_ENV=$NODE_ENV"' >> start.sh && \
+    echo 'echo "Starting application..."' >> start.sh && \
+    echo 'NODE_ENV=production node dist/index.js' >> start.sh && \
+    chmod +x start.sh
+
 # Start the server
-CMD ["node", "dist/server/index.js"]
+CMD ["./start.sh"]

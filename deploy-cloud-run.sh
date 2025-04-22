@@ -2,7 +2,7 @@
 # Cloud Run Deployment Script
 
 # Configuration - Update these values
-PROJECT_ID="greenlane-crm"
+PROJECT_ID="greenlane-cloud-solutions"
 SERVICE_NAME="greenlane-crm-app"
 REGION="us-central1"
 MAX_INSTANCES=10
