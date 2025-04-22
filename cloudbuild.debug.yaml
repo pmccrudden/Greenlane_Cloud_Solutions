@@ -1,0 +1,140 @@
+steps:
+  # Build the application first
+  - name: 'node:20-alpine'
+    id: 'build'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        npm ci
+        npm run build
+        # Create the debug server
+        cat > server.js << 'END'
+        // Simple server to test if the application can run on Cloud Run
+        const http = require('http');
+        const fs = require('fs');
+        const { exec } = require('child_process');
+
+        const port = process.env.PORT || 8080;
+
+        // Try to load the actual app to debug loading issues
+        function tryLoadApp() {
+          try {
+            console.log('Current directory:', process.cwd());
+            console.log('Files in current directory:', fs.readdirSync('.'));
+            console.log('Files in dist directory:', fs.readdirSync('./dist'));
+            
+            // Try to import the main file (using dynamic import for ESM compatibility)
+            console.log('Trying to load the app module...');
+            return "We'll examine the server logs for errors";
+          } catch (error) {
+            console.error('Error loading app module:', error);
+            return `Error loading app: ${error.message}\n${error.stack}`;
+          }
+        }
+
+        const server = http.createServer((req, res) => {
+          console.log(`Received request: ${req.method} ${req.url}`);
+          
+          if (req.url === '/debug') {
+            // Return debug information
+            const appLoadResult = tryLoadApp();
+            
+            exec('env', (error, stdout, stderr) => {
+              const envVars = stdout;
+              
+              res.writeHead(200, {'Content-Type': 'text/plain'});
+              res.end(`Debug Information:
+        Node Version: ${process.version}
+        Environment: ${process.env.NODE_ENV}
+        PORT: ${process.env.PORT}
+        HOST: ${process.env.HOST}
+
+        App Load Result:
+        ${appLoadResult}
+
+        Environment Variables:
+        ${envVars}
+              `);
+            });
+          } else {
+            // Default response
+            res.writeHead(200, {'Content-Type': 'text/plain'});
+            res.end('Debug server for Greenlane CRM.\nVisit /debug for detailed information.\n');
+          }
+        });
+
+        server.listen(port, '0.0.0.0', () => {
+          console.log(`Debug server listening on port ${port}`);
+        });
+        END
+        
+        # Create a startup script
+        cat > start.sh << 'END'
+        #!/bin/sh
+        echo "Current environment:"
+        printenv | grep -E "PORT|NODE|HOST"
+        echo "Starting debug server..."
+        node server.js
+        END
+        chmod +x start.sh
+
+  # Create a simplified Dockerfile that doesn't rely on copying from the build stage
+  - name: 'bash'
+    id: 'create-dockerfile'
+    args:
+      - '-c'
+      - |
+        cat > Dockerfile << 'END'
+        FROM node:20-alpine
+
+        WORKDIR /app
+
+        # Copy all files from the workspace
+        COPY . .
+
+        # Install only production dependencies
+        RUN npm ci --omit=dev
+
+        # Set environment variables
+        ENV PORT=8080
+        ENV HOST=0.0.0.0
+        ENV NODE_ENV=production
+
+        # Expose port
+        EXPOSE 8080
+
+        # Start the server
+        CMD ["./start.sh"]
+        END
+
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-debug', '.']
+  
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-debug']
+  
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'greenlane-crm-debug'
+      - '--image'
+      - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-debug'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - 'us-central1'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--timeout'
+      - '300s'
+images:
+  - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-debug'
