@@ -1,20 +1,62 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { join } from "path";
+import fs from "fs";
 
 // Define the missing functions
 function serveStatic(app: express.Express) {
   const staticPath = join(process.cwd(), "dist", "public");
   console.log('Serving static files from:', staticPath);
-  app.use(express.static(staticPath));
   
-  // Serve index.html for all non-API routes to support client-side routing
-  app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api")) {
-      return next();
-    }
-    res.sendFile(join(staticPath, "index.html"));
-  });
+  // Check if the static path exists
+  if (fs.existsSync(staticPath)) {
+    console.log('Static path exists, serving files...');
+    app.use(express.static(staticPath));
+    
+    // Serve index.html for all non-API routes to support client-side routing
+    app.get("*", (req, res, next) => {
+      if (req.path.startsWith("/api")) {
+        return next();
+      }
+      
+      const indexPath = join(staticPath, "index.html");
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        console.log('Warning: index.html not found in static path');
+        res.send(`
+          <html>
+            <head><title>Greenlane CRM API Server</title></head>
+            <body>
+              <h1>Greenlane CRM API Server</h1>
+              <p>The API server is running, but the frontend has not been built yet.</p>
+              <p>Please run <code>npm run build</code> to build the frontend.</p>
+            </body>
+          </html>
+        `);
+      }
+    });
+  } else {
+    console.log('Warning: Static path does not exist, serving API only');
+    
+    // Handle non-API routes with a friendly message
+    app.get("*", (req, res, next) => {
+      if (req.path.startsWith("/api")) {
+        return next();
+      }
+      
+      res.send(`
+        <html>
+          <head><title>Greenlane CRM API Server</title></head>
+          <body>
+            <h1>Greenlane CRM API Server</h1>
+            <p>The API server is running, but the frontend has not been built yet.</p>
+            <p>Please run <code>npm run build</code> to build the frontend.</p>
+          </body>
+        </html>
+      `);
+    });
+  }
 }
 
 const app = express();

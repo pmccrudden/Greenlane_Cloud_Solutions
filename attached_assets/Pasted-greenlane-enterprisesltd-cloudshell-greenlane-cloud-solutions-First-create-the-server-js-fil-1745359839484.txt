@@ -1,0 +1,62 @@
+greenlane_enterprisesltd@cloudshell:~ (greenlane-cloud-solutions)$ # First, create the server.js file
+cat > server.js << 'EOF'
+#!/usr/bin/env node
+
+// This is a special startup script for Cloud Run
+// Our main app is an ES module, but we need a way to run it
+// with traditional Node.js startup
+
+console.log('Starting Greenlane CRM application');
+console.log('Environment: NODE_ENV=', process.env.NODE_ENV);
+console.log('Port: PORT=', process.env.PORT);
+console.log('Host: HOST=', process.env.HOST);
+
+try {
+  // For ESM modules, we need to use dynamic import
+  import('./dist/index.js')
+    .then(() => {
+      console.log('Application started successfully');
+    })
+    .catch(error => {
+      console.error('Error starting application:', error);
+      process.exit(1);
+    });
+} catch (error) {
+  console.error('Fatal error importing application:', error);
+  process.exit(1);
+}
+
+// Keep the process alive - our server should be started by the imported module
+EOF
+
+# Make the server.js executable
+chmod +x server.js
+
+# Next, modify package.json to add the start script
+cat package.json
+cat: package.json: No such file or directory
+greenlane_enterprisesltd@cloudshell:~ (greenlane-cloud-solutions)$ gcloud builds submit --config cloudbuild.yaml
+Creating temporary archive of 72464 file(s) totalling 1.6 GiB before compression.
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745358674.963695-c3b0378f1bc64111ad6c74ec630c8f75.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/f196ca43-af7d-40e8-84f2-5f56a967379b].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/f196ca43-af7d-40e8-84f2-5f56a967379b?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "f196ca43-af7d-40e8-84f2-5f56a967379b"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745358674.963695-c3b0378f1bc64111ad6c74ec630c8f75.tgz#1745359778354569
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745358674.963695-c3b0378f1bc64111ad6c74ec630c8f75.tgz#1745359778354569...
+| [1 files][421.5 MiB/421.5 MiB]                                                
+Operation completed over 1 objects/421.5 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: unable to prepare context: unable to evaluate symlinks in Dockerfile path: lstat /workspace/Dockerfile: no such file or directory
+Finished Step #0
+ERROR
+ERROR: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 1
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build f196ca43-af7d-40e8-84f2-5f56a967379b completed with status "FAILURE"
