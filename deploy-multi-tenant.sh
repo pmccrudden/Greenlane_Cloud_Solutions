@@ -2,7 +2,7 @@
 # Multi-Tenant Cloud Run Deployment Script with Cloudflare DNS Integration
 
 # Configuration - Update these values
-PROJECT_ID="greenlane-cloud-solutions"
+PROJECT_ID="greenlane-crm"
 SERVICE_NAME="greenlane-crm-app"
 REGION="us-central1"
 MAX_INSTANCES=10
