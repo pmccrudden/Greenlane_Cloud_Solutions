@@ -1,0 +1,79 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ gcloud builds submit --config cloudbuild.yaml
+Creating temporary archive of 193 file(s) totalling 4.0 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.JosACCegeZ/logs/2025.04.22/19.26.00.667988.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745349960.954901-c84221530e3a41e5b1ef057f3faaafe0.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/24a57650-485d-4535-b704-48e0b2582f89].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/24a57650-485d-4535-b704-48e0b2582f89?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "24a57650-485d-4535-b704-48e0b2582f89"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745349960.954901-c84221530e3a41e5b1ef057f3faaafe0.tgz#1745349963496951
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745349960.954901-c84221530e3a41e5b1ef057f3faaafe0.tgz#1745349963496951...
+/ [1 files][  2.4 MiB/  2.4 MiB]                                                
+Operation completed over 1 objects/2.4 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: Sending build context to Docker daemon  4.343MB
+Step #0: Step 1/11 : FROM node:20-alpine
+Step #0: 20-alpine: Pulling from library/node
+Step #0: f18232174bc9: Already exists
+Step #0: a54ab62fca2d: Pulling fs layer
+Step #0: 6bf3eed75316: Pulling fs layer
+Step #0: efb51bda5e87: Pulling fs layer
+Step #0: 6bf3eed75316: Verifying Checksum
+Step #0: 6bf3eed75316: Download complete
+Step #0: efb51bda5e87: Verifying Checksum
+Step #0: efb51bda5e87: Download complete
+Step #0: a54ab62fca2d: Verifying Checksum
+Step #0: a54ab62fca2d: Download complete
+Step #0: a54ab62fca2d: Pull complete
+Step #0: 6bf3eed75316: Pull complete
+Step #0: efb51bda5e87: Pull complete
+Step #0: Digest: sha256:ce05c148e5e9d4fadcb25ea81236590142cb7982cd5732273cbcdcffd3420b6b
+Step #0: Status: Downloaded newer image for node:20-alpine
+Step #0:  ---> 0160beacba2d
+Step #0: Step 2/11 : WORKDIR /app
+Step #0:  ---> Running in 44b4f37ad62d
+Step #0: Removing intermediate container 44b4f37ad62d
+Step #0:  ---> e2349ba77ef3
+Step #0: Step 3/11 : COPY package.json package-lock.json ./
+Step #0:  ---> 63e20540b7f9
+Step #0: Step 4/11 : RUN npm ci --omit=dev
+Step #0:  ---> Running in 1e38c52c225e
+Step #0: npm warn deprecated react-beautiful-dnd@13.1.1: react-beautiful-dnd is now deprecated. Context and options: https://github.com/atlassian/react-beautiful-dnd/issues/2672
+Step #0: 
+Step #0: added 428 packages, and audited 429 packages in 13s
+Step #0: 
+Step #0: 54 packages are looking for funding
+Step #0:   run `npm fund` for details
+Step #0: 
+Step #0: 1 moderate severity vulnerability
+Step #0: 
+Step #0: To address all issues, run:
+Step #0:   npm audit fix
+Step #0: 
+Step #0: Run `npm audit` for details.
+Step #0: npm notice
+Step #0: npm notice New major version of npm available! 10.8.2 -> 11.3.0
+Step #0: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.3.0
+Step #0: npm notice To update run: npm install -g npm@11.3.0
+Step #0: npm notice
+Step #0: Removing intermediate container 1e38c52c225e
+Step #0:  ---> 03eca9ab6d35
+Step #0: Step 5/11 : COPY dist/ ./dist/
+Step #0: COPY failed: file not found in build context or excluded by .dockerignore: stat dist/: file does not exist
+Finished Step #0
+ERROR
+ERROR: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 1
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build 24a57650-485d-4535-b704-48e0b2582f89 completed with status "FAILURE"

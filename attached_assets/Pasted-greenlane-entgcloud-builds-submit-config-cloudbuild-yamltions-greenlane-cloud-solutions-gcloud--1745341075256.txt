@@ -1,0 +1,237 @@
+greenlane_entgcloud builds submit --config cloudbuild.yamltions (greenlane-cloud-solutions)$ gcloud builds submit --config cloudbuild.yaml
+Creating temporary archive of 193 file(s) totalling 4.0 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.wxREoPn5W8/logs/2025.04.22/16.55.03.906610.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745340904.274296-cef8a785228b41fabf352cae5b800663.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/89224087-13ec-45a6-8db5-cb481fa0b5fb].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/89224087-13ec-45a6-8db5-cb481fa0b5fb?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+----------------------------- REMOTE BUILD OUTPUT ------------------------------
+starting build "89224087-13ec-45a6-8db5-cb481fa0b5fb"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745340904.274296-cef8a785228b41fabf352cae5b800663.tgz#1745340906838685
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745340904.274296-cef8a785228b41fabf352cae5b800663.tgz#1745340906838685...
+/ [1 files][  2.4 MiB/  2.4 MiB]                                                
+Operation completed over 1 objects/2.4 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: Sending build context to Docker daemon  4.343MB
+Step #0: Step 1/18 : FROM node:20-alpine AS builder
+Step #0: 20-alpine: Pulling from library/node
+Step #0: f18232174bc9: Already exists
+Step #0: 8cc209e5911c: Pulling fs layer
+Step #0: d7a069a788e0: Pulling fs layer
+Step #0: 42ec265e2954: Pulling fs layer
+Step #0: 42ec265e2954: Verifying Checksum
+Step #0: 42ec265e2954: Download complete
+Step #0: d7a069a788e0: Verifying Checksum
+Step #0: d7a069a788e0: Download complete
+Step #0: 8cc209e5911c: Verifying Checksum
+Step #0: 8cc209e5911c: Download complete
+Step #0: 8cc209e5911c: Pull complete
+Step #0: d7a069a788e0: Pull complete
+Step #0: 42ec265e2954: Pull complete
+Step #0: Digest: sha256:8bda036ddd59ea51a23bc1a1035d3b5c614e72c01366d989f4120e8adca196d4
+Step #0: Status: Downloaded newer image for node:20-alpine
+Step #0:  ---> 5885a9462a2f
+Step #0: Step 2/18 : WORKDIR /app
+Step #0:  ---> Running in cbe65bd70f4d
+Step #0: Removing intermediate container cbe65bd70f4d
+Step #0:  ---> 7a9309f60652
+Step #0: Step 3/18 : COPY package.json package-lock.json ./
+Step #0:  ---> 04aea8c29094
+Step #0: Step 4/18 : RUN npm ci
+Step #0:  ---> Running in 1e9580372aa4
+Step #0: npm warn deprecated @esbuild-kit/core-utils@3.3.2: Merged into tsx: https://tsx.is
+Step #0: npm warn deprecated @esbuild-kit/esm-loader@2.6.5: Merged into tsx: https://tsx.is
+Step #0: npm warn deprecated react-beautiful-dnd@13.1.1: react-beautiful-dnd is now deprecated. Context and options: https://github.com/atlassian/react-beautiful-dnd/issues/2672
+Step #0: 
+Step #0: added 520 packages, and audited 521 packages in 18s
+Step #0: 
+Step #0: 63 packages are looking for funding
+Step #0:   run `npm fund` for details
+Step #0: 
+Step #0: 8 moderate severity vulnerabilities
+Step #0: 
+Step #0: To address issues that do not require attention, run:
+Step #0:   npm audit fix
+Step #0: 
+Step #0: To address all issues (including breaking changes), run:
+Step #0:   npm audit fix --force
+Step #0: 
+Step #0: Run `npm audit` for details.
+Step #0: npm notice
+Step #0: npm notice New major version of npm available! 10.8.2 -> 11.3.0
+Step #0: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.3.0
+Step #0: npm notice To update run: npm install -g npm@11.3.0
+Step #0: npm notice
+Step #0: Removing intermediate container 1e9580372aa4
+Step #0:  ---> 9509791c5c47
+Step #0: Step 5/18 : COPY . .
+Step #0:  ---> 49b4226d943a
+Step #0: Step 6/18 : RUN npm run build
+Step #0:  ---> Running in 075960c9814d
+Step #0: 
+Step #0: > rest-express@1.0.0 build
+Step #0: > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+Step #0: 
+Step #0: vite v5.4.18 building for production...
+Step #0: transforming...
+Step #0: Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+Step #0:   npx update-browserslist-db@latest
+Step #0:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Step #0: ✓ 2708 modules transformed.
+Step #0: rendering chunks...
+Step #0: computing gzip size...
+Step #0: ../dist/public/index.html                               1.80 kB │ gzip:   0.73 kB
+Step #0: ../dist/public/assets/index-Bf-DU6lz.css              100.67 kB │ gzip:  16.04 kB
+Step #0: ../dist/public/assets/trial-success-uVYQUo9s.js         3.49 kB │ gzip:   1.16 kB
+Step #0: ../dist/public/assets/checkout-options-BuCIW42n.js      4.06 kB │ gzip:   1.56 kB
+Step #0: ../dist/public/assets/free-trial-CH-a5N1F.js           15.60 kB │ gzip:   4.42 kB
+Step #0: ../dist/public/assets/index-xDqY7kHJ.js                28.90 kB │ gzip:   5.98 kB
+Step #0: ../dist/public/assets/index-B83W84I1.js             1,215.72 kB │ gzip: 326.08 kB
+Step #0: 
+Step #0: (!) Some chunks are larger than 500 kB after minification. Consider:
+Step #0: - Using dynamic import() to code-split the application
+Step #0: - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+Step #0: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+Step #0: ✓ built in 18.37s
+Step #0: ▲ [WARNING] The CommonJS "module" variable is treated as a global variable in an ECMAScript module and may not work as expected [commonjs-variable-in-esm]
+Step #0: 
+Step #0:     server/cloudflare.js:202:0:
+Step #0:       202 │ module.exports = {
+Step #0:           ╵ ~~~~~~
+Step #0: 
+Step #0:   This file is considered to be an ECMAScript module because the enclosing "package.json" file sets the type of this file to "module":
+Step #0: 
+Step #0:     package.json:4:10:
+Step #0:       4 │   "type": "module",
+Step #0:         ╵           ~~~~~~~~
+Step #0: 
+Step #0:   Node's package format requires that CommonJS files in a "type": "module" package use the ".cjs" file extension.
+Step #0: 
+Step #0: 1 warning
+Step #0: 
+Step #0:   dist/index.js  199.4kb
+Step #0: 
+Step #0: ⚡ Done in 30ms
+Step #0: Removing intermediate container 075960c9814d
+Step #0:  ---> 4ca9e200e9e0
+Step #0: Step 7/18 : FROM node:20-alpine AS production
+Step #0:  ---> 5885a9462a2f
+Step #0: Step 8/18 : ENV NODE_ENV=production
+Step #0:  ---> Running in f697acf02828
+Step #0: Removing intermediate container f697acf02828
+Step #0:  ---> f24041a6fa72
+Step #0: Step 9/18 : WORKDIR /app
+Step #0:  ---> Running in 75ce46041995
+Step #0: Removing intermediate container 75ce46041995
+Step #0:  ---> ba77be8e687e
+Step #0: Step 10/18 : COPY package.json package-lock.json ./
+Step #0:  ---> a02300ef0c55
+Step #0: Step 11/18 : RUN npm ci --only=production
+Step #0:  ---> Running in 5043ed438370
+Step #0: npm warn config only Use `--omit=dev` to omit dev dependencies from the install.
+Step #0: npm warn deprecated react-beautiful-dnd@13.1.1: react-beautiful-dnd is now deprecated. Context and options: https://github.com/atlassian/react-beautiful-dnd/issues/2672
+Step #0: 
+Step #0: added 428 packages, and audited 429 packages in 14s
+Step #0: 
+Step #0: 54 packages are looking for funding
+Step #0:   run `npm fund` for details
+Step #0: 
+Step #0: 1 moderate severity vulnerability
+Step #0: 
+Step #0: To address all issues, run:
+Step #0:   npm audit fix
+Step #0: 
+Step #0: Run `npm audit` for details.
+Step #0: npm notice
+Step #0: npm notice New major version of npm available! 10.8.2 -> 11.3.0
+Step #0: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.3.0
+Step #0: npm notice To update run: npm install -g npm@11.3.0
+Step #0: npm notice
+Step #0: Removing intermediate container 5043ed438370
+Step #0:  ---> c24344669776
+Step #0: Step 12/18 : COPY --from=builder /app/dist ./dist
+Step #0:  ---> ae9ff5833813
+Step #0: Step 13/18 : COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
+Step #0:  ---> 605fa95a77cc
+Step #0: Step 14/18 : EXPOSE 8080
+Step #0:  ---> Running in 0d6d9e0a9425
+Step #0: Removing intermediate container 0d6d9e0a9425
+Step #0:  ---> 09829866d1d6
+Step #0: Step 15/18 : ENV PORT=8080
+Step #0:  ---> Running in 42c3c1c00c08
+Step #0: Removing intermediate container 42c3c1c00c08
+Step #0:  ---> 668ec41e3377
+Step #0: Step 16/18 : ENV HOST=0.0.0.0
+Step #0:  ---> Running in d3b1931d5246
+Step #0: Removing intermediate container d3b1931d5246
+Step #0:  ---> 9a196263ace3
+Step #0: Step 17/18 : RUN echo '#!/bin/sh' > ./start.sh &&     echo '# If PORT is specified by the environment, use that instead' >> ./start.sh &&     echo 'export PORT=${PORT:-8080}' >> ./start.sh &&     echo 'npm start' >> ./start.sh &&     chmod +x ./start.sh
+Step #0:  ---> Running in c50f55b06e0d
+Step #0: Removing intermediate container c50f55b06e0d
+Step #0:  ---> 3a00c12a04d4
+Step #0: Step 18/18 : CMD ["./start.sh"]
+Step #0:  ---> Running in bc6a40053cb8
+Step #0: Removing intermediate container bc6a40053cb8
+Step #0:  ---> 3a985ad538ce
+Step #0: Successfully built 3a985ad538ce
+Step #0: Successfully tagged gcr.io/greenlane-cloud-solutions/greenlane-crm-app:latest
+Finished Step #0
+Starting Step #1
+Step #1: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #1: Using default tag: latest
+Step #1: The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-app]
+Step #1: b3bb6f0895fa: Preparing
+Step #1: cf6f82ef4dc0: Preparing
+Step #1: ed35e7417d2f: Preparing
+Step #1: dc66f9af57a9: Preparing
+Step #1: 0acbda7e764a: Preparing
+Step #1: 005d44f2ca4e: Preparing
+Step #1: 71966995f05c: Preparing
+Step #1: 31d5ff869df5: Preparing
+Step #1: 4f35fe5263c7: Preparing
+Step #1: 08000c18d16d: Preparing
+Step #1: 71966995f05c: Waiting
+Step #1: 31d5ff869df5: Waiting
+Step #1: 4f35fe5263c7: Waiting
+Step #1: 08000c18d16d: Waiting
+Step #1: 005d44f2ca4e: Waiting
+Step #1: ed35e7417d2f: Pushed
+Step #1: cf6f82ef4dc0: Pushed
+Step #1: 0acbda7e764a: Pushed
+Step #1: b3bb6f0895fa: Pushed
+Step #1: 71966995f05c: Layer already exists
+Step #1: 4f35fe5263c7: Layer already exists
+Step #1: 31d5ff869df5: Layer already exists
+Step #1: 08000c18d16d: Layer already exists
+Step #1: 005d44f2ca4e: Pushed
+Step #1: dc66f9af57a9: Pushed
+Step #1: latest: digest: sha256:cb145b22d1b5167df1aed397003c9285825839cc58dc6ed3414f1a33ff197cc6 size: 2410
+Finished Step #1
+Starting Step #2
+Step #2: Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk
+Step #2: Using default tag: latest
+Step #2: latest: Pulling from google.com/cloudsdktool/cloud-sdk
+Step #2: Digest: sha256:134f1938136304884f2d3b7365162adb1ca06d0b86c599f15a4fe107b94f7950
+Step #2: Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: Deploying container to Cloud Run service [greenlane-crm-app] in project [greenlane-cloud-solutions] region [us-central1]
+Step #2: Deploying...
+Step #2: failed
+Step #2: Deployment failed
+Step #2: ERROR: (gcloud.run.deploy) spec.template.spec.containers[0].env: The following reserved env names were provided: PORT. These values are automatically set by the system.
+Finished Step #2
+ERROR
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+--------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build 89224087-13ec-45a6-8db5-cb481fa0b5fb completed with status "FAILURE"
