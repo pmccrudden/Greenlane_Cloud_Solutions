@@ -14,11 +14,10 @@ console.log('Environment:', {
   HOST: process.env.HOST
 });
 
-// Using ES modules since package.json has "type": "module"
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import fs from 'fs';
-import express from 'express';
+// Using CommonJS because we're explicitly naming this file .cjs
+const fs = require('fs');
+const path = require('path');
+const express = require('express');
 
 // Show files to debug setup
 console.log('Current directory:', process.cwd());
@@ -66,24 +65,43 @@ app.get('/debug', (req, res) => {
 
 // Set up routing for static files and API
 try {
+  // Serve static files if they exist
   if (fs.existsSync(staticPath)) {
     console.log('Static path exists, serving files...');
     app.use(express.static(staticPath));
   }
 
-  // Start the server before trying to import the main app
-  const server = app.listen(port, '0.0.0.0', () => {
+  // Route for any other requests - catch-all SPA route
+  app.get('*', (req, res) => {
+    const indexPath = path.join(staticPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(path.resolve(indexPath));
+    } else {
+      res.send('<h1>Application is starting...</h1><p>Please try again in a moment.</p>');
+    }
+  });
+
+  // Start the server immediately
+  app.listen(port, '0.0.0.0', () => {
     console.log(`Server listening on port ${port}`);
     
-    // Now import the main application (but don't wait for it)
-    console.log('Attempting to import main application...');
-    import('./dist/index.js')
-      .then(() => {
-        console.log('Main application imported successfully');
-      })
-      .catch(err => {
-        console.error('Error importing main application:', err);
-      });
+    // Now load the main application (after we're already listening)
+    try {
+      // For CommonJS we use a different approach to dynamically import ES modules
+      const { pathToFileURL } = require('url');
+      const modulePath = pathToFileURL('./dist/index.js').href;
+      
+      console.log('Attempting to import main application:', modulePath);
+      import(modulePath)
+        .then(() => {
+          console.log('Main application imported successfully');
+        })
+        .catch(err => {
+          console.error('Error importing main application:', err);
+        });
+    } catch (err) {
+      console.error('Failed to import main application:', err);
+    }
   });
 } catch (err) {
   console.error('Fatal error in server startup:', err);
