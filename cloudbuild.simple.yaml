@@ -1,19 +1,21 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-test', '-f', 'Dockerfile.simple', '.']
+    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-simple-app', '-f', 'Dockerfile.simple', '.']
+  
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-test']
+    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-simple-app']
+  
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'greenlane-crm-test'
+      - 'greenlane-simple-app'
       - '--image'
-      - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-test'
+      - 'gcr.io/greenlane-cloud-solutions/greenlane-simple-app'
       - '--platform'
       - 'managed'
       - '--region'
@@ -23,7 +25,12 @@ steps:
       - '512Mi'
       - '--cpu'
       - '1'
+      - '--concurrency'
+      - '80'
       - '--timeout'
       - '300s'
+      - '--set-env-vars'
+      - 'NODE_ENV=production'
+
 images:
-  - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-test'
+  - 'gcr.io/greenlane-cloud-solutions/greenlane-simple-app'
