@@ -1,0 +1,36 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ docker push "gcr.io/greenlane-crm/greenlane-crm-app"
+Using default tag: latest
+The push refers to repository [gcr.io/greenlane-crm/greenlane-crm-app]
+f1be01877fd2: Preparing 
+97e5f0300251: Preparing 
+2dc6f7c740f1: Preparing 
+17f05aa79fcc: Preparing 
+e09bc837adef: Preparing 
+71966995f05c: Waiting 
+31d5ff869df5: Waiting 
+4f35fe5263c7: Waiting 
+08000c18d16d: Waiting 
+denied: Caller does not have permission or the resource may not exist 'read'. To configure permissions, follow instructions at: https://cloud.google.com/container-registry/docs/access-control
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ gcloud run deploy greenlane-crm-app \
+  --image "gcr.io/greenlane-crm/greenlane-crm-app" \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --max-instances 10 \
+  --min-instances 1 \
+  --memory 1Gi \
+  --cpu 1 \
+  --concurrency 80 \
+  --timeout 300s \
+  --set-env-vars "NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com" \
+  --update-secrets="/app/.env=greenlane-env:latest"
+Deploying container to Cloud Run service [greenlane-crm-app] in project [greenlane-cloud-solutions] region [us-central1]
+X Deploying...                                                                                                                                                                
+  - Creating Revision...                                                                                                                                                      
+  . Routing traffic...                                                                                                                                                        
+  ✓ Setting IAM Policy...                                                                                                                                                     
+Deployment failed                                                                                                                                                             
+ERROR: (gcloud.run.deploy) Revision 'greenlane-crm-app-00002-cf4' is not ready and cannot serve traffic. Google Cloud Run Service Agent service-869018523985@serverless-robot-prod.iam.gserviceaccount.com must have permission to read the image, gcr.io/greenlane-crm/greenlane-crm-app. Ensure that the provided container image URL is correct and that the above account has permission to access the image. If you just enabled the Cloud Run API, the permissions might take a few minutes to propagate. Note that the image is from project [greenlane-crm], which is not the same as this project [greenlane-cloud-solutions]. Permission must be granted to the Google Cloud Run Service Agent service-869018523985@serverless-robot-prod.iam.gserviceaccount.com from this project. See https://cloud.google.com/run/docs/deploying#other-projects
+ Cause: 403 Forbidden
+GET https://gcr.io/v2/greenlane-crm/greenlane-crm-app/manifests/latest
+{"errors":[{"code":"DENIED","message":"Caller does not have permission or the resource may not exist 'read'. To configure permissions, follow instructions at: https://cloud.google.com/container-registry/docs/access-control"}]}

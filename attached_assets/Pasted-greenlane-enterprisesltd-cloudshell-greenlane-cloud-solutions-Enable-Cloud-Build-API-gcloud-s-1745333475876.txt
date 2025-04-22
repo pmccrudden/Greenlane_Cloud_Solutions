@@ -1,0 +1,40 @@
+greenlane_enterprisesltd@cloudshell:~ (greenlane-cloud-solutions)$ # Enable Cloud Build API
+gcloud services enable cloudbuild.googleapis.com
+
+# Create a Cloud Build configuration file
+cat > cloudbuild.yaml << EOF
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/greenlane-crm-app', '.']
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/greenlane-crm-app']
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+gcloud builds submit --config cloudbuild.yamlnlanecloudsolutions.com'
+Creating temporary archive of 72283 file(s) totalling 1.6 GiB before compression.
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745332527.796571-bab5f741c47b4610b23d8659144aa3f1.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/42e05549-df31-491f-9802-4f6d4f858c2b].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/42e05549-df31-491f-9802-4f6d4f858c2b?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "42e05549-df31-491f-9802-4f6d4f858c2b"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745332527.796571-bab5f741c47b4610b23d8659144aa3f1.tgz#1745333225741125
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745332527.796571-bab5f741c47b4610b23d8659144aa3f1.tgz#1745333225741125...
+\ [1 files][421.3 MiB/421.3 MiB]                                                
+Operation completed over 1 objects/421.3 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: invalid argument "gcr.io//greenlane-crm-app" for "-t, --tag" flag: invalid reference format
+Step #0: See 'docker build --help'.
+Finished Step #0
+ERROR
+ERROR: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 125
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 125
+ERROR: (gcloud.builds.submit) build 42e05549-df31-491f-9802-4f6d4f858c2b completed with status "FAILURE"

@@ -1,0 +1,32 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ gcloud builds submit --config cloudbuild.yaml
+Creating temporary archive of 193 file(s) totalling 4.0 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.zzD24fL8bt/logs/2025.04.22/15.31.00.550484.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745335860.888964-c91506ce33ea4be18e45bd5c68a4da02.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/c153b020-db3d-4373-8330-f9507578a762].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/c153b020-db3d-4373-8330-f9507578a762?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "c153b020-db3d-4373-8330-f9507578a762"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745335860.888964-c91506ce33ea4be18e45bd5c68a4da02.tgz#1745335862970883
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745335860.888964-c91506ce33ea4be18e45bd5c68a4da02.tgz#1745335862970883...
+/ [1 files][  2.4 MiB/  2.4 MiB]                                                
+Operation completed over 1 objects/2.4 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: Sending build context to Docker daemon  4.343MB
+Step #0: Error response from daemon: dockerfile parse error line 31: unknown instruction: EXPORT
+Finished Step #0
+ERROR
+ERROR: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 1
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build c153b020-db3d-4373-8330-f9507578a762 completed with status "FAILURE"

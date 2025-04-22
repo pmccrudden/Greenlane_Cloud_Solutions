@@ -1,0 +1,45 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ls -la
+total 1680
+drwxrwxr-x   9 greenlane_enterprisesltd greenlane_enterprisesltd    4096 Apr 21 16:23 .
+drwxr-x---  13 greenlane_enterprisesltd greenlane_enterprisesltd    4096 Apr 22 14:35 ..
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    1641 Apr 21 14:39 account-tasks-methods.txt
+drwxrwxr-x   2 greenlane_enterprisesltd greenlane_enterprisesltd    4096 Apr 21 14:39 attached_assets
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    1532 Apr 21 14:39 cf-zone-info.js
+drwxrwxr-x   3 greenlane_enterprisesltd greenlane_enterprisesltd    4096 Apr 21 14:39 client
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    1817 Apr 21 14:39 corrected-account-tasks.js
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    1699 Apr 21 14:39 deploy-cloud-run.sh
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    5084 Apr 21 14:39 deploy-multi-tenant.sh
+-rwxrwxr-x   1 greenlane_enterprisesltd greenlane_enterprisesltd    8668 Apr 21 14:39 deploy-production-with-demo.sh
+drwxrwxr-x   3 greenlane_enterprisesltd greenlane_enterprisesltd    4096 Apr 21 15:20 dist
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     909 Apr 21 16:08 Dockerfile
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     440 Apr 21 14:39 .dockerignore
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     325 Apr 21 14:39 drizzle.config.ts
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     208 Apr 21 14:39 env.deploy
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     668 Apr 21 14:39 env.production
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd   10227 Apr 21 14:39 fixed-storage.ts
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd 1171157 Apr 21 14:39 generated-icon.png
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    4173 Apr 21 14:39 get-cloudflare-zone-info.js
+drwxrwxr-x   8 greenlane_enterprisesltd greenlane_enterprisesltd    4096 Apr 21 16:18 .git
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     101 Apr 21 14:39 .gitignore
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    5296 Apr 21 14:39 init-modules.js
+drwxrwxr-x 348 greenlane_enterprisesltd greenlane_enterprisesltd   12288 Apr 21 15:42 node_modules
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    3818 Apr 21 15:42 package.json
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd  316688 Apr 21 16:23 package-lock.json
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd      80 Apr 21 14:39 postcss.config.js
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    7192 Apr 21 14:39 PRODUCTION-DEPLOYMENT.md
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     803 Apr 21 14:39 .replit
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd      48 Apr 21 14:39 replit.nix
+drwxrwxr-x   2 greenlane_enterprisesltd greenlane_enterprisesltd    4096 Apr 21 15:18 server
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    4902 Apr 21 14:39 setup-cloudflare-dns.js
+-rwxrwxr-x   1 greenlane_enterprisesltd greenlane_enterprisesltd    3859 Apr 21 14:39 setup-cloudflare-secrets.sh
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd   14350 Apr 21 14:39 setup-demo-tenant.js
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    8264 Apr 21 14:39 setupStripeProducts.js
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    5261 Apr 21 14:39 setup-tenant.js
+drwxrwxr-x   2 greenlane_enterprisesltd greenlane_enterprisesltd    4096 Apr 21 14:39 shared
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    2531 Apr 21 14:39 stripeConfig.json
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd    2787 Apr 21 14:39 tailwind.config.ts
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     113 Apr 21 14:39 theme.json
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     657 Apr 21 14:39 tsconfig.json
+-rw-rw-r--   1 greenlane_enterprisesltd greenlane_enterprisesltd     978 Apr 21 14:39 vite.config.ts
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ gcloud builds submit --config cloudbuild.yaml
+ERROR: (gcloud.builds.submit) Unable to read file [cloudbuild.yaml]: [Errno 2] No such file or directory: 'cloudbuild.yaml'
