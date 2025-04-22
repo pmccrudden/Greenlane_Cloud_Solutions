@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // For Node.js ESM/CommonJS dual compatibility
 // This is needed because our package.json specifies "type": "module",
 // but we need a CommonJS-compatible entry point for production
@@ -155,5 +156,32 @@ const start = async () => {
 // Start the server
 start().catch(error => {
   console.error('Failed to start server:', error);
+=======
+#!/usr/bin/env node
+
+// This is a special startup script for Cloud Run
+// Our main app is an ES module, but we need a way to run it
+// with traditional Node.js startup
+
+console.log('Starting Greenlane CRM application');
+console.log('Environment: NODE_ENV=', process.env.NODE_ENV);
+console.log('Port: PORT=', process.env.PORT);
+console.log('Host: HOST=', process.env.HOST);
+
+try {
+  // For ESM modules, we need to use dynamic import
+  import('./dist/index.js')
+    .then(() => {
+      console.log('Application started successfully');
+    })
+    .catch(error => {
+      console.error('Error starting application:', error);
+      process.exit(1);
+    });
+} catch (error) {
+  console.error('Fatal error importing application:', error);
+>>>>>>> 60dfd24 (committ and sync)
   process.exit(1);
-});
+}
+
+// Keep the process alive - our server should be started by the imported module

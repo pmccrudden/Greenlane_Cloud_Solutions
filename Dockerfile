@@ -31,15 +31,6 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server.js ./server.js
 COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
 
-# Print diagnostic info at startup
-RUN echo '#!/bin/sh' > start-debug.sh && \
-    echo 'echo "Starting application with the following environment:"' >> start-debug.sh && \
-    echo 'echo "NODE_ENV=$NODE_ENV"' >> start-debug.sh && \
-    echo 'echo "PORT=$PORT"' >> start-debug.sh && \
-    echo 'echo "Running: npm start"' >> start-debug.sh && \
-    echo 'npm start' >> start-debug.sh && \
-    chmod +x start-debug.sh
-
 # Set environment variables
 ENV NODE_ENV=production
 ENV PORT=8080
@@ -48,5 +39,5 @@ ENV HOST=0.0.0.0
 # Expose port
 EXPOSE 8080
 
-# Start the server using npm start
-CMD ["./start-debug.sh"]
+# Start the server using node directly (more reliable than npm start)
+CMD ["node", "server.js"]
