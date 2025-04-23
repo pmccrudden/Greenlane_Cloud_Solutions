@@ -5,10 +5,10 @@ WORKDIR /app
 
 # Install app dependencies
 COPY package.json ./
-RUN npm install --only=production
+RUN npm install --omit=dev
 
 # Bundle app source
-COPY app.js ./
+COPY app.cjs ./
 
 # Set environment variables
 ENV NODE_ENV=production
@@ -17,5 +17,5 @@ ENV PORT=8080
 # Expose the port
 EXPOSE 8080
 
-# Start the application with the simple app.js
-CMD ["node", "app.js"]
+# Start the application with the CommonJS version
+CMD ["node", "app.cjs"]
