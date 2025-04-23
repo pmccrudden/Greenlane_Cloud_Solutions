@@ -42,8 +42,7 @@ steps:
       - 'node'
       - '--args'
       - 'bootstrap.js'
-      - '--startup-cpu-boost'
-      - 'true'
+      - '--cpu-boost'
 
 images:
   - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
