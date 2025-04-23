@@ -1,0 +1,177 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ chmod +x deploy-esm.sh
+./deploy-esm.sh
+=== Deploying ESM App to Cloud Run ===
+Testing app-minimal.mjs locally...
+Starting minimal server (ESM version)...
+Using port: 8080
+Minimal server listening on port 8080
+Sending test request to http://localhost:8080/health
+Received request for: /health
+{"status":"ok","timestamp":"2025-04-23T20:22:31.496Z"}
+Submitting build to Cloud Build...
+SIGTERM received, shutting down
+Server closed
+Creating temporary archive of 242 file(s) totalling 4.3 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.t2T3dt026z/logs/2025.04.23/20.22.32.147601.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745439752.427421-8a441d2f8fbf4ce98fa43104692bb82e.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/1da44584-ae48-4019-9c25-10e7e2e0ccab].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/1da44584-ae48-4019-9c25-10e7e2e0ccab?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "1da44584-ae48-4019-9c25-10e7e2e0ccab"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745439752.427421-8a441d2f8fbf4ce98fa43104692bb82e.tgz#1745439754488836
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745439752.427421-8a441d2f8fbf4ce98fa43104692bb82e.tgz#1745439754488836...
+/ [1 files][  2.5 MiB/  2.5 MiB]                                                
+Operation completed over 1 objects/2.5 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: Sending build context to Docker daemon   4.78MB
+Step #0: Step 1/7 : FROM node:20-alpine
+Step #0: 20-alpine: Pulling from library/node
+Step #0: f18232174bc9: Already exists
+Step #0: a54ab62fca2d: Pulling fs layer
+Step #0: 6bf3eed75316: Pulling fs layer
+Step #0: efb51bda5e87: Pulling fs layer
+Step #0: efb51bda5e87: Verifying Checksum
+Step #0: efb51bda5e87: Download complete
+Step #0: 6bf3eed75316: Verifying Checksum
+Step #0: 6bf3eed75316: Download complete
+Step #0: a54ab62fca2d: Verifying Checksum
+Step #0: a54ab62fca2d: Download complete
+Step #0: a54ab62fca2d: Pull complete
+Step #0: 6bf3eed75316: Pull complete
+Step #0: efb51bda5e87: Pull complete
+Step #0: Digest: sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f
+Step #0: Status: Downloaded newer image for node:20-alpine
+Step #0:  ---> 0160beacba2d
+Step #0: Step 2/7 : WORKDIR /app
+Step #0:  ---> Running in a4646d30eaa2
+Step #0: Removing intermediate container a4646d30eaa2
+Step #0:  ---> 768c84f82cf7
+Step #0: Step 3/7 : COPY app-minimal.mjs .
+Step #0:  ---> 7b5cbd281dec
+Step #0: Step 4/7 : ENV NODE_ENV=production
+Step #0:  ---> Running in da4b044e99af
+Step #0: Removing intermediate container da4b044e99af
+Step #0:  ---> 538324759283
+Step #0: Step 5/7 : ENV PORT=8080
+Step #0:  ---> Running in 344cf2fba1ff
+Step #0: Removing intermediate container 344cf2fba1ff
+Step #0:  ---> c38bd5e557eb
+Step #0: Step 6/7 : EXPOSE 8080
+Step #0:  ---> Running in e3da0e11713f
+Step #0: Removing intermediate container e3da0e11713f
+Step #0:  ---> cfe1793bc055
+Step #0: Step 7/7 : CMD ["node", "app-minimal.mjs"]
+Step #0:  ---> Running in 0fe7edff9dfa
+Step #0: Removing intermediate container 0fe7edff9dfa
+Step #0:  ---> 87d884d69de3
+Step #0: Successfully built 87d884d69de3
+Step #0: Successfully tagged gcr.io/greenlane-cloud-solutions/greenlane-esm-app:latest
+Finished Step #0
+Starting Step #1
+Step #1: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #1: Using default tag: latest
+Step #1: The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-esm-app]
+Step #1: 0b8d6720e16c: Preparing
+Step #1: 9e34a26f0f40: Preparing
+Step #1: b8185dcc9be5: Preparing
+Step #1: 2c9cabe10289: Preparing
+Step #1: 75228a052fed: Preparing
+Step #1: 08000c18d16d: Preparing
+Step #1: 08000c18d16d: Waiting
+Step #1: 2c9cabe10289: Layer already exists
+Step #1: b8185dcc9be5: Layer already exists
+Step #1: 75228a052fed: Layer already exists
+Step #1: 08000c18d16d: Layer already exists
+Step #1: 0b8d6720e16c: Pushed
+Step #1: 9e34a26f0f40: Pushed
+Step #1: latest: digest: sha256:e29ef05840bcd827a9bc530fb1288a287cd1f1c9ba260feb44788f70d7d4d615 size: 1572
+Finished Step #1
+Starting Step #2
+Step #2: Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk
+Step #2: Using default tag: latest
+Step #2: latest: Pulling from google.com/cloudsdktool/cloud-sdk
+Step #2: 23b7d26ef1d2: Already exists
+Step #2: 414194ec006b: Pulling fs layer
+Step #2: 119ced87cd2b: Pulling fs layer
+Step #2: c12f750fbaf0: Pulling fs layer
+Step #2: 2c9f1e00705a: Pulling fs layer
+Step #2: 92c27e79463e: Pulling fs layer
+Step #2: 6b0559dc4a91: Pulling fs layer
+Step #2: 2c9f1e00705a: Waiting
+Step #2: 92c27e79463e: Waiting
+Step #2: 6b0559dc4a91: Waiting
+Step #2: c12f750fbaf0: Download complete
+Step #2: 414194ec006b: Verifying Checksum
+Step #2: 414194ec006b: Download complete
+Step #2: 119ced87cd2b: Verifying Checksum
+Step #2: 119ced87cd2b: Download complete
+Step #2: 6b0559dc4a91: Verifying Checksum
+Step #2: 6b0559dc4a91: Download complete
+Step #2: 92c27e79463e: Verifying Checksum
+Step #2: 92c27e79463e: Download complete
+Step #2: 414194ec006b: Pull complete
+Step #2: 119ced87cd2b: Pull complete
+Step #2: c12f750fbaf0: Pull complete
+Step #2: 2c9f1e00705a: Verifying Checksum
+Step #2: 2c9f1e00705a: Download complete
+Step #2: 2c9f1e00705a: Pull complete
+Step #2: 92c27e79463e: Pull complete
+Step #2: 6b0559dc4a91: Pull complete
+Step #2: Digest: sha256:348ebedf45eb6979ec93359df987ecb007ad570ae9279d1fe46e7f2f3da651b5
+Step #2: Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: Deploying container to Cloud Run service [greenlane-esm-app] in project [greenlane-cloud-solutions] region [us-central1]
+Step #2: Deploying new service...
+Step #2: Setting IAM Policy............warning
+Step #2: Creating Revision.....................................................................................................................................................................................................................................................................................................................................................................................................................................done
+Step #2: Routing traffic.....done
+Step #2: Completed with warnings:
+Step #2:   Setting IAM policy failed, try "gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker greenlane-esm-app"
+Step #2: Service [greenlane-esm-app] revision [greenlane-esm-app-00001-xvx] has been deployed and is serving 100 percent of traffic.
+Step #2: Service URL: https://greenlane-esm-app-869018523985.us-central1.run.app
+Finished Step #2
+PUSH
+Pushing gcr.io/greenlane-cloud-solutions/greenlane-esm-app
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-esm-app]
+0b8d6720e16c: Preparing
+9e34a26f0f40: Preparing
+b8185dcc9be5: Preparing
+2c9cabe10289: Preparing
+75228a052fed: Preparing
+08000c18d16d: Preparing
+08000c18d16d: Waiting
+0b8d6720e16c: Layer already exists
+b8185dcc9be5: Layer already exists
+75228a052fed: Layer already exists
+9e34a26f0f40: Layer already exists
+2c9cabe10289: Layer already exists
+08000c18d16d: Layer already exists
+latest: digest: sha256:e29ef05840bcd827a9bc530fb1288a287cd1f1c9ba260feb44788f70d7d4d615 size: 1572
+DONE
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ID                                    CREATE_TIME                DURATION  SOURCE                                                                                                   IMAGES                                                        STATUS
+1da44584-ae48-4019-9c25-10e7e2e0ccab  2025-04-23T20:22:34+00:00  2M25S     gs://greenlane-cloud-solutions_cloudbuild/source/1745439752.427421-8a441d2f8fbf4ce98fa43104692bb82e.tgz  gcr.io/greenlane-cloud-solutions/greenlane-esm-app (+1 more)  SUCCESS
+Setting IAM policy for public access...
+Updated IAM policy for service [greenlane-esm-app].
+bindings:
+- members:
+  - allUsers
+  role: roles/run.invoker
+etag: BwYzd-WuSDg=
+version: 1
+Retrieving service URL...
+Service deployed successfully to: https://greenlane-esm-app-mx3osic2uq-uc.a.run.app
+Testing service health endpoint...
+{"status":"ok","timestamp":"2025-04-23T20:25:10.843Z"}
+Open this URL in your browser: https://greenlane-esm-app-mx3osic2uq-uc.a.run.app
+Deployment completed.
