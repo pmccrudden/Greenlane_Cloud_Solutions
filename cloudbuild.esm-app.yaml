@@ -34,12 +34,6 @@ steps:
       - '--no-cpu-throttling'
       - '--port'
       - '8080'
-      - '--health-check-path'
-      - '/health'
-      - '--health-check-timeout'
-      - '10s'
-      - '--health-check-interval'
-      - '5s'
 
 images:
   - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
