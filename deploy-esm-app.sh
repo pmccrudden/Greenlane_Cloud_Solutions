@@ -4,9 +4,9 @@
 
 echo "=== Deploying Greenlane CRM (ESM Version) to Cloud Run ==="
 
-# 1. Test the ESM server locally
-echo "Testing server-esm.js locally..."
-node server-esm.js &
+# 1. Test the bootstrap server locally
+echo "Testing bootstrap server locally..."
+node bootstrap.js &
 APP_PID=$!
 sleep 3
 echo "Sending test request to http://localhost:8080/health"
