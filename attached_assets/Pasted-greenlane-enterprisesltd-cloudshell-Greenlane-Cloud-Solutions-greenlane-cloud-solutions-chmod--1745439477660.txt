@@ -1,0 +1,453 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ chmod +x deploy-minimal.sh
+./deploy-minimal.sh
+=== Deploying Minimal App to Cloud Run ===
+Testing app-minimal.js locally...
+file:///home/greenlane_enterprisesltd/Greenlane_Cloud_Solutions/app-minimal.js:2
+const http = require('http');
+             ^
+
+ReferenceError: require is not defined in ES module scope, you can use import instead
+This file is being treated as an ES module because it has a '.js' file extension and '/home/greenlane_enterprisesltd/Greenlane_Cloud_Solutions/package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.
+    at file:///home/greenlane_enterprisesltd/Greenlane_Cloud_Solutions/app-minimal.js:2:14
+    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:116:5)
+
+Node.js v22.14.0
+Sending test request to http://localhost:8080/health
+
+./deploy-minimal.sh: line 15: kill: (2239) - No such process
+Submitting build to Cloud Build...
+Creating temporary archive of 237 file(s) totalling 4.3 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.t2T3dt026z/logs/2025.04.23/20.15.29.807875.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745439330.092053-6f585dc89aeb443b9c710a473cec0f4d.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/68da6e55-9ad9-4536-aad2-80d771b9ed73].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/68da6e55-9ad9-4536-aad2-80d771b9ed73?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+------------------------------------------------------------------------------- REMOTE BUILD OUTPUT -------------------------------------------------------------------------------
+starting build "68da6e55-9ad9-4536-aad2-80d771b9ed73"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745439330.092053-6f585dc89aeb443b9c710a473cec0f4d.tgz#1745439332143023
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745439330.092053-6f585dc89aeb443b9c710a473cec0f4d.tgz#1745439332143023...
+/ [1 files][  2.5 MiB/  2.5 MiB]                                                
+Operation completed over 1 objects/2.5 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: Sending build context to Docker daemon   4.75MB
+Step #0: Step 1/8 : FROM node:20-alpine
+Step #0: 20-alpine: Pulling from library/node
+Step #0: f18232174bc9: Already exists
+Step #0: a54ab62fca2d: Pulling fs layer
+Step #0: 6bf3eed75316: Pulling fs layer
+Step #0: efb51bda5e87: Pulling fs layer
+Step #0: 6bf3eed75316: Verifying Checksum
+Step #0: 6bf3eed75316: Download complete
+Step #0: efb51bda5e87: Verifying Checksum
+Step #0: efb51bda5e87: Download complete
+Step #0: a54ab62fca2d: Verifying Checksum
+Step #0: a54ab62fca2d: Download complete
+Step #0: a54ab62fca2d: Pull complete
+Step #0: 6bf3eed75316: Pull complete
+Step #0: efb51bda5e87: Pull complete
+Step #0: Digest: sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f
+Step #0: Status: Downloaded newer image for node:20-alpine
+Step #0:  ---> 0160beacba2d
+Step #0: Step 2/8 : WORKDIR /app
+Step #0:  ---> Running in d3910ebc051a
+Step #0: Removing intermediate container d3910ebc051a
+Step #0:  ---> 617093735720
+Step #0: Step 3/8 : COPY package.json .
+Step #0:  ---> 93fc1dd62486
+Step #0: Step 4/8 : COPY app-minimal.js .
+Step #0:  ---> db07cef729d8
+Step #0: Step 5/8 : ENV NODE_ENV=production
+Step #0:  ---> Running in 8c7a14003231
+Step #0: Removing intermediate container 8c7a14003231
+Step #0:  ---> f8fb1a3cbd19
+Step #0: Step 6/8 : ENV PORT=8080
+Step #0:  ---> Running in 897c894131e7
+Step #0: Removing intermediate container 897c894131e7
+Step #0:  ---> 2f2c5e4f95a8
+Step #0: Step 7/8 : EXPOSE 8080
+Step #0:  ---> Running in 2a53c3c09821
+Step #0: Removing intermediate container 2a53c3c09821
+Step #0:  ---> b5733dd537ea
+Step #0: Step 8/8 : CMD ["node", "app-minimal.js"]
+Step #0:  ---> Running in c6a56ca044c1
+Step #0: Removing intermediate container c6a56ca044c1
+Step #0:  ---> 06271f25103f
+Step #0: Successfully built 06271f25103f
+Step #0: Successfully tagged gcr.io/greenlane-cloud-solutions/greenlane-minimal-app:latest
+Finished Step #0
+Starting Step #1
+Step #1: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #1: Using default tag: latest
+Step #1: The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-minimal-app]
+Step #1: 63f1d1d6c5ab: Preparing
+Step #1: c2ad626b4df6: Preparing
+Step #1: efe731fc1de9: Preparing
+Step #1: b8185dcc9be5: Preparing
+Step #1: 2c9cabe10289: Preparing
+Step #1: 75228a052fed: Preparing
+Step #1: 08000c18d16d: Preparing
+Step #1: 75228a052fed: Waiting
+Step #1: 08000c18d16d: Waiting
+Step #1: 2c9cabe10289: Layer already exists
+Step #1: b8185dcc9be5: Layer already exists
+Step #1: 75228a052fed: Layer already exists
+Step #1: 08000c18d16d: Layer already exists
+Step #1: 63f1d1d6c5ab: Pushed
+Step #1: efe731fc1de9: Pushed
+Step #1: c2ad626b4df6: Pushed
+Step #1: latest: digest: sha256:dd02d122c68fdcea57ee625cf0f83693b6b63ddbad7c8386f3cd0b1ddfb545d9 size: 1780
+Finished Step #1
+Starting Step #2
+Step #2: Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk
+Step #2: Using default tag: latest
+Step #2: latest: Pulling from google.com/cloudsdktool/cloud-sdk
+Step #2: 23b7d26ef1d2: Already exists
+Step #2: 414194ec006b: Pulling fs layer
+Step #2: 119ced87cd2b: Pulling fs layer
+Step #2: c12f750fbaf0: Pulling fs layer
+Step #2: 2c9f1e00705a: Pulling fs layer
+Step #2: 92c27e79463e: Pulling fs layer
+Step #2: 6b0559dc4a91: Pulling fs layer
+Step #2: 2c9f1e00705a: Waiting
+Step #2: 92c27e79463e: Waiting
+Step #2: 6b0559dc4a91: Waiting
+Step #2: c12f750fbaf0: Verifying Checksum
+Step #2: c12f750fbaf0: Download complete
+Step #2: 119ced87cd2b: Verifying Checksum
+Step #2: 119ced87cd2b: Download complete
+Step #2: 414194ec006b: Verifying Checksum
+Step #2: 414194ec006b: Download complete
+Step #2: 6b0559dc4a91: Verifying Checksum
+Step #2: 6b0559dc4a91: Download complete
+Step #2: 92c27e79463e: Verifying Checksum
+Step #2: 92c27e79463e: Download complete
+Step #2: 414194ec006b: Pull complete
+Step #2: 119ced87cd2b: Pull complete
+Step #2: c12f750fbaf0: Pull complete
+Step #2: 2c9f1e00705a: Verifying Checksum
+Step #2: 2c9f1e00705a: Download complete
+Step #2: 2c9f1e00705a: Pull complete
+Step #2: 92c27e79463e: Pull complete
+Step #2: 6b0559dc4a91: Pull complete
+Step #2: Digest: sha256:348ebedf45eb6979ec93359df987ecb007ad570ae9279d1fe46e7f2f3da651b5
+Step #2: Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: Deploying container to Cloud Run service [greenlane-minimal-app] in project [greenlane-cloud-solutions] region [us-central1]
+Step #2: Deploying new service...
+Step #2: Setting IAM Policy............warning
+Step #2: Creating Revision...................................................................................................................................failed
+Step #2: Deployment failed
+Step #2:   Setting IAM policy failed, try "gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker greenlane-minimal-app"
+Step #2: ERROR: (gcloud.run.deploy) Revision 'greenlane-minimal-app-00001-xrp' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+Step #2: 
+Step #2: Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-minimal-app/revision_name/greenlane-minimal-app-00001-xrp&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-minimal-app%22%0Aresource.labels.revision_name%3D%22greenlane-minimal-app-00001-xrp%22 
+Step #2: For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+Finished Step #2
+ERROR
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build 68da6e55-9ad9-4536-aad2-80d771b9ed73 completed with status "FAILURE"
+Setting IAM policy for public access...
+Updated IAM policy for service [greenlane-minimal-app].
+bindings:
+- members:
+  - allUsers
+  role: roles/run.invoker
+etag: BwYzd8oDPFI=
+version: 1
+Retrieving service URL...
+Unable to retrieve service URL. Check deployment logs.
+Retrieving logs to help diagnose the issue...
+---
+insertId: 68094acc0008d8146712e346
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem
+receiveTimestamp: '2025-04-23T20:17:16.834983683Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Default STARTUP TCP probe failed 1 time consecutively for container "greenlane-minimal-app-1" on port 8080. The instance was not started.
+  Connection failed with status CANCELLED.
+timestamp: '2025-04-23T20:17:16.579604Z'
+---
+insertId: 68094acc000797fe45865f11
+labels:
+  container_name: greenlane-minimal-app-1
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem
+receiveTimestamp: '2025-04-23T20:17:16.504175060Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+severity: WARNING
+textPayload: Container called exit(1).
+timestamp: '2025-04-23T20:17:16.495957349Z'
+---
+insertId: 68094acc00007dd537f2a2ce
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: Node.js v20.19.1
+timestamp: '2025-04-23T20:17:16.032213Z'
+---
+insertId: 68094acc00007dcf24c71de9
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: '    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)'
+timestamp: '2025-04-23T20:17:16.032207Z'
+---
+insertId: 68094acc00007dcb72e21372
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: '    at async ModuleLoader.import (node:internal/modules/esm/loader:540:24)'
+timestamp: '2025-04-23T20:17:16.032203Z'
+---
+insertId: 68094acc00007dc865a6a64c
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: '    at ModuleJob.run (node:internal/modules/esm/module_job:263:25)'
+timestamp: '2025-04-23T20:17:16.032200Z'
+---
+insertId: 68094acc00007dc4cea91ac5
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: '    at file:///app/app-minimal.js:2:14'
+timestamp: '2025-04-23T20:17:16.032196Z'
+---
+insertId: 68094acc00007dc00882c6da
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: "This file is being treated as an ES module because it has a '.js' file\
+  \ extension and '/app/package.json' contains \"type\": \"module\". To treat it as\
+  \ a CommonJS script, rename it to use the '.cjs' file extension."
+timestamp: '2025-04-23T20:17:16.032192Z'
+---
+insertId: 68094acc00007dbd76dfa0b2
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: 'ReferenceError: require is not defined in ES module scope, you can use
+  import instead'
+timestamp: '2025-04-23T20:17:16.032189Z'
+---
+insertId: 68094acc00007d966c203550
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: '             ^'
+timestamp: '2025-04-23T20:17:16.032150Z'
+---
+insertId: 68094acc00007d912c5a1764
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: const http = require('http');
+timestamp: '2025-04-23T20:17:16.032145Z'
+---
+insertId: 68094acc00007d69572fa8fc
+labels:
+  instanceId: 00afae8043de89e478165890c6b24b46412109b4cb6b5b1b796b39a4575c1e3dae2f5cfc4e3e92575bc37c023a544b9cec84b525fff913cf6e980cdf7d5d776466380f9382
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T20:17:16.037192163Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-app-00001-xrp
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+textPayload: file:///app/app-minimal.js:2
+timestamp: '2025-04-23T20:17:16.032105Z'
+---
+insertId: i2daisdmvrj
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Factivity
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  authenticationInfo:
+    principalEmail: 869018523985-compute@developer.gserviceaccount.com
+    principalSubject: serviceAccount:869018523985-compute@developer.gserviceaccount.com
+  authorizationInfo:
+  - granted: true
+    permission: run.services.create
+    permissionType: ADMIN_WRITE
+    resource: namespaces/greenlane-cloud-solutions/services/greenlane-minimal-app
+    resourceAttributes: {}
+  - granted: true
+    permission: run.services.create
+    permissionType: ADMIN_WRITE
+    resource: namespaces/greenlane-cloud-solutions/services/greenlane-minimal-app
+    resourceAttributes:
+      name: namespaces/greenlane-cloud-solutions/services/greenlane-minimal-app
+      service: run.googleapis.com/
+      type: run.googleapis.com/Service
+  methodName: google.cloud.run.v1.Services.CreateService
+  request:
+    '@type': type.googleapis.com/google.cloud.run.v1.CreateServiceRequest
+    parent: namespaces/greenlane-cloud-solutions
+    service:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      metadata:
+        annotations:
+          run.googleapis.com/client-name: gcloud
+          run.googleapis.com/client-version: 519.0.0
+        name: greenlane-minimal-app
+        namespace: greenlane-cloud-solutions
+      spec:
+        template:
+          metadata:
+            annotations:
+              run.googleapis.com/client-name: gcloud
+              run.googleapis.com/client-version: 519.0.0
+              run.googleapis.com/startup-cpu-boost: 'True'
+            labels:
+              client.knative.dev/nonce: lyqlpwbqmw
+          spec:
+            containers:
+            - image: gcr.io/greenlane-cloud-solutions/greenlane-minimal-app
+              name: ''
+              resources:
+                limits:
+                  cpu: '1'
+                  memory: 256Mi
+      status: {}
+  requestMetadata:
+    callerIp: 35.230.14.84
+    callerSuppliedUserAgent: google-cloud-sdk gcloud/519.0.0 command/gcloud.run.deploy
+      invocation-id/089dccc41b51452887c312563bd1f669 environment/GCE environment-version/None
+      client-os/LINUX client-os-ver/5.10.0 client-pltf-arch/x86_64 interactive/False
+      from-script/False python/3.12.8 term/ (Linux 5.10.0-32-cloud-amd64),gzip(gfe)
+    destinationAttributes: {}
+    requestAttributes:
+      auth: {}
+      time: '2025-04-23T20:17:03.365754Z'
+  resourceLocation:
+    currentLocations:
+    - us-central1
+  resourceName: namespaces/greenlane-cloud-solutions/services/greenlane-minimal-app
+  serviceName: run.googleapis.com
+receiveTimestamp: '2025-04-23T20:17:03.876055312Z'
+resource:
+  labels:
+    configuration_name: ''
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: ''
+    service_name: greenlane-minimal-app
+  type: cloud_run_revision
+severity: NOTICE
+timestamp: '2025-04-23T20:17:03.223338Z'
+Deployment completed.
