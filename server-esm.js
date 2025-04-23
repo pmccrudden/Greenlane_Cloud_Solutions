@@ -21,9 +21,29 @@ import http from 'http';
 // This ensures we're listening on the port as quickly as possible
 const port = process.env.PORT || 8080;
 const bareServer = http.createServer((req, res) => {
-  if (req.url === '/health') {
+  // Handle both /health and / for health checks since Cloud Run might check either
+  if (req.url === '/health' || req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', startup: true }));
+    res.end(JSON.stringify({ 
+      status: 'ok', 
+      startup: true, 
+      timestamp: new Date().toISOString() 
+    }));
+    return;
+  }
+  
+  if (req.url === '/debug') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      env: {
+        NODE_ENV: process.env.NODE_ENV,
+        PORT: process.env.PORT,
+        HOST: process.env.HOST,
+      },
+      cwd: process.cwd(),
+      startupTime: new Date().toISOString(),
+      nodeVersion: process.version
+    }));
     return;
   }
   

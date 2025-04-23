@@ -22,6 +22,9 @@ FROM node:20-alpine AS production
 # Set working directory
 WORKDIR /app
 
+# Install curl for health checks and other essential tools
+RUN apk add --no-cache curl
+
 # Copy package files and install production dependencies only
 COPY package*.json ./
 RUN npm ci --omit=dev
@@ -36,8 +39,11 @@ ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOST=0.0.0.0
 
+# Health check configuration
+HEALTHCHECK --interval=5s --timeout=10s --start-period=5s --retries=3 CMD curl -f http://localhost:8080/health || exit 1
+
 # Expose port
 EXPOSE 8080
 
-# Start the server using our new ESM-compatible server.js
-CMD ["node", "server-esm.js"]
+# Start the server with optimized flags for faster startup
+CMD ["node", "--unhandled-rejections=strict", "--trace-warnings", "server-esm.js"]

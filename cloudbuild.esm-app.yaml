@@ -7,7 +7,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app']
   
-  # Deploy container image to Cloud Run
+  # Deploy container image to Cloud Run with improved startup configuration
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -34,6 +34,14 @@ steps:
       - '--no-cpu-throttling'
       - '--port'
       - '8080'
+      - '--min-instances'
+      - '1'
+      - '--max-instances'
+      - '10'
+      - '--command'
+      - 'node'
+      - '--args'
+      - 'server-esm.js'
 
 images:
   - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
