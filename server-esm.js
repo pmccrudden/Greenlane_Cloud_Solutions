@@ -19,7 +19,14 @@ import http from 'http';
 
 // Create a bare-minimum HTTP server first to satisfy Cloud Run health checks
 // This ensures we're listening on the port as quickly as possible
-const port = process.env.PORT || 8080;
+console.log('SERVER STARTING - Environment details:');
+console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`- PORT: ${process.env.PORT}`);
+console.log(`- BASE_DOMAIN: ${process.env.BASE_DOMAIN}`);
+console.log(`- Current directory: ${process.cwd()}`);
+console.log(`- Files in directory: ${fs.readdirSync('.').join(', ')}`);
+
+const port = parseInt(process.env.PORT) || 8080;
 const bareServer = http.createServer((req, res) => {
   // Handle both /health and / for health checks since Cloud Run might check either
   if (req.url === '/health' || req.url === '/') {

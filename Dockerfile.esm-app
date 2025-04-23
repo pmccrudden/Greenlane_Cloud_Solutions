@@ -32,6 +32,7 @@ RUN npm ci --omit=dev
 # Copy built files from build stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server-esm.js ./server-esm.js
+COPY --from=builder /app/bootstrap.js ./bootstrap.js
 COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
 
 # Set environment variables
@@ -45,5 +46,7 @@ HEALTHCHECK --interval=5s --timeout=10s --start-period=5s --retries=3 CMD curl -
 # Expose port
 EXPOSE 8080
 
-# Start the server with optimized flags for faster startup
-CMD ["node", "--unhandled-rejections=strict", "--trace-warnings", "server-esm.js"]
+# Using our pre-built bootstrap.js file for optimal startup time
+
+# Use this ultra-minimal bootstrap script that starts immediately and then launches the real server
+CMD ["node", "bootstrap.js"]

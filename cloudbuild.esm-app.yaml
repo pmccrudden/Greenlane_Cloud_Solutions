@@ -41,7 +41,9 @@ steps:
       - '--command'
       - 'node'
       - '--args'
-      - 'server-esm.js'
+      - 'bootstrap.js'
+      - '--startup-cpu-boost'
+      - 'true'
 
 images:
   - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
