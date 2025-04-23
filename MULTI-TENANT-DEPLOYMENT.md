@@ -1,123 +1,121 @@
-# Multi-Tenant Deployment Guide for Greenlane CRM
+# Multi-Tenant GreenLane CRM Deployment Guide
 
-This guide outlines how to deploy and configure the Greenlane CRM application with multi-tenant support using Google Cloud Run and Cloudflare DNS.
+This guide outlines the steps to deploy the GreenLane CRM multi-tenant application to Google Cloud Run and set up Cloudflare DNS for custom subdomain support.
 
 ## Prerequisites
 
-- Google Cloud SDK (gcloud) installed and configured
-- Cloudflare account with API token
-- Domain name configured in Cloudflare DNS
-- Greenlane CRM codebase with latest changes
+- Google Cloud account with billing enabled
+- Cloudflare account with your domain (greenlanecloudsolutions.com) configured
+- Google Cloud SDK installed and configured
+- Git repository cloned locally
 
-## Step 1: Deploy to Google Cloud Run
+## Deployment Process Overview
 
-The `deploy-esm-app.sh` script handles the deployment to Google Cloud Run.
+1. **Deploy minimal server to Cloud Run**
+2. **Set up Cloudflare secrets in Google Cloud**
+3. **Configure Cloudflare DNS for multi-tenant setup**
+4. **Deploy the full application**
+5. **Verify deployment and DNS configuration**
+
+## Step 1: Deploy minimal server to Cloud Run
+
+The minimal server provides a lightweight placeholder that will pass Cloud Run's health checks and allow DNS configuration while you work on the full application deployment.
+
+```bash
+# Make the deployment script executable
+chmod +x deploy-minimal-cloud.sh
+
+# Run the deployment script
+./deploy-minimal-cloud.sh
+```
+
+This will create a service called `greenlane-minimal` on Cloud Run.
+
+## Step 2: Set up Cloudflare secrets in Google Cloud
+
+To securely manage your Cloudflare credentials:
 
 ```bash
 # Make the script executable
-chmod +x deploy-esm-app.sh
+chmod +x setup-cloudflare-secrets.sh
 
-# Run the deployment script
+# Run the script (requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID in environment)
+./setup-cloudflare-secrets.sh
+```
+
+This script will:
+- Create secrets in Google Cloud Secret Manager
+- Configure the Cloud Run service to access these secrets
+- Provide instructions for using the secrets in your Google Cloud Shell
+
+## Step 3: Configure Cloudflare DNS for multi-tenant setup
+
+Once the minimal server is deployed and secrets are configured:
+
+```bash
+# Make the DNS update script executable
+chmod +x update-dns-from-minimal.sh
+
+# Run the DNS update script
+./update-dns-from-minimal.sh
+```
+
+This will configure Cloudflare DNS with:
+- `app.greenlanecloudsolutions.com` → Cloud Run service
+- `api.greenlanecloudsolutions.com` → Cloud Run service
+- `*.greenlanecloudsolutions.com` → Cloud Run service (wildcard for tenant subdomains)
+
+## Step 4: Deploy the full application
+
+Once DNS is configured, you can deploy the full application:
+
+```bash
+# Deploy using ESM app configuration
 ./deploy-esm-app.sh
 ```
 
-This will build and deploy the container to Cloud Run with the following configuration:
-- ES Module support for proper Node.js compatibility
-- Two-phase server startup for reliable health checks
-- Minimum 1 instance for fast response times
-- Maximum 10 instances for auto-scaling
+## Step 5: Verify deployment and DNS configuration
 
-## Step 2: Set Up Cloudflare DNS for Multi-Tenant Support
-
-### 2.1 Set Required Environment Variables
+To check that everything is working correctly:
 
 ```bash
-# Cloudflare API token with Zone:DNS:Edit permissions
-export CLOUDFLARE_API_TOKEN="your_cloudflare_api_token"
+# Make the verification script executable
+chmod +x check-deployment-status.sh
 
-# Cloudflare Zone ID for your domain (from Cloudflare Dashboard)
-export CLOUDFLARE_ZONE_ID="your_cloudflare_zone_id"
-
-# Base domain for your application
-export BASE_DOMAIN="greenlanecloudsolutions.com"
+# Run the verification script
+./check-deployment-status.sh
 ```
 
-### 2.2 Update DNS Records
-
-```bash
-# Make the script executable
-chmod +x update-cloudflare-dns.sh
-
-# Run the script to update DNS records
-./update-cloudflare-dns.sh
-```
-
-This script will create or update the following DNS records:
-- `app.$BASE_DOMAIN` → Cloud Run service URL
-- `api.$BASE_DOMAIN` → Cloud Run service URL
-- `*.$BASE_DOMAIN` → Cloud Run service URL (wildcard for tenant subdomains)
-
-## Step 3: Configure Environment Variables in Cloud Run
-
-Update the Cloud Run service with the required environment variables:
-
-```bash
-gcloud run services update greenlane-crm-app \
-  --region=us-central1 \
-  --set-env-vars="NODE_ENV=production,BASE_DOMAIN=$BASE_DOMAIN"
-```
-
-## Step 4: Create Initial Tenant
-
-After the DNS changes have propagated, create your first tenant:
-
-```bash
-# Run the tenant creation script
-node --experimental-modules setup-tenant.js \
-  --name "Demo Company" \
-  --domain "demo" \
-  --adminEmail "admin@example.com" \
-  --adminPassword "securePassword"
-```
-
-This will create:
-- A new tenant record in the database
-- An admin user for the tenant
-- Basic demo data for the tenant
-
-## Step 5: Verify Multi-Tenant Setup
-
-After setup is complete, your application should be accessible at:
-
-1. Main application: `https://app.$BASE_DOMAIN`
-2. API endpoint: `https://api.$BASE_DOMAIN`
-3. Tenant sites: `https://<tenant-subdomain>.$BASE_DOMAIN`
-
-For example, the demo tenant would be at `https://demo.$BASE_DOMAIN`
+This will check:
+- Cloud Run service status
+- DNS resolution for key domains
+- Connectivity tests
 
 ## Troubleshooting
 
-### DNS Propagation Issues
+### Cloud Run Deployment Issues
 
-- Cloudflare DNS changes usually propagate quickly, but can take up to 24 hours in some cases
-- Verify DNS records in Cloudflare Dashboard
-- Use `dig <subdomain>.$BASE_DOMAIN` to check DNS resolution
+- **Health check failures**: Ensure your app binds to the port specified by the `PORT` environment variable (default: 8080) immediately on startup
+- **Container startup timeout**: Simplify your startup process to ensure quick binding to the port
+- **Secret access issues**: Check that service account has access to Secret Manager secrets
 
-### Cloud Run Connectivity
+### DNS Configuration Issues
 
-- Check if the Cloud Run service is deployed and running
-- Verify the service URL is correct using `gcloud run services describe greenlane-crm-app --region=us-central1`
-- Check service logs for any errors: `gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=greenlane-crm-app"`
-
-### Database Connection Issues
-
-- Verify that Cloud Run service has access to the database
-- Check database connection string in environment variables
-- Review logs for database connection errors
+- **DNS not resolving**: Cloudflare DNS changes can take 5-30 minutes to propagate globally
+- **API authentication errors**: Verify your Cloudflare API token has Zone:DNS:Edit permissions
+- **CNAME conflicts**: Check for existing DNS records that might conflict
 
 ## Next Steps
 
-1. Set up automated tenant provisioning through the marketing website
-2. Configure monitoring and alerts for the production service
-3. Establish backup and disaster recovery procedures
-4. Implement staging environment for testing changes before production
+After successful deployment:
+
+1. **Set up tenant provisioning**: Configure the system to automatically create and configure new tenants
+2. **Implement CI/CD pipeline**: Set up automated deployments from your Git repository
+3. **Configure monitoring and alerts**: Set up Cloud Monitoring for your application
+4. **Implement backup strategy**: Set up database backups and disaster recovery
+
+## Reference
+
+- Cloud Run Documentation: https://cloud.google.com/run/docs
+- Cloudflare API Documentation: https://developers.cloudflare.com/api
+- GreenLane CRM API Documentation: [Internal Link - TBD]
