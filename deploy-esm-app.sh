@@ -9,9 +9,10 @@ echo "Testing bootstrap server locally..."
 node bootstrap.js &
 APP_PID=$!
 sleep 3
-echo "Sending test request to http://localhost:8080/health"
-curl -s http://localhost:8080/health
+echo "Sending test request to http://localhost:8080/"
+curl -s http://localhost:8080/
 echo ""
+echo "Stopping test server..."
 kill $APP_PID
 
 # 2. Submit build with ESM configuration
