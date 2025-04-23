@@ -30,10 +30,36 @@ fi
 # Check for Cloudflare credentials
 if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ZONE_ID" ]; then
   echo "Cloudflare credentials not found in environment."
-  echo "Please set the following environment variables:"
-  echo "  CLOUDFLARE_API_TOKEN - Your Cloudflare API token"
-  echo "  CLOUDFLARE_ZONE_ID - Zone ID for your domain $BASE_DOMAIN"
-  exit 1
+  echo "Attempting to retrieve from Google Cloud Secret Manager..."
+  
+  # Check if the secrets exist in Google Cloud Secret Manager
+  if gcloud secrets describe cloudflare-api-token --project=greenlane-cloud-solutions &>/dev/null; then
+    echo "Found Cloudflare API Token in Secret Manager. Retrieving..."
+    export CLOUDFLARE_API_TOKEN=$(gcloud secrets versions access latest --secret=cloudflare-api-token --project=greenlane-cloud-solutions)
+  else
+    echo "Cloudflare API Token not found in Secret Manager."
+    read -sp "Enter Cloudflare API Token: " CLOUDFLARE_API_TOKEN
+    echo ""
+    if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+      echo "Error: Cloudflare API Token is required."
+      exit 1
+    fi
+    export CLOUDFLARE_API_TOKEN
+  fi
+  
+  if gcloud secrets describe cloudflare-zone-id --project=greenlane-cloud-solutions &>/dev/null; then
+    echo "Found Cloudflare Zone ID in Secret Manager. Retrieving..."
+    export CLOUDFLARE_ZONE_ID=$(gcloud secrets versions access latest --secret=cloudflare-zone-id --project=greenlane-cloud-solutions)
+  else
+    echo "Cloudflare Zone ID not found in Secret Manager."
+    read -sp "Enter Cloudflare Zone ID: " CLOUDFLARE_ZONE_ID
+    echo ""
+    if [ -z "$CLOUDFLARE_ZONE_ID" ]; then
+      echo "Error: Cloudflare Zone ID is required."
+      exit 1
+    fi
+    export CLOUDFLARE_ZONE_ID
+  fi
 fi
 
 # Run the Cloudflare DNS setup script

@@ -5,11 +5,34 @@
 
 echo "=== Setting up Cloudflare Secrets in Google Cloud ==="
 
-# Check if the secrets are already in the environment (set by Replit)
+# Check if the secrets are already in the environment
 if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ZONE_ID" ]; then
-  echo "Error: Cloudflare credentials not found in environment."
-  echo "Make sure CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID are properly set."
-  exit 1
+  echo "Cloudflare credentials not found in environment."
+  echo "Please enter your Cloudflare credentials:"
+  
+  # Prompt for API token if not in environment
+  if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+    read -sp "Enter Cloudflare API Token: " CLOUDFLARE_API_TOKEN
+    echo ""
+    if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+      echo "Error: Cloudflare API Token is required."
+      exit 1
+    fi
+  fi
+  
+  # Prompt for Zone ID if not in environment
+  if [ -z "$CLOUDFLARE_ZONE_ID" ]; then
+    read -sp "Enter Cloudflare Zone ID: " CLOUDFLARE_ZONE_ID
+    echo ""
+    if [ -z "$CLOUDFLARE_ZONE_ID" ]; then
+      echo "Error: Cloudflare Zone ID is required."
+      exit 1
+    fi
+  fi
+  
+  # Export for use in this script
+  export CLOUDFLARE_API_TOKEN
+  export CLOUDFLARE_ZONE_ID
 fi
 
 # Create or update the secrets in Google Cloud Secret Manager
