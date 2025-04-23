@@ -6,7 +6,7 @@ echo "=== Checking Greenlane CRM Deployment Status ==="
 
 # Check minimal deployment
 echo "Checking minimal deployment (greenlane-minimal)..."
-MINIMAL_STATUS=$(gcloud run services describe greenlane-minimal --region=us-central1 --format="value(status.conditions[0].type),value(status.conditions[0].status),value(status.conditions[0].message)")
+MINIMAL_STATUS=$(gcloud run services describe greenlane-minimal --region=us-central1 --format="value(status.conditions[0].status)")
 MINIMAL_URL=$(gcloud run services describe greenlane-minimal --region=us-central1 --format="value(status.url)")
 
 if [[ "$MINIMAL_STATUS" == *"True"* ]]; then
@@ -30,7 +30,7 @@ echo ""
 
 # Check full app deployment
 echo "Checking full app deployment (greenlane-crm-app)..."
-FULL_STATUS=$(gcloud run services describe greenlane-crm-app --region=us-central1 --format="value(status.conditions[0].type),value(status.conditions[0].status),value(status.conditions[0].message)" 2>/dev/null)
+FULL_STATUS=$(gcloud run services describe greenlane-crm-app --region=us-central1 --format="value(status.conditions[0].status)" 2>/dev/null)
 FULL_URL=$(gcloud run services describe greenlane-crm-app --region=us-central1 --format="value(status.url)" 2>/dev/null)
 
 if [ -z "$FULL_STATUS" ]; then

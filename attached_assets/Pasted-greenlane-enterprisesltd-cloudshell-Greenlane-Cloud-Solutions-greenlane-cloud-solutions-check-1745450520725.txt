@@ -1,0 +1,100 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./check-deployment-status.sh
+=== Checking Greenlane CRM Deployment Status ===
+Checking minimal deployment (greenlane-minimal)...
+ERROR: (gcloud.run.services.describe) Name expected [service value(status.conditions[0].type) *HERE* ,value(status.conditions[0].status),value(status.conditions[0].message)].
+❌ Minimal deployment has issues:
+   
+   Recent logs for minimal deployment:
+---
+insertId: 680974110007b9b4199c1857
+labels:
+  instanceId: 00afae8043a9e0110d45c6a3a73c550876e80e3c0a1c2eef013ceafefe692c85f22cc757772eb7fb016c9636614600a866de72b9e8a86e8fb15d18dff989a6a1d20717e117
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-23T23:13:21.844431998Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-00005-hcr
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+textPayload: Server closed
+timestamp: '2025-04-23T23:13:21.506292Z'
+---
+insertId: 680974110007b678b55dd1f8
+labels:
+  instanceId: 00afae8043a9e0110d45c6a3a73c550876e80e3c0a1c2eef013ceafefe692c85f22cc757772eb7fb016c9636614600a866de72b9e8a86e8fb15d18dff989a6a1d20717e117
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-23T23:13:21.512795268Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-00005-hcr
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+textPayload: SIGTERM received, shutting down server
+timestamp: '2025-04-23T23:13:21.505464Z'
+---
+insertId: 680972f50008df395e7b2330
+labels:
+  instanceId: 00afae80438d41ea2709bb207d00de88b0f177481e91c1ec10bb76b14747135f815d0dc3ff29807ad0f2bb34c70158f79afceb049083d06d256fa114fee48d525b1dce7400
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-23T23:08:37.917964890Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-00005-hcr
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+textPayload: Server closed
+timestamp: '2025-04-23T23:08:37.581433Z'
+---
+insertId: 680972f50008dc2cd5d58b91
+labels:
+  instanceId: 00afae80438d41ea2709bb207d00de88b0f177481e91c1ec10bb76b14747135f815d0dc3ff29807ad0f2bb34c70158f79afceb049083d06d256fa114fee48d525b1dce7400
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-23T23:08:37.587186808Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-00005-hcr
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+textPayload: SIGTERM received, shutting down server
+timestamp: '2025-04-23T23:08:37.580652Z'
+---
+insertId: 68097172000b176d4a06d4e1
+labels:
+  instanceId: 00afae8043ed99bde263f34140b1413c9658e8aaa8dac99065861bb56adbaa91f79c869b2efabb363738e2fc0e4dbfd1745197dd13742e08ce7f436931e21d9938cb94e2d8
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-23T23:02:11.066272059Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-00004-hrk
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+textPayload: Server closed
+timestamp: '2025-04-23T23:02:10.726893Z'
+
+Checking full app deployment (greenlane-crm-app)...
+ℹ️ Full app deployment not found
+
+Checking DNS configuration for greenlanecloudsolutions.com...
+Resolving app.greenlanecloudsolutions.com...
+❌ app.greenlanecloudsolutions.com does not resolve
+Resolving api.greenlanecloudsolutions.com...
+❌ api.greenlanecloudsolutions.com does not resolve
+Resolving test.greenlanecloudsolutions.com (sample tenant)...
+❌ test.greenlanecloudsolutions.com does not resolve
+
+Deployment status check completed.

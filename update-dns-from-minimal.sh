@@ -64,7 +64,8 @@ fi
 
 # Run the Cloudflare DNS setup script
 echo "Updating Cloudflare DNS settings..."
-node setup-cloudflare-dns.js
+# Use the --experimental-modules flag to ensure ES modules work correctly
+node --experimental-modules setup-cloudflare-dns.js
 
 echo "DNS update process completed."
 echo "Note: DNS changes may take some time to propagate globally (typically 5-30 minutes)."
