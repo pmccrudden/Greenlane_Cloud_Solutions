@@ -1,11 +1,16 @@
-// Minimal Cloud Run App - Pure CommonJS for maximum compatibility
+// Minimal Cloud Run App - ES Modules for compatibility with the project
 // This file is specifically designed to be the simplest possible server that
 // will satisfy Cloud Run's health checks immediately
 
-// Use CommonJS style requires for maximum compatibility
-const http = require('http');
-const path = require('path');
-const fs = require('fs');
+// Use ES Module imports for compatibility with "type": "module" in package.json
+import http from 'http';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// ES Module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 console.log('Minimal Cloud Run Server Starting');
 console.log('Environment:', {
