@@ -1,0 +1,971 @@
+                 "failureThreshold": 1,
+                    "periodSeconds": 240,
+                    "tcpSocket": {
+                      "port": 8080
+                    },
+                    "timeoutSeconds": 240
+                  }
+                }
+              ],
+              "serviceAccountName": "869018523985-compute@developer.gserviceaccount.com",
+              "timeoutSeconds": 300
+            }
+          },
+          "traffic": [
+            {
+              "latestRevision": true,
+              "percent": 100
+            }
+          ]
+        },
+        "status": {
+          "conditions": [
+            {
+              "lastTransitionTime": "2025-04-23T19:50:02.629345Z",
+              "message": "Revision 'greenlane-simple-app-00002-b5q' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00002-b5q&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00002-b5q%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastTransitionTime": "2025-04-23T19:50:02.627Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00002-b5q&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00002-b5q%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "status": "True",
+              "type": "ConfigurationsReady"
+            },
+            {
+              "lastTransitionTime": "2025-04-23T19:50:02.629345Z",
+              "message": "Revision 'greenlane-simple-app-00002-b5q' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00002-b5q&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00002-b5q%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "RoutesReady"
+            }
+          ],
+          "latestCreatedRevisionName": "greenlane-simple-app-00002-b5q",
+          "observedGeneration": 2
+        }
+      },
+      "serviceName": "run.googleapis.com",
+      "status": {
+        "code": 9,
+        "message": "Ready condition status changed to False for Service greenlane-simple-app with message: Revision 'greenlane-simple-app-00002-b5q' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00002-b5q&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00002-b5q%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start"
+      }
+    },
+    "receiveTimestamp": "2025-04-23T19:50:03.599525841Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-04-23T19:50:02.805861Z"
+  },
+  {
+    "insertId": "6eucg7dksms",
+    "logName": "projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event",
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "methodName": "/Services.ReplaceService",
+      "resourceName": "namespaces/greenlane-cloud-solutions/revisions/greenlane-simple-app-00002-b5q",
+      "response": {
+        "@type": "type.googleapis.com/google.cloud.run.v1.Revision",
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Revision",
+        "metadata": {
+          "annotations": {
+            "autoscaling.knative.dev/maxScale": "40",
+            "run.googleapis.com/client-name": "gcloud",
+            "run.googleapis.com/client-version": "519.0.0",
+            "run.googleapis.com/operation-id": "604b267a-feb8-4be5-aa8b-27f6a8a828c7",
+            "run.googleapis.com/startup-cpu-boost": "true",
+            "serving.knative.dev/creator": "869018523985-compute@developer.gserviceaccount.com"
+          },
+          "creationTimestamp": "2025-04-23T19:49:39.060694Z",
+          "generation": 1,
+          "labels": {
+            "client.knative.dev/nonce": "hcztcohnpj",
+            "cloud.googleapis.com/location": "us-central1",
+            "run.googleapis.com/startupProbeType": "Default",
+            "serving.knative.dev/configuration": "greenlane-simple-app",
+            "serving.knative.dev/configurationGeneration": "2",
+            "serving.knative.dev/route": "greenlane-simple-app",
+            "serving.knative.dev/service": "greenlane-simple-app",
+            "serving.knative.dev/serviceUid": "5f06664e-d438-4e1c-a776-5f81cd7a82e4"
+          },
+          "name": "greenlane-simple-app-00002-b5q",
+          "namespace": "869018523985",
+          "ownerReferences": [
+            {
+              "apiVersion": "serving.knative.dev/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "Configuration",
+              "name": "greenlane-simple-app",
+              "uid": "b341de96-3480-4d4b-956e-bc491114892e"
+            }
+          ],
+          "resourceVersion": "AAYzd2gzUKU",
+          "selfLink": "/apis/serving.knative.dev/v1/namespaces/869018523985/revisions/greenlane-simple-app-00002-b5q",
+          "uid": "de1ff4a9-5408-4ffa-9740-e45377238dd7"
+        },
+        "spec": {
+          "containerConcurrency": 80,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "NODE_ENV",
+                  "value": "production"
+                }
+              ],
+              "image": "gcr.io/greenlane-cloud-solutions/greenlane-simple-app@sha256:bb9208dae3bf828cd1651cfdf3c0b6a9079fbfcba46403e8cd8620ec257f5b32",
+              "name": "greenlane-simple-app-1",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http1"
+                }
+              ],
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "512Mi"
+                }
+              },
+              "startupProbe": {
+                "failureThreshold": 1,
+                "periodSeconds": 240,
+                "tcpSocket": {
+                  "port": 8080
+                },
+                "timeoutSeconds": 240
+              }
+            }
+          ],
+          "serviceAccountName": "869018523985-compute@developer.gserviceaccount.com",
+          "timeoutSeconds": 300
+        },
+        "status": {
+          "conditions": [
+            {
+              "lastTransitionTime": "2025-04-23T19:50:02.582181Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00002-b5q&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00002-b5q%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastTransitionTime": "2025-04-23T19:50:02.582181Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00002-b5q&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00002-b5q%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "ContainerHealthy"
+            },
+            {
+              "lastTransitionTime": "2025-04-23T19:49:59.595016Z",
+              "message": "Container image import completed in 19.81s.",
+              "status": "True",
+              "type": "ContainerReady"
+            },
+            {
+              "lastTransitionTime": "2025-04-23T19:50:01.246020Z",
+              "message": "Provisioning imported containers completed in 1.65s. Checking container health.",
+              "status": "True",
+              "type": "ResourcesAvailable"
+            },
+            {
+              "lastTransitionTime": "2025-04-23T19:50:01.246020Z",
+              "message": "System will retry after 0:00:00 from lastTransitionTime for attempt 0.",
+              "reason": "ImmediateRetry",
+              "severity": "Info",
+              "status": "True",
+              "type": "Retry"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "imageDigest": "gcr.io/greenlane-cloud-solutions/greenlane-simple-app@sha256:bb9208dae3bf828cd1651cfdf3c0b6a9079fbfcba46403e8cd8620ec257f5b32",
+              "name": "greenlane-simple-app-1"
+            }
+          ],
+          "imageDigest": "gcr.io/greenlane-cloud-solutions/greenlane-simple-app@sha256:bb9208dae3bf828cd1651cfdf3c0b6a9079fbfcba46403e8cd8620ec257f5b32",
+          "logUrl": "https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00002-b5q&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00002-b5q%22",
+          "observedGeneration": 1
+        }
+      },
+      "serviceName": "run.googleapis.com",
+      "status": {
+        "code": 9,
+        "message": "Ready condition status changed to False for Revision greenlane-simple-app-00002-b5q with message: The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00002-b5q&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00002-b5q%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start"
+      }
+    },
+    "receiveTimestamp": "2025-04-23T19:50:02.812503185Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-04-23T19:50:02.594874Z"
+  },
+  {
+    "insertId": "6809446a0008dd8c8242d7de",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-23T19:50:02.849827543Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"greenlane-simple-app-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2025-04-23T19:50:02.581004Z"
+  },
+  {
+    "insertId": "6809446a0007c8af39d3bb1f",
+    "labels": {
+      "container_name": "greenlane-simple-app-1",
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-23T19:50:02.521930423Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(1).",
+    "timestamp": "2025-04-23T19:50:02.510120997Z"
+  },
+  {
+    "insertId": "6809446a0000c40f2368c42c",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "Node.js v20.19.1",
+    "timestamp": "2025-04-23T19:50:02.050191Z"
+  },
+  {
+    "insertId": "6809446a0000c40ced92812f",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)",
+    "timestamp": "2025-04-23T19:50:02.050188Z"
+  },
+  {
+    "insertId": "6809446a0000c409541fc40f",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "    at async ModuleLoader.import (node:internal/modules/esm/loader:540:24)",
+    "timestamp": "2025-04-23T19:50:02.050185Z"
+  },
+  {
+    "insertId": "6809446a0000c407d2801e30",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "    at ModuleJob.run (node:internal/modules/esm/module_job:263:25)",
+    "timestamp": "2025-04-23T19:50:02.050183Z"
+  },
+  {
+    "insertId": "6809446a0000c40406dec0ff",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "    at file:///app/app.js:1:17",
+    "timestamp": "2025-04-23T19:50:02.050180Z"
+  },
+  {
+    "insertId": "6809446a0000c401a37d8bae",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "This file is being treated as an ES module because it has a '.js' file extension and '/app/package.json' contains \"type\": \"module\". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.",
+    "timestamp": "2025-04-23T19:50:02.050177Z"
+  },
+  {
+    "insertId": "6809446a0000c3ff1624fd69",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "ReferenceError: require is not defined in ES module scope, you can use import instead",
+    "timestamp": "2025-04-23T19:50:02.050175Z"
+  },
+  {
+    "insertId": "6809446a0000c3e5c892d4ee",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "                ^",
+    "timestamp": "2025-04-23T19:50:02.050149Z"
+  },
+  {
+    "insertId": "6809446a0000c3e1718926a7",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "const express = require('express');",
+    "timestamp": "2025-04-23T19:50:02.050145Z"
+  },
+  {
+    "insertId": "6809446a0000c3d21b422d7c",
+    "labels": {
+      "instanceId": "00afae8043c43a80b4b49ff978a689803d28ada02df2e65a030ad69937661199f48360b4d2e934d9ab1f362485fbc511bf5bbbfbe477194cfdbdbb32e33a4310943b7e16f6"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-23T19:50:02.056641912Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00002-b5q",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "file:///app/app.js:1",
+    "timestamp": "2025-04-23T19:50:02.050130Z"
+  },
+  {
+    "insertId": "z92vigdof5f",
+    "logName": "projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Factivity",
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "authenticationInfo": {
+        "principalEmail": "869018523985-compute@developer.gserviceaccount.com",
+        "principalSubject": "serviceAccount:869018523985-compute@developer.gserviceaccount.com"
+      },
+      "authorizationInfo": [
+        {
+          "granted": true,
+          "permission": "run.services.update",
+          "permissionType": "ADMIN_WRITE",
+          "resource": "namespaces/greenlane-cloud-solutions/services/greenlane-simple-app",
+          "resourceAttributes": {}
+        },
+        {
+          "granted": true,
+          "permission": "run.services.update",
+          "permissionType": "ADMIN_WRITE",
+          "resource": "namespaces/greenlane-cloud-solutions/services/greenlane-simple-app",
+          "resourceAttributes": {
+            "name": "namespaces/greenlane-cloud-solutions/services/greenlane-simple-app",
+            "service": "run.googleapis.com/",
+            "type": "run.googleapis.com/Service"
+          }
+        }
+      ],
+      "methodName": "google.cloud.run.v1.Services.ReplaceService",
+      "request": {
+        "@type": "type.googleapis.com/google.cloud.run.v1.ReplaceServiceRequest",
+        "name": "namespaces/greenlane-cloud-solutions/services/greenlane-simple-app",
+        "service": {
+          "apiVersion": "serving.knative.dev/v1",
+          "kind": "Service",
+          "metadata": {
+            "annotations": {
+              "run.googleapis.com/client-name": "gcloud",
+              "run.googleapis.com/client-version": "519.0.0",
+              "run.googleapis.com/ingress": "all",
+              "run.googleapis.com/ingress-status": "all",
+              "run.googleapis.com/operation-id": "ae02d52f-8747-4bee-b099-3b31a86b21fa",
+              "run.googleapis.com/urls": "[\"https://greenlane-simple-app-869018523985.us-central1.run.app\"]",
+              "serving.knative.dev/creator": "869018523985-compute@developer.gserviceaccount.com",
+              "serving.knative.dev/lastModifier": "869018523985-compute@developer.gserviceaccount.com"
+            },
+            "creationTimestamp": "2025-04-22T23:52:18.992750Z",
+            "generation": 1,
+            "labels": {
+              "cloud.googleapis.com/location": "us-central1"
+            },
+            "name": "greenlane-simple-app",
+            "namespace": "869018523985",
+            "resourceVersion": "AAYzZq+1HH8",
+            "selfLink": "/apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-simple-app",
+            "uid": "5f06664e-d438-4e1c-a776-5f81cd7a82e4"
+          },
+          "spec": {
+            "template": {
+              "metadata": {
+                "annotations": {
+                  "autoscaling.knative.dev/maxScale": "40",
+                  "run.googleapis.com/client-name": "gcloud",
+                  "run.googleapis.com/client-version": "519.0.0",
+                  "run.googleapis.com/startup-cpu-boost": "true"
+                },
+                "labels": {
+                  "client.knative.dev/nonce": "hcztcohnpj",
+                  "run.googleapis.com/startupProbeType": "Default"
+                }
+              },
+              "spec": {
+                "containerConcurrency": 80,
+                "containers": [
+                  {
+                    "image": "gcr.io/greenlane-cloud-solutions/greenlane-simple-app",
+                    "resources": {
+                      "limits": {
+                        "cpu": "1",
+                        "memory": "512Mi"
+                      }
+                    }
+                  }
+                ],
+                "serviceAccountName": "869018523985-compute@developer.gserviceaccount.com",
+                "timeoutSeconds": 300
+              }
+            },
+            "traffic": [
+              {
+                "latestRevision": true,
+                "percent": 100
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastTransitionTime": "2025-04-22T23:53:07.751422Z",
+                "reason": "HealthCheckContainerError",
+                "status": "False",
+                "type": "Ready"
+              },
+              {
+                "lastTransitionTime": "2025-04-22T23:53:07.749609Z",
+                "status": "True",
+                "type": "ConfigurationsReady"
+              },
+              {
+                "lastTransitionTime": "2025-04-22T23:53:07.751422Z",
+                "reason": "HealthCheckContainerError",
+                "status": "False",
+                "type": "RoutesReady"
+              }
+            ],
+            "latestCreatedRevisionName": "greenlane-simple-app-00001-lgq",
+            "observedGeneration": 1
+          }
+        }
+      },
+      "requestMetadata": {
+        "callerIp": "34.82.73.125",
+        "callerSuppliedUserAgent": "google-cloud-sdk gcloud/519.0.0 command/gcloud.run.deploy invocation-id/6d84f74cc6054c99b18dc09f5ad77e18 environment/GCE environment-version/None client-os/LINUX client-os-ver/5.10.0 client-pltf-arch/x86_64 interactive/False from-script/False python/3.12.8 term/ (Linux 5.10.0-32-cloud-amd64),gzip(gfe)",
+        "destinationAttributes": {},
+        "requestAttributes": {
+          "auth": {},
+          "time": "2025-04-23T19:49:38.932287Z"
+        }
+      },
+      "resourceLocation": {
+        "currentLocations": [
+          "us-central1"
+        ]
+      },
+      "resourceName": "namespaces/greenlane-cloud-solutions/services/greenlane-simple-app",
+      "serviceName": "run.googleapis.com"
+    },
+    "receiveTimestamp": "2025-04-23T19:49:39.038294007Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "NOTICE",
+    "timestamp": "2025-04-23T19:49:38.685904Z"
+  },
+  {
+    "insertId": "1fwl9yd5klq",
+    "logName": "projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event",
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "methodName": "/Services.CreateService",
+      "resourceName": "namespaces/greenlane-cloud-solutions/services/greenlane-simple-app",
+      "response": {
+        "@type": "type.googleapis.com/google.cloud.run.v1.Service",
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Service",
+        "metadata": {
+          "annotations": {
+            "run.googleapis.com/client-name": "gcloud",
+            "run.googleapis.com/client-version": "519.0.0",
+            "run.googleapis.com/ingress": "all",
+            "run.googleapis.com/ingress-status": "all",
+            "run.googleapis.com/operation-id": "ae02d52f-8747-4bee-b099-3b31a86b21fa",
+            "run.googleapis.com/urls": "[\"https://greenlane-simple-app-869018523985.us-central1.run.app\"]",
+            "serving.knative.dev/creator": "869018523985-compute@developer.gserviceaccount.com",
+            "serving.knative.dev/lastModifier": "869018523985-compute@developer.gserviceaccount.com"
+          },
+          "creationTimestamp": "2025-04-22T23:52:18.992750Z",
+          "generation": 1,
+          "labels": {
+            "cloud.googleapis.com/location": "us-central1"
+          },
+          "name": "greenlane-simple-app",
+          "namespace": "869018523985",
+          "resourceVersion": "AAYzZq+1HH8",
+          "selfLink": "/apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-simple-app",
+          "uid": "5f06664e-d438-4e1c-a776-5f81cd7a82e4"
+        },
+        "spec": {
+          "template": {
+            "metadata": {
+              "annotations": {
+                "autoscaling.knative.dev/maxScale": "40",
+                "run.googleapis.com/client-name": "gcloud",
+                "run.googleapis.com/client-version": "519.0.0",
+                "run.googleapis.com/startup-cpu-boost": "true"
+              },
+              "labels": {
+                "client.knative.dev/nonce": "strzlrbujn",
+                "run.googleapis.com/startupProbeType": "Default"
+              }
+            },
+            "spec": {
+              "containerConcurrency": 80,
+              "containers": [
+                {
+                  "env": [
+                    {
+                      "name": "NODE_ENV",
+                      "value": "production"
+                    }
+                  ],
+                  "image": "gcr.io/greenlane-cloud-solutions/greenlane-simple-app",
+                  "ports": [
+                    {
+                      "containerPort": 8080,
+                      "name": "http1"
+                    }
+                  ],
+                  "resources": {
+                    "limits": {
+                      "cpu": "1",
+                      "memory": "512Mi"
+                    }
+                  },
+                  "startupProbe": {
+                    "failureThreshold": 1,
+                    "periodSeconds": 240,
+                    "tcpSocket": {
+                      "port": 8080
+                    },
+                    "timeoutSeconds": 240
+                  }
+                }
+              ],
+              "serviceAccountName": "869018523985-compute@developer.gserviceaccount.com",
+              "timeoutSeconds": 300
+            }
+          },
+          "traffic": [
+            {
+              "latestRevision": true,
+              "percent": 100
+            }
+          ]
+        },
+        "status": {
+          "conditions": [
+            {
+              "lastTransitionTime": "2025-04-22T23:53:07.751422Z",
+              "message": "Revision 'greenlane-simple-app-00001-lgq' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00001-lgq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00001-lgq%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastTransitionTime": "2025-04-22T23:53:07.749609Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00001-lgq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00001-lgq%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "status": "True",
+              "type": "ConfigurationsReady"
+            },
+            {
+              "lastTransitionTime": "2025-04-22T23:53:07.751422Z",
+              "message": "Revision 'greenlane-simple-app-00001-lgq' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00001-lgq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00001-lgq%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "RoutesReady"
+            }
+          ],
+          "latestCreatedRevisionName": "greenlane-simple-app-00001-lgq",
+          "observedGeneration": 1
+        }
+      },
+      "serviceName": "run.googleapis.com",
+      "status": {
+        "code": 9,
+        "message": "Ready condition status changed to False for Service greenlane-simple-app with message: Revision 'greenlane-simple-app-00001-lgq' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00001-lgq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00001-lgq%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start"
+      }
+    },
+    "receiveTimestamp": "2025-04-22T23:53:08.063122286Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-04-22T23:53:07.839515Z"
+  },
+  {
+    "insertId": "-jde0lldgusu",
+    "logName": "projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event",
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "methodName": "/Services.CreateService",
+      "resourceName": "namespaces/greenlane-cloud-solutions/revisions/greenlane-simple-app-00001-lgq",
+      "response": {
+        "@type": "type.googleapis.com/google.cloud.run.v1.Revision",
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Revision",
+        "metadata": {
+          "annotations": {
+            "autoscaling.knative.dev/maxScale": "40",
+            "run.googleapis.com/client-name": "gcloud",
+            "run.googleapis.com/client-version": "519.0.0",
+            "run.googleapis.com/operation-id": "ae02d52f-8747-4bee-b099-3b31a86b21fa",
+            "run.googleapis.com/startup-cpu-boost": "true",
+            "serving.knative.dev/creator": "869018523985-compute@developer.gserviceaccount.com"
+          },
+          "creationTimestamp": "2025-04-22T23:52:19.123042Z",
+          "generation": 1,
+          "labels": {
+            "client.knative.dev/nonce": "strzlrbujn",
+            "cloud.googleapis.com/location": "us-central1",
+            "run.googleapis.com/startupProbeType": "Default",
+            "serving.knative.dev/configuration": "greenlane-simple-app",
+            "serving.knative.dev/configurationGeneration": "1",
+            "serving.knative.dev/route": "greenlane-simple-app",
+            "serving.knative.dev/service": "greenlane-simple-app",
+            "serving.knative.dev/serviceUid": "5f06664e-d438-4e1c-a776-5f81cd7a82e4"
+          },
+          "name": "greenlane-simple-app-00001-lgq",
+          "namespace": "869018523985",
+          "ownerReferences": [
+            {
+              "apiVersion": "serving.knative.dev/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "Configuration",
+              "name": "greenlane-simple-app",
+              "uid": "b341de96-3480-4d4b-956e-bc491114892e"
+            }
+          ],
+          "resourceVersion": "AAYzZq+zWzc",
+          "selfLink": "/apis/serving.knative.dev/v1/namespaces/869018523985/revisions/greenlane-simple-app-00001-lgq",
+          "uid": "f77cdb9f-e26b-46ad-8f23-384ba5e421f3"
+        },
+        "spec": {
+          "containerConcurrency": 80,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "NODE_ENV",
+                  "value": "production"
+                }
+              ],
+              "image": "gcr.io/greenlane-cloud-solutions/greenlane-simple-app@sha256:541f8451a9ec746a67537ec3b3d2c20887599d28d99b170391ecbc5edd967fd1",
+              "name": "greenlane-simple-app-1",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http1"
+                }
+              ],
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "512Mi"
+                }
+              },
+              "startupProbe": {
+                "failureThreshold": 1,
+                "periodSeconds": 240,
+                "tcpSocket": {
+                  "port": 8080
+                },
+                "timeoutSeconds": 240
+              }
+            }
+          ],
+          "serviceAccountName": "869018523985-compute@developer.gserviceaccount.com",
+          "timeoutSeconds": 300
+        },
+        "status": {
+          "conditions": [
+            {
+              "lastTransitionTime": "2025-04-22T23:53:07.711799Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00001-lgq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00001-lgq%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastTransitionTime": "2025-04-22T23:53:07.711799Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00001-lgq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00001-lgq%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "ContainerHealthy"
+            },
+            {
+              "lastTransitionTime": "2025-04-22T23:52:41.971122Z",
+              "message": "Container image import completed in 22.19s.",
+              "status": "True",
+              "type": "ContainerReady"
+            },
+            {
+              "lastTransitionTime": "2025-04-22T23:53:06.408651Z",
+              "message": "Provisioning imported containers completed in 24.43s. Checking container health.",
+              "status": "True",
+              "type": "ResourcesAvailable"
+            },
+            {
+              "lastTransitionTime": "2025-04-22T23:53:06.408651Z",
+              "message": "System will retry after 0:00:00 from lastTransitionTime for attempt 0.",
+              "reason": "ImmediateRetry",
+              "severity": "Info",
+              "status": "True",
+              "type": "Retry"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "imageDigest": "gcr.io/greenlane-cloud-solutions/greenlane-simple-app@sha256:541f8451a9ec746a67537ec3b3d2c20887599d28d99b170391ecbc5edd967fd1",
+              "name": "greenlane-simple-app-1"
+            }
+          ],
+          "imageDigest": "gcr.io/greenlane-cloud-solutions/greenlane-simple-app@sha256:541f8451a9ec746a67537ec3b3d2c20887599d28d99b170391ecbc5edd967fd1",
+          "logUrl": "https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00001-lgq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00001-lgq%22",
+          "observedGeneration": 1
+        }
+      },
+      "serviceName": "run.googleapis.com",
+      "status": {
+        "code": 9,
+        "message": "Ready condition status changed to False for Revision greenlane-simple-app-00001-lgq with message: The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-simple-app/revision_name/greenlane-simple-app-00001-lgq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-simple-app%22%0Aresource.labels.revision_name%3D%22greenlane-simple-app-00001-lgq%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start"
+      }
+    },
+    "receiveTimestamp": "2025-04-22T23:53:08.583349595Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00001-lgq",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-04-22T23:53:07.724095Z"
+  },
+  {
+    "insertId": "68082be3000ad95de388c18b",
+    "labels": {
+      "instanceId": "00afae8043590a662344d934404b0d089492df6f166e133a906613651ea34347e9e50eee4f5c1437f1dd6fabce437f4def8b14fe559a4764fd529fa0f3cf898b6eea99"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-22T23:53:07.988747433Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00001-lgq",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"greenlane-simple-app-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2025-04-22T23:53:07.711005Z"
+  },
+  {
+    "insertId": "68082be30009ec3fb933780c",
+    "labels": {
+      "container_name": "greenlane-simple-app-1",
+      "instanceId": "00afae8043590a662344d934404b0d089492df6f166e133a906613651ea34347e9e50eee4f5c1437f1dd6fabce437f4def8b14fe559a4764fd529fa0f3cf898b6eea99"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-22T23:53:07.655228645Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00001-lgq",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(1).",
+    "timestamp": "2025-04-22T23:53:07.650208368Z"
+  },
+  {
+    "insertId": "68082be30003f0de10102967",
+    "labels": {
+      "instanceId": "00afae8043590a662344d934404b0d089492df6f166e133a906613651ea34347e9e50eee4f5c1437f1dd6fabce437f4def8b14fe559a4764fd529fa0f3cf898b6eea99"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-22T23:53:07.608018134Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-simple-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-simple-app-00001-lgq",
+        "service_name": "greenlane-simple-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "Node.js v20.19.1",
+    "timestamp": "2025-04-22T23:53:07.258270Z"
+  }
+]
+Deployment completed.

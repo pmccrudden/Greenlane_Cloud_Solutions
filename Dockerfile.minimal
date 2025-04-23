@@ -1,0 +1,20 @@
+FROM node:20-alpine
+
+# Create app directory
+WORKDIR /app
+
+# Copy package.json to satisfy any dependencies
+COPY package.json .
+
+# Bundle app source
+COPY app-minimal.js .
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=8080
+
+# Expose the port
+EXPOSE 8080
+
+# Start the application with the minimal app
+CMD ["node", "app-minimal.js"]
