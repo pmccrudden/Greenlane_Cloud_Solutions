@@ -1,0 +1,420 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ # Make the verification script executable
+chmod +x check-deployment-status.sh
+
+# Run the verification script
+./check-deployment-status.sh
+=== Checking Greenlane CRM Deployment Status ===
+Checking minimal deployment (greenlane-minimal)...
+ERROR: (gcloud.run.services.describe) Name expected [service value(status.conditions[0].type) *HERE* ,value(status.conditions[0].status),value(status.conditions[0].message)].
+❌ Minimal deployment has issues:
+   
+   Recent logs for minimal deployment:
+---
+insertId: -8l1asedkbom
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  methodName: /Services.ReplaceService
+  resourceName: namespaces/greenlane-cloud-solutions/services/greenlane-minimal
+  response:
+    '@type': type.googleapis.com/google.cloud.run.v1.Service
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    metadata:
+      annotations:
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 518.0.0
+        run.googleapis.com/ingress: all
+        run.googleapis.com/ingress-status: all
+        run.googleapis.com/operation-id: edacb7db-df24-458e-9aa2-75feea2e13be
+        run.googleapis.com/urls: '["https://greenlane-minimal-869018523985.us-central1.run.app","https://greenlane-minimal-mx3osic2uq-uc.a.run.app"]'
+        serving.knative.dev/creator: 869018523985-compute@developer.gserviceaccount.com
+        serving.knative.dev/lastModifier: greenlane.enterprisesltd@gmail.com
+      creationTimestamp: '2025-04-23T21:35:54.630341Z'
+      generation: 2
+      labels:
+        cloud.googleapis.com/location: us-central1
+      name: greenlane-minimal
+      namespace: '869018523985'
+      resourceVersion: AAYzeW8GuaQ
+      selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-minimal
+      uid: 53aac08f-18b3-480f-90fb-b9c53ba121fa
+    spec:
+      template:
+        metadata:
+          annotations:
+            autoscaling.knative.dev/maxScale: '40'
+            run.googleapis.com/client-name: gcloud
+            run.googleapis.com/client-version: 518.0.0
+            run.googleapis.com/startup-cpu-boost: 'true'
+          labels:
+            client.knative.dev/nonce: olpgrftebz
+            run.googleapis.com/startupProbeType: Default
+        spec:
+          containerConcurrency: 80
+          containers:
+          - env:
+            - name: NODE_ENV
+              value: production
+            - name: BASE_DOMAIN
+              value: greenlanecloudsolutions.com
+            - name: CLOUDFLARE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: cloudflare-api-token
+            - name: CLOUDFLARE_ZONE_ID
+              valueFrom:
+                secretKeyRef:
+                  key: latest
+                  name: cloudflare-zone-id
+            image: gcr.io/greenlane-cloud-solutions/greenlane-minimal
+            ports:
+            - containerPort: 8080
+              name: http1
+            resources:
+              limits:
+                cpu: '1'
+                memory: 512Mi
+            startupProbe:
+              failureThreshold: 1
+              periodSeconds: 240
+              tcpSocket:
+                port: 8080
+              timeoutSeconds: 240
+          serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+          timeoutSeconds: 300
+      traffic:
+      - latestRevision: true
+        percent: 100
+    status:
+      address:
+        url: https://greenlane-minimal-mx3osic2uq-uc.a.run.app
+      conditions:
+      - lastTransitionTime: '2025-04-23T22:15:06.970536Z'
+        message: |-
+          Revision 'greenlane-minimal-00002-lmd' is not ready and cannot serve traffic. spec.template.spec.containers[0].env[2].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-api-token/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+          spec.template.spec.containers[0].env[3].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-zone-id/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+        reason: SecretsAccessCheckFailed
+        status: 'False'
+        type: Ready
+      - lastTransitionTime: '2025-04-23T22:15:06.950124Z'
+        message: |-
+          spec.template.spec.containers[0].env[2].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-api-token/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+          spec.template.spec.containers[0].env[3].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-zone-id/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+        status: 'True'
+        type: ConfigurationsReady
+      - lastTransitionTime: '2025-04-23T22:15:06.970536Z'
+        message: |-
+          Revision 'greenlane-minimal-00002-lmd' is not ready and cannot serve traffic. spec.template.spec.containers[0].env[2].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-api-token/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+          spec.template.spec.containers[0].env[3].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-zone-id/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+        reason: SecretsAccessCheckFailed
+        status: 'False'
+        type: RoutesReady
+      latestCreatedRevisionName: greenlane-minimal-00002-lmd
+      latestReadyRevisionName: greenlane-minimal-00001-9s9
+      observedGeneration: 2
+      traffic:
+      - latestRevision: true
+        percent: 100
+        revisionName: greenlane-minimal-00001-9s9
+      url: https://greenlane-minimal-mx3osic2uq-uc.a.run.app
+  serviceName: run.googleapis.com
+  status:
+    code: 9
+    message: |-
+      Ready condition status changed to False for Service greenlane-minimal with message: Revision 'greenlane-minimal-00002-lmd' is not ready and cannot serve traffic. spec.template.spec.containers[0].env[2].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-api-token/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+      spec.template.spec.containers[0].env[3].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-zone-id/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+receiveTimestamp: '2025-04-23T22:15:07.814205557Z'
+resource:
+  labels:
+    configuration_name: ''
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: ''
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+severity: ERROR
+timestamp: '2025-04-23T22:15:07.052302Z'
+---
+insertId: 8mpvfodiahg
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  methodName: /Services.ReplaceService
+  resourceName: namespaces/greenlane-cloud-solutions/revisions/greenlane-minimal-00002-lmd
+  response:
+    '@type': type.googleapis.com/google.cloud.run.v1.Revision
+    apiVersion: serving.knative.dev/v1
+    kind: Revision
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '40'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 518.0.0
+        run.googleapis.com/operation-id: edacb7db-df24-458e-9aa2-75feea2e13be
+        run.googleapis.com/startup-cpu-boost: 'true'
+        serving.knative.dev/creator: greenlane.enterprisesltd@gmail.com
+      creationTimestamp: '2025-04-23T22:15:05.685879Z'
+      generation: 1
+      labels:
+        client.knative.dev/nonce: olpgrftebz
+        cloud.googleapis.com/location: us-central1
+        run.googleapis.com/startupProbeType: Default
+        serving.knative.dev/configuration: greenlane-minimal
+        serving.knative.dev/configurationGeneration: '2'
+        serving.knative.dev/route: greenlane-minimal
+        serving.knative.dev/service: greenlane-minimal
+        serving.knative.dev/serviceUid: 53aac08f-18b3-480f-90fb-b9c53ba121fa
+      name: greenlane-minimal-00002-lmd
+      namespace: '869018523985'
+      ownerReferences:
+      - apiVersion: serving.knative.dev/v1
+        blockOwnerDeletion: true
+        controller: true
+        kind: Configuration
+        name: greenlane-minimal
+        uid: 061fe679-7ce3-48a2-9f8b-f91692561382
+      resourceVersion: AAYzeW8E6Bo
+      selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/revisions/greenlane-minimal-00002-lmd
+      uid: 9d75501d-d98c-4c8c-960e-17682a8821f5
+    spec:
+      containerConcurrency: 80
+      containers:
+      - env:
+        - name: NODE_ENV
+          value: production
+        - name: BASE_DOMAIN
+          value: greenlanecloudsolutions.com
+        - name: CLOUDFLARE_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: cloudflare-api-token
+        - name: CLOUDFLARE_ZONE_ID
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: cloudflare-zone-id
+        image: gcr.io/greenlane-cloud-solutions/greenlane-minimal@sha256:0f9bc104435b67af2170d80b1467eb04e1649593f9fb037daf43b9fd4b1f6ee2
+        name: greenlane-minimal-1
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+      serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+      timeoutSeconds: 300
+    status:
+      conditions:
+      - lastTransitionTime: '2025-04-23T22:15:06.915866Z'
+        message: |-
+          spec.template.spec.containers[0].env[2].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-api-token/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+          spec.template.spec.containers[0].env[3].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-zone-id/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+        reason: SecretsAccessCheckFailed
+        status: 'False'
+        type: Ready
+      - lastTransitionTime: '2025-04-23T22:15:06.450306Z'
+        message: Container image import completed.
+        status: 'True'
+        type: ContainerReady
+      - lastTransitionTime: '2025-04-23T22:15:06.915866Z'
+        message: |-
+          spec.template.spec.containers[0].env[2].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-api-token/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+          spec.template.spec.containers[0].env[3].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-zone-id/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+        reason: SecretsAccessCheckFailed
+        status: 'False'
+        type: ResourcesAvailable
+      containerStatuses:
+      - imageDigest: gcr.io/greenlane-cloud-solutions/greenlane-minimal@sha256:0f9bc104435b67af2170d80b1467eb04e1649593f9fb037daf43b9fd4b1f6ee2
+        name: greenlane-minimal-1
+      imageDigest: gcr.io/greenlane-cloud-solutions/greenlane-minimal@sha256:0f9bc104435b67af2170d80b1467eb04e1649593f9fb037daf43b9fd4b1f6ee2
+      logUrl: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-minimal/revision_name/greenlane-minimal-00002-lmd&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-minimal%22%0Aresource.labels.revision_name%3D%22greenlane-minimal-00002-lmd%22
+      observedGeneration: 1
+  serviceName: run.googleapis.com
+  status:
+    code: 9
+    message: |-
+      Ready condition status changed to False for Revision greenlane-minimal-00002-lmd with message: spec.template.spec.containers[0].env[2].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-api-token/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+      spec.template.spec.containers[0].env[3].value_from.secret_key_ref.name: Permission denied on secret: projects/869018523985/secrets/cloudflare-zone-id/versions/latest for Revision service account 869018523985-compute@developer.gserviceaccount.com. The service account used must be granted the 'Secret Manager Secret Accessor' role (roles/secretmanager.secretAccessor) at the secret, project or higher level.
+receiveTimestamp: '2025-04-23T22:15:07.289905391Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-00002-lmd
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+severity: ERROR
+timestamp: '2025-04-23T22:15:06.929336Z'
+---
+insertId: ricrk8dmc9d
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Factivity
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  authenticationInfo:
+    principalEmail: greenlane.enterprisesltd@gmail.com
+    principalSubject: user:greenlane.enterprisesltd@gmail.com
+  authorizationInfo:
+  - granted: true
+    permission: run.services.update
+    permissionType: ADMIN_WRITE
+    resource: namespaces/greenlane-cloud-solutions/services/greenlane-minimal
+    resourceAttributes: {}
+  - granted: true
+    permission: run.services.update
+    permissionType: ADMIN_WRITE
+    resource: namespaces/greenlane-cloud-solutions/services/greenlane-minimal
+    resourceAttributes:
+      name: namespaces/greenlane-cloud-solutions/services/greenlane-minimal
+      service: run.googleapis.com/
+      type: run.googleapis.com/Service
+  methodName: google.cloud.run.v1.Services.ReplaceService
+  request:
+    '@type': type.googleapis.com/google.cloud.run.v1.ReplaceServiceRequest
+    name: namespaces/greenlane-cloud-solutions/services/greenlane-minimal
+    service:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      metadata:
+        annotations:
+          run.googleapis.com/client-name: gcloud
+          run.googleapis.com/client-version: 518.0.0
+          run.googleapis.com/ingress: all
+          run.googleapis.com/ingress-status: all
+          run.googleapis.com/operation-id: db4d15b9-f1a2-443f-8f7b-40d1c02c8e97
+          run.googleapis.com/urls: '["https://greenlane-minimal-869018523985.us-central1.run.app","https://greenlane-minimal-mx3osic2uq-uc.a.run.app"]'
+          serving.knative.dev/creator: 869018523985-compute@developer.gserviceaccount.com
+          serving.knative.dev/lastModifier: 869018523985-compute@developer.gserviceaccount.com
+        creationTimestamp: '2025-04-23T21:35:54.630341Z'
+        generation: 1
+        labels:
+          cloud.googleapis.com/location: us-central1
+        name: greenlane-minimal
+        namespace: '869018523985'
+        resourceVersion: AAYzeOMmviQ
+        selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-minimal
+        uid: 53aac08f-18b3-480f-90fb-b9c53ba121fa
+      spec:
+        template:
+          metadata:
+            annotations:
+              autoscaling.knative.dev/maxScale: '40'
+              run.googleapis.com/client-name: gcloud
+              run.googleapis.com/client-version: 518.0.0
+              run.googleapis.com/startup-cpu-boost: 'true'
+            labels:
+              client.knative.dev/nonce: olpgrftebz
+              run.googleapis.com/startupProbeType: Default
+          spec:
+            containerConcurrency: 80
+            containers:
+            - image: gcr.io/greenlane-cloud-solutions/greenlane-minimal
+              resources:
+                limits:
+                  cpu: '1'
+                  memory: 512Mi
+            serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+            timeoutSeconds: 300
+        traffic:
+        - latestRevision: true
+          percent: 100
+      status:
+        conditions:
+        - lastTransitionTime: '2025-04-23T21:36:00.323108Z'
+          status: 'True'
+          type: Ready
+        - lastTransitionTime: '2025-04-23T21:35:59.047323Z'
+          status: 'True'
+          type: ConfigurationsReady
+        - lastTransitionTime: '2025-04-23T21:36:00.283197Z'
+          status: 'True'
+          type: RoutesReady
+        latestCreatedRevisionName: greenlane-minimal-00001-9s9
+        latestReadyRevisionName: greenlane-minimal-00001-9s9
+        observedGeneration: 1
+        traffic:
+        - latestRevision: true
+          percent: 100
+          revisionName: greenlane-minimal-00001-9s9
+        url: https://greenlane-minimal-mx3osic2uq-uc.a.run.app
+  requestMetadata:
+    callerIp: 34.76.225.70
+    callerSuppliedUserAgent: google-cloud-sdk gcloud/518.0.0 command/gcloud.run.services.update
+      invocation-id/c5697976a2034b738665444da151d523 environment/devshell environment-version/None
+      client-os/LINUX client-os-ver/6.6.72 client-pltf-arch/x86_64 interactive/True
+      from-script/True python/3.12.8 term/screen (Linux 6.6.72+),gzip(gfe)
+    destinationAttributes: {}
+    requestAttributes:
+      auth: {}
+      time: '2025-04-23T22:15:05.647325Z'
+  resourceLocation:
+    currentLocations:
+    - us-central1
+  resourceName: namespaces/greenlane-cloud-solutions/services/greenlane-minimal
+  serviceName: run.googleapis.com
+receiveTimestamp: '2025-04-23T22:15:05.806933295Z'
+resource:
+  labels:
+    configuration_name: ''
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: ''
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+severity: NOTICE
+timestamp: '2025-04-23T22:15:05.424831Z'
+---
+insertId: 6809612c0004b9eb14bfdeac
+labels:
+  instanceId: 00afae804395c46860ff74a9547b51d43c2e4afcb9bc4dab1ab5f55bafa104fc7bd5a1bfd14c09a937cefbd58e0ed400adbd8a84f20457f87e6357a18a9ad21862c0742095
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-23T21:52:44.647037055Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-00001-9s9
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+textPayload: Server closed
+timestamp: '2025-04-23T21:52:44.309739Z'
+---
+insertId: 6809612c0004b0b91331d2a5
+labels:
+  instanceId: 00afae804395c46860ff74a9547b51d43c2e4afcb9bc4dab1ab5f55bafa104fc7bd5a1bfd14c09a937cefbd58e0ed400adbd8a84f20457f87e6357a18a9ad21862c0742095
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-23T21:52:44.321671834Z'
+resource:
+  labels:
+    configuration_name: greenlane-minimal
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-minimal-00001-9s9
+    service_name: greenlane-minimal
+  type: cloud_run_revision
+textPayload: SIGTERM received, shutting down server
+timestamp: '2025-04-23T21:52:44.307385Z'
+
+Checking full app deployment (greenlane-crm-app)...
+ℹ️ Full app deployment not found
+
+Checking DNS configuration for greenlanecloudsolutions.com...
+Resolving app.greenlanecloudsolutions.com...
+❌ app.greenlanecloudsolutions.com does not resolve
+Resolving api.greenlanecloudsolutions.com...
+❌ api.greenlanecloudsolutions.com does not resolve
+Resolving test.greenlanecloudsolutions.com (sample tenant)...
+❌ test.greenlanecloudsolutions.com does not resolve
+
+Deployment status check completed.

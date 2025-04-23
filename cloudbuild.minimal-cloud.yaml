@@ -33,6 +33,8 @@ steps:
       - 'NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com'
       - '--port'
       - '8080'
+      - '--cpu-boost'
+      - 'true'
 
 images:
   - 'gcr.io/greenlane-cloud-solutions/greenlane-minimal'
