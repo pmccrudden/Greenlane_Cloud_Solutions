@@ -1,6 +1,6 @@
 // Script to set up Cloudflare DNS with wildcard subdomain for multi-tenant GreenLane CRM
-import fetch from 'node-fetch';
-import dotenv from 'dotenv';
+const fetch = require('node-fetch');
+const dotenv = require('dotenv');
 
 // Load environment variables from .env file
 dotenv.config();

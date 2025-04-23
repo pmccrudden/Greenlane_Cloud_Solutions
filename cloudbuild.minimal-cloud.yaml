@@ -1,0 +1,38 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-minimal', '-f', 'Dockerfile.minimal-cloud', '.']
+  
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-minimal']
+  
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'greenlane-minimal'
+      - '--image'
+      - 'gcr.io/greenlane-cloud-solutions/greenlane-minimal'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - 'us-central1'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--concurrency'
+      - '80'
+      - '--timeout'
+      - '300s'
+      - '--set-env-vars'
+      - 'NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com'
+      - '--port'
+      - '8080'
+
+images:
+  - 'gcr.io/greenlane-cloud-solutions/greenlane-minimal'
