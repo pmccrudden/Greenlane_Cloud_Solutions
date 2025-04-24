@@ -1,0 +1,26 @@
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Production stage with diagnostics
+FROM node:20-alpine AS production
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/server.js ./server.js
+COPY --from=builder /app/stripeConfig.json ./stripeConfig.json 
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+EXPOSE 8080
+# Install diagnostic tools
+RUN apk add --no-cache curl
+
+# Enable more verbose Node.js logging
+ENV NODE_DEBUG=module,fs,http,net
+ENV NODE_OPTIONS="--trace-warnings --trace-uncaught"
+CMD ["node", "server.js"]
