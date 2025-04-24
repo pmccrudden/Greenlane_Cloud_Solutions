@@ -1,0 +1,53 @@
+FROM node:20-alpine as builder
+
+WORKDIR /app
+
+# Copy necessary files for build
+COPY package.json package-lock.json ./
+COPY client ./client
+COPY shared ./shared
+COPY server ./server
+COPY vite.config.ts postcss.config.js tailwind.config.ts ./
+
+# Install dependencies explicitly for build process
+RUN npm ci
+
+# Build the frontend 
+RUN npm run build && \
+    echo "Frontend build complete. Checking build output:" && \
+    ls -la ./dist && \
+    ls -la ./dist/public || echo "No dist/public directory"
+
+# Create a smaller production image
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy only what we need to run the server
+COPY package.json package-lock.json ./
+COPY server-esm.js ./
+COPY server ./server
+COPY shared ./shared
+
+# Install only production dependencies
+RUN npm ci --only=production
+
+# Copy the built frontend files from the builder
+COPY --from=builder /app/dist ./dist
+
+# Verify the frontend files exist
+RUN ls -la ./dist && \
+    ls -la ./dist/public && \
+    echo "Frontend files verified"
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=8080
+ENV BASE_DOMAIN=greenlanecloudsolutions.com
+
+# Expose the port the app will run on
+EXPOSE 8080
+
+# Run the ESM server
+CMD ["node", "server-esm.js"]
