@@ -1,0 +1,42 @@
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+RUN ls -la
+
+# Stage 2: Production stage
+FROM node:20-alpine AS production
+WORKDIR /app
+
+# Explicitly copy package files - this was missing before
+COPY package.json ./
+COPY package-lock.json ./
+
+RUN npm ci --only=production
+
+# Copy build artifacts
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/server.js ./
+COPY --from=builder /app/stripeConfig.json ./
+COPY --from=builder /app/shared ./shared
+COPY --from=builder /app/server ./server
+
+# Verify files are present - this will show in the build logs
+RUN echo "Verifying files in /app:"
+RUN ls -la /app
+RUN echo "Contents of /app/dist:"
+RUN ls -la /app/dist || echo "dist directory missing!"
+RUN echo "Checking for critical files:"
+RUN ls -la /app/package.json || echo "package.json missing!"
+RUN ls -la /app/server.js || echo "server.js missing!"
+
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+EXPOSE 8080
+
+# Use node directly instead of npm to avoid package.json dependency
+CMD ["node", "server.js"]
