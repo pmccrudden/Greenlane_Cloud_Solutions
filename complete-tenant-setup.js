@@ -6,8 +6,10 @@
 import { createTenantAndAdmin } from './create-tenant.js';
 import { promises as fs } from 'fs';
 import { createInterface } from 'readline';
-import dotenv from 'dotenv';
-import fetch from 'node-fetch';
+import * as fsSync from 'fs';
+
+// We'll use our own implementation instead of dotenv and node-fetch
+// to avoid ESM compatibility issues
 
 /**
  * Load environment variables from a file
@@ -16,16 +18,31 @@ import fetch from 'node-fetch';
  */
 function loadEnvFromFile(file) {
   try {
-    const config = dotenv.config({ path: file });
-    if (config.error) {
-      throw config.error;
+    if (fsSync.existsSync(file)) {
+      const content = fsSync.readFileSync(file, 'utf8');
+      const lines = content.split('\n');
+      const result = {};
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (trimmedLine && !trimmedLine.startsWith('#')) {
+          const [key, ...valueParts] = trimmedLine.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts.join('=').trim();
+            // Remove quotes if present
+            const cleanValue = value.replace(/^["'](.*)["']$/, '$1');
+            process.env[key.trim()] = cleanValue;
+            result[key.trim()] = cleanValue;
+          }
+        }
+      }
+      console.log(`Loaded environment variables from ${file}`);
+      return result;
     }
-    console.log(`Loaded environment variables from ${file}`);
-    return config.parsed;
   } catch (error) {
     console.warn(`Warning: Could not load ${file}: ${error.message}`);
-    return {};
   }
+  return {};
 }
 
 // Load environment variables
@@ -85,23 +102,50 @@ async function createTenantSubdomain(subdomain) {
   console.log(`Setting up CNAME record: ${subdomain}.greenlanecloudsolutions.com → ${serviceHostname}`);
 
   try {
-    // Create CNAME record
-    const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`,
-      },
-      body: JSON.stringify({
-        type: 'CNAME',
-        name: subdomain,
-        content: serviceHostname,
-        ttl: 1, // Automatic
-        proxied: true
-      })
+    // Create CNAME record using https module since we don't have node-fetch
+    const https = await import('https');
+    
+    const requestData = JSON.stringify({
+      type: 'CNAME',
+      name: subdomain,
+      content: serviceHostname,
+      ttl: 1, // Automatic
+      proxied: true
     });
-
-    const data = await response.json();
+    
+    const data = await new Promise((resolve, reject) => {
+      const options = {
+        hostname: 'api.cloudflare.com',
+        port: 443,
+        path: `/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.CLOUDFLARE_API_TOKEN}`,
+          'Content-Length': Buffer.byteLength(requestData)
+        }
+      };
+      
+      const req = https.request(options, (res) => {
+        let responseData = '';
+        
+        res.on('data', (chunk) => {
+          responseData += chunk;
+        });
+        
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(responseData));
+          } catch (e) {
+            reject(new Error(`Failed to parse response: ${e.message}`));
+          }
+        });
+      });
+      
+      req.on('error', reject);
+      req.write(requestData);
+      req.end();
+    });
 
     if (data.success) {
       return { success: true, message: `Created DNS record for ${subdomain}.greenlanecloudsolutions.com` };
