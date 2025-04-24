@@ -88,8 +88,6 @@ gcloud run deploy greenlane-crm-fixed \
   --timeout=600s \
   --set-env-vars="NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com,CRM_DOMAIN=crm.greenlanecloudsolutions.com,API_DOMAIN=api.greenlanecloudsolutions.com,HOST=0.0.0.0" \
   --update-secrets=/app/.env=greenlane-env:latest \
-  --clear-command \
-  --clear-args \
   --quiet
 
 echo "Deployment completed."

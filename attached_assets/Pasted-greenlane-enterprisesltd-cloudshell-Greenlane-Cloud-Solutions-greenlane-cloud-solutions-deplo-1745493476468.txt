@@ -1,0 +1,66 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-direct-fix.sh
+=== Direct Deploying Greenlane CRM to Cloud Run (with package.json fix) ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-16860]
+Current GCP project: greenlane-cloud-solutions
+Building Docker image locally...
+[+] Building 47.8s (26/26) FINISHED                                                                                                                                   docker:default
+ => [internal] load build definition from Dockerfile.fix                                                                                                                        0.0s
+ => => transferring dockerfile: 1.15kB                                                                                                                                          0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                                               0.7s
+ => [internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 482B                                                                                                                                               0.0s
+ => [builder 1/8] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                 0.0s
+ => [internal] load build context                                                                                                                                               0.0s
+ => => transferring context: 68.98kB                                                                                                                                            0.0s
+ => CACHED [builder 2/8] WORKDIR /app                                                                                                                                           0.0s
+ => [builder 3/8] COPY package.json ./                                                                                                                                          0.0s
+ => [builder 4/8] COPY package-lock.json ./                                                                                                                                     0.0s
+ => [production  5/17] RUN npm ci --only=production                                                                                                                            22.0s
+ => [builder 5/8] RUN npm ci                                                                                                                                                   22.5s
+ => [builder 6/8] COPY . .                                                                                                                                                      0.1s 
+ => [builder 7/8] RUN npm run build                                                                                                                                            15.6s 
+ => [builder 8/8] RUN ls -la                                                                                                                                                    0.3s 
+ => [production  6/17] COPY --from=builder /app/dist ./dist                                                                                                                     0.1s 
+ => [production  7/17] COPY --from=builder /app/server.js ./                                                                                                                    0.0s 
+ => [production  8/17] COPY --from=builder /app/stripeConfig.json ./                                                                                                            0.0s 
+ => [production  9/17] COPY --from=builder /app/shared ./shared                                                                                                                 0.0s 
+ => [production 10/17] COPY --from=builder /app/server ./server                                                                                                                 0.0s 
+ => [production 11/17] RUN echo "Verifying files in /app:"                                                                                                                      0.3s 
+ => [production 12/17] RUN ls -la /app                                                                                                                                          0.3s
+ => [production 13/17] RUN echo "Contents of /app/dist:"                                                                                                                        0.3s
+ => [production 14/17] RUN ls -la /app/dist || echo "dist directory missing!"                                                                                                   0.3s
+ => [production 15/17] RUN echo "Checking for critical files:"                                                                                                                  0.3s
+ => [production 16/17] RUN ls -la /app/package.json || echo "package.json missing!"                                                                                             0.3s 
+ => [production 17/17] RUN ls -la /app/server.js || echo "server.js missing!"                                                                                                   0.3s 
+ => exporting to image                                                                                                                                                          5.7s 
+ => => exporting layers                                                                                                                                                         5.7s 
+ => => writing image sha256:b41a4442a0e91ef788b83b83dc5e9a6b117e94d2c144123933da554b89050bfc                                                                                    0.0s
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-fixed:latest                                                                                                    0.0s
+Pushing image to Google Container Registry...
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-fixed]
+9125a00c4fc9: Pushed 
+8546824b9c1f: Pushed 
+69ac575dcaf6: Pushed 
+6316767b1a27: Pushed 
+d7d5e1dd8fc8: Pushed 
+a2356629d5b6: Pushed 
+0a269b2fbee0: Pushed 
+1bd04e51540d: Pushed 
+f95bf8f0e9d2: Pushed 
+b7c55e2bc9e0: Pushed 
+a03ff8ccd9f5: Layer already exists 
+b8185dcc9be5: Layer already exists 
+2c9cabe10289: Layer already exists 
+75228a052fed: Layer already exists 
+08000c18d16d: Layer already exists 
+latest: digest: sha256:19a2d6cdc884b1e664ca18803e3a1c1624248dd0d0e239bd55237cc0f807caa4 size: 4478
+Deploying to Cloud Run...
+ERROR: (gcloud.run.deploy) unrecognized arguments:
+  --clear-command (did you mean '--command'?)
+  --clear-args (did you mean '--clear-env-vars'?)
+  To search the help text of gcloud commands, run:
+  gcloud help -- SEARCH_TERMS
+Deployment completed.
+Checking service status...
+Service not yet available. Check Cloud Run logs for details.
