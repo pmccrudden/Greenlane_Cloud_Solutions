@@ -209,34 +209,8 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // Redirect to the app domain if this is the root path
-  const host = req.headers.host;
-  const baseDomain = process.env.BASE_DOMAIN || 'greenlanecloudsolutions.com';
-  const forwardedHost = req.headers['x-forwarded-host'];
-  
-  if ((host === baseDomain || host === `www.${baseDomain}` || 
-       forwardedHost === baseDomain || forwardedHost === `www.${baseDomain}`)) {
-    // This is the main domain - try to load the main app
-    console.log('Main domain detected, attempting to load and redirect to the application');
-    
-    // Option 1: Try to look for the compiled app
-    setTimeout(async () => {
-      console.log('Delayed attempt to load the full application');
-      try {
-        await import('./dist/index.js');
-        console.log('Successfully loaded application, should take over the routing');
-      } catch (error) {
-        console.error('Failed to load application:', error.message);
-      }
-    }, 2000);
-    
-    // Option 2: Attempt to redirect to the app subdomain
-    res.writeHead(302, {
-      'Location': `https://app.${baseDomain}/`
-    });
-    res.end();
-    return;
-  }
+  // No additional checks needed here as the main domain redirect 
+  // is already handled above in the root path (/) endpoint handler
   
   // Default response - HTML with more diagnostics
   res.writeHead(200, { 'Content-Type': 'text/html' });
