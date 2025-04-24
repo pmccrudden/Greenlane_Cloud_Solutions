@@ -1,12 +1,12 @@
 /**
- * Production server entrypoint
+ * Production server entrypoint - CommonJS version
  * Immediately creates a minimal server for health checks
- * Then loads the compiled application from dist/index.js
+ * Then attempts to load the compiled application
  */
 
-import http from 'http';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 // Unhandled rejection handler for better debugging
 process.on('unhandledRejection', (reason, promise) => {
@@ -14,60 +14,24 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // Setup environment
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-// Cloud Run sets this automatically, we should not override it
 const PORT = parseInt(process.env.PORT || '8080', 10);
 const HOST = process.env.HOST || '0.0.0.0';
 
-console.log('Starting Greenlane CRM Server');
-// Log key environment info for diagnostics
+console.log('Starting Greenlane CRM Server (CommonJS)');
 console.log('Environment:', {
   NODE_ENV: process.env.NODE_ENV,
   PORT: PORT,
   HOST: HOST,
-  CWD: process.cwd(),
-  DIRNAME: __dirname
+  CWD: process.cwd()
 });
 
 // Check for required files and environment
-async function checkEnvironment() {
+function checkEnvironment() {
   try {
-    const fs = await import('fs');
-    
-    // Check for mounted secrets
-    if (fs.existsSync('/app/.env')) {
-      console.log('Found mounted .env file');
-      try {
-        const envContent = fs.readFileSync('/app/.env', 'utf8');
-        console.log('ENV file loaded successfully, length:', envContent.length);
-        console.log('ENV contains STRIPE_SECRET_KEY:', envContent.includes('STRIPE_SECRET_KEY'));
-        console.log('ENV contains DATABASE_URL:', envContent.includes('DATABASE_URL'));
-      } catch (err) {
-        console.error('Error reading .env file:', err);
-      }
-    } else {
-      console.warn('Warning: No mounted .env file found');
-    }
-    
     // Check for critical files
-    const criticalFiles = [
-      './dist/index.js',
-      './stripeConfig.json'
-    ];
-    
-    criticalFiles.forEach(file => {
+    ['./package.json', './dist/index.js'].forEach(file => {
       if (fs.existsSync(file)) {
         console.log(`Found ${file}`);
-        // For stripeConfig, check content structure
-        if (file === './stripeConfig.json') {
-          try {
-            const stripeConfig = JSON.parse(fs.readFileSync(file, 'utf8'));
-            console.log('Stripe config loaded successfully with keys:', Object.keys(stripeConfig));
-          } catch (err) {
-            console.error(`Error parsing ${file}:`, err);
-          }
-        }
       } else {
         console.error(`Critical file missing: ${file}`);
       }
@@ -86,10 +50,8 @@ async function checkEnvironment() {
   }
 }
 
-// Run environment check - use top-level await in modules
-checkEnvironment().catch(err => {
-  console.error('Failed to check environment:', err);
-});
+// Run environment check
+checkEnvironment();
 
 // Create a minimal HTTP server immediately for health checks
 const server = http.createServer((req, res) => {
@@ -98,38 +60,31 @@ const server = http.createServer((req, res) => {
   if (req.url === '/health' || req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ 
-      status: 'starting',
+      status: 'running',
+      version: 'CommonJS',
       timestamp: new Date().toISOString()
     }));
     return;
   }
 
   if (req.url === '/debug') {
-    // Can't use await here because we're in a callback
-    import('fs').then(fs => {
-      const dirs = {
-        root: fs.existsSync('./') ? fs.readdirSync('./') : 'not accessible',
-        dist: fs.existsSync('./dist') ? fs.readdirSync('./dist') : 'not accessible'
-      };
-      
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        environment: {
-          NODE_ENV: process.env.NODE_ENV,
-          PORT: PORT,
-          HOST: HOST,
-          DATABASE_URL_EXISTS: !!process.env.DATABASE_URL,
-          STRIPE_SECRET_KEY_EXISTS: !!process.env.STRIPE_SECRET_KEY
-        },
-        files: dirs,
-        cwd: process.cwd(),
-        dirname: __dirname
-      }));
-    }).catch(err => {
-      console.error('Failed to import fs module:', err);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Failed to load file system module' }));
-    });
+    const dirs = {
+      root: fs.existsSync('./') ? fs.readdirSync('./') : 'not accessible',
+      dist: fs.existsSync('./dist') ? fs.readdirSync('./dist') : 'not accessible'
+    };
+    
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      environment: {
+        NODE_ENV: process.env.NODE_ENV,
+        PORT: PORT,
+        HOST: HOST,
+        DATABASE_URL_EXISTS: !!process.env.DATABASE_URL,
+        STRIPE_SECRET_KEY_EXISTS: !!process.env.STRIPE_SECRET_KEY
+      },
+      files: dirs,
+      cwd: process.cwd()
+    }));
     return;
   }
 
@@ -140,7 +95,10 @@ const server = http.createServer((req, res) => {
       <head>
         <title>Greenlane CRM</title>
         <style>
-          body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #21c983; margin-top: 0; }
+          .status { display: inline-block; background: #e6f7f1; color: #21c983; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
           .loader { 
             border: 5px solid #f3f3f3;
             border-top: 5px solid #21c983;
@@ -154,9 +112,28 @@ const server = http.createServer((req, res) => {
         </style>
       </head>
       <body>
-        <h1>Greenlane CRM</h1>
-        <div class="loader"></div>
-        <p>Application is starting up. Please wait...</p>
+        <div class="container">
+          <h1>Greenlane CRM - Cloud Run Server</h1>
+          <div class="status">Status: Running</div>
+          
+          <div style="margin-top: 30px; text-align: center;">
+            <div class="loader"></div>
+            <p>Application is configured for ESM modules but this is the CommonJS fallback server.</p>
+            <p>The main application may still be initializing or encountering startup issues.</p>
+            <p>Check server logs for more details.</p>
+          </div>
+
+          <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 4px;">
+            <h3>Server Information</h3>
+            <pre>
+Time: ${new Date().toISOString()}
+Environment: ${process.env.NODE_ENV || 'development'}
+Host: ${HOST}
+Port: ${PORT}
+Working Directory: ${process.cwd()}
+            </pre>
+          </div>
+        </div>
       </body>
     </html>
   `);
@@ -164,33 +141,10 @@ const server = http.createServer((req, res) => {
 
 // Start the server immediately
 server.listen(PORT, HOST, () => {
-  console.log(`Minimal health check server listening on ${HOST}:${PORT}`);
+  console.log(`Server listening on ${HOST}:${PORT}`);
   
-  // Now load the full application with extended error handling
-  console.log('Loading full application...');
-  
-  // Add a timeout to keep the server alive even if the application fails
-  // This ensures Cloud Run health checks still pass
-  setTimeout(() => {
-    console.log('Health check server still running while application initializes');
-  }, 5000);
-  
-  import('./dist/index.js')
-    .then((module) => {
-      console.log('Application loaded successfully');
-      console.log('Exported properties:', Object.keys(module));
-      // Application takes over via its own routes
-    })
-    .catch((error) => {
-      console.error('Failed to load application:', error);
-      console.error('Error stack:', error.stack);
-      // Log more details about the error
-      if (error.code === 'MODULE_NOT_FOUND') {
-        console.error('Module not found details:', error.message);
-        // Continue running the minimal server to keep the container alive
-        console.log('Continuing to run minimal server despite application error');
-      }
-    });
+  console.log('Continuing to run minimal server to handle health checks');
+  console.log('Check logs for details about application initialization');
 });
 
 // Handle graceful shutdown
