@@ -1,0 +1,87 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ # 1. Make sure you're in the correct directory
+# You're already in Greenlane_Cloud_Solutions, so skip the cd command
+
+# 2. Give execute permission to the deployment script
+chmod +x deploy-esm-enhanced.sh
+
+# 3. Run the deployment script
+./deploy-esm-enhanced.sh
+=== Deploying Enhanced ESM Server to Cloud Run ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-6595]
+Current GCP project: greenlane-cloud-solutions
+Building enhanced ESM Docker image...
+[+] Building 23.7s (25/25) FINISHED                                                                                                                                   docker:default
+ => [internal] load build definition from Dockerfile.esm-enhanced                                                                                                               0.0s
+ => => transferring dockerfile: 1.80kB                                                                                                                                          0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)                                                                                                  0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 25)                                                                                                 0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                                               0.7s
+ => [internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 482B                                                                                                                                               0.0s
+ => [builder 1/7] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                 0.0s
+ => [internal] load build context                                                                                                                                               0.0s
+ => => transferring context: 100.74kB                                                                                                                                           0.0s
+ => CACHED [builder 2/7] WORKDIR /app                                                                                                                                           0.0s
+ => CACHED [builder 3/7] COPY package.json package-lock.json ./                                                                                                                 0.0s
+ => CACHED [builder 4/7] RUN npm ci                                                                                                                                             0.0s
+ => [builder 5/7] COPY . .                                                                                                                                                      0.1s
+ => [builder 6/7] RUN npm run build &&     echo "Build complete. Listing contents:" &&     ls -la ./dist &&     echo "Client files:" &&     ls -la ./dist/public || echo "No   18.8s
+ => [builder 7/7] RUN mkdir -p ./dist/public                                                                                                                                    0.3s
+ => CACHED [production  4/16] RUN npm ci --only=production                                                                                                                      0.0s 
+ => [production  5/16] COPY --from=builder /app/dist ./dist                                                                                                                     0.0s 
+ => [production  6/16] COPY --from=builder /app/shared ./shared                                                                                                                 0.0s 
+ => [production  7/16] COPY --from=builder /app/server ./server                                                                                                                 0.0s 
+ => [production  8/16] COPY --from=builder /app/client ./client                                                                                                                 0.1s 
+ => [production  9/16] COPY server-esm.js ./                                                                                                                                    0.0s
+ => [production 10/16] RUN mkdir -p ./dist/public &&     echo '<html><head><title>Greenlane CRM</title></head><body><h1>Greenlane CRM API Server</h1><p>The API server is runn  0.3s
+ => [production 11/16] RUN echo "Files in /app:"                                                                                                                                0.3s
+ => [production 12/16] RUN ls -la /app                                                                                                                                          0.3s
+ => [production 13/16] RUN echo "Contents of /app/dist:"                                                                                                                        0.3s
+ => [production 14/16] RUN ls -la /app/dist || echo "dist directory missing or empty"                                                                                           0.4s
+ => [production 15/16] RUN echo "Contents of /app/dist/public:"                                                                                                                 0.3s
+ => [production 16/16] RUN ls -la /app/dist/public || echo "dist/public directory missing or empty"                                                                             0.3s 
+ => exporting to image                                                                                                                                                          0.3s 
+ => => exporting layers                                                                                                                                                         0.3s 
+ => => writing image sha256:f96fa6006304592cb8d1511e19f64899c66909592212da46ee2e4d06069b782f                                                                                    0.0s 
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced:latest                                                                                             0.0s 
+Pushing image to Google Container Registry...                                                                                                                                        
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced]
+f8219bd67df1: Pushed 
+c6880053d7e2: Pushed 
+e85b93212cec: Pushed 
+1d1c3adb0715: Pushed 
+3ec3a9f34908: Pushed 
+1b4bd7383017: Pushed 
+6bc636af5719: Pushed 
+1444ad022252: Pushed 
+86ce4cbacba7: Layer already exists 
+0285c5bdbaeb: Layer already exists 
+3cb52306c6f7: Layer already exists 
+b8185dcc9be5: Layer already exists 
+2c9cabe10289: Layer already exists 
+75228a052fed: Layer already exists 
+08000c18d16d: Layer already exists 
+latest: digest: sha256:ee5786479b0685b7ef7fe3fb7c868e2ce4eb9c089a6afb19cd8f639b5e193dfd size: 4274
+Deploying to Cloud Run...
+Deploying container to Cloud Run service [greenlane-crm-esm-enhanced] in project [greenlane-cloud-solutions] region [us-central1]
+✓ Deploying... Done.                                                                                                                                                                
+  ✓ Creating Revision...                                                                                                                                                            
+  ✓ Routing traffic...                                                                                                                                                              
+  ✓ Setting IAM Policy...                                                                                                                                                           
+Done.                                                                                                                                                                               
+Service [greenlane-crm-esm-enhanced] revision [greenlane-crm-esm-enhanced-00006-pb2] has been deployed and is serving 100 percent of traffic.
+Service URL: https://greenlane-crm-esm-enhanced-869018523985.us-central1.run.app
+Deployment completed.
+Checking service status...
+Service is available at: https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app
+
+Testing the endpoints:
+Main endpoint:
+Status code: 200
+Debug endpoint:
+https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/debug
+Service hostname saved to service_hostname.txt: greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app
+
+View logs:
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%20resource.labels.service_name%3D%22greenlane-crm-esm-enhanced%22?project=greenlane-cloud-solutions

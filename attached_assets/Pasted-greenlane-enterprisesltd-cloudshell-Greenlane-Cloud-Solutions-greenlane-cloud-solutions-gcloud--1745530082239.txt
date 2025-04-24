@@ -1,0 +1,524 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=greenlane-crm-esm-enhanced" --limit=20
+---
+insertId: 680aaad500009e5c82ef0097
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:19:17.277591986Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: 'Exported properties: []'
+timestamp: '2025-04-24T21:19:17.040540Z'
+---
+insertId: 680aaad500009de24a0fc1d2
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:19:17.277591986Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: 'Successfully loaded app from: ./dist/index.js'
+timestamp: '2025-04-24T21:19:17.040418Z'
+---
+insertId: 680aaad500009db386fc88a1
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:19:17.277591986Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: Server imported as module - not starting listener (already running via
+  bootstrap)
+timestamp: '2025-04-24T21:19:17.040371Z'
+---
+insertId: 680aaad500009b9bfb122647
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:19:17.277591986Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: 'Found index.html at: /app/dist/public/index.html'
+timestamp: '2025-04-24T21:19:17.039835Z'
+---
+insertId: 680aaad4000e5867afaa723d
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:19:16.945579132Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: Static path exists, serving files...
+timestamp: '2025-04-24T21:19:16.940135Z'
+---
+insertId: 680aaad4000e582f93944ebf
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:19:16.945579132Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: 'Attempting to serve static files from: /app/dist/public'
+timestamp: '2025-04-24T21:19:16.940079Z'
+---
+insertId: 680aaad3000b4cc39386fc1b
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T21:19:15.840024477Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: memory, and will not scale past a single process.
+timestamp: '2025-04-24T21:19:15.740547Z'
+---
+insertId: 680aaad3000b4cc0bb174ee4
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T21:19:15.840024477Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: designed for a production environment, as it will leak
+timestamp: '2025-04-24T21:19:15.740544Z'
+---
+insertId: 680aaad3000b4cb953e21e20
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T21:19:15.840024477Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: 'Warning: connect.session() MemoryStore is not'
+timestamp: '2025-04-24T21:19:15.740537Z'
+---
+insertId: 680aaace000cd053d9a404a4
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T21:19:10.846025918Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: 'Warning: STRIPE_SECRET_KEY is not set, Stripe functionality will be
+  unavailable'
+timestamp: '2025-04-24T21:19:10.839763Z'
+---
+insertId: 680aaa500000b49f83c3f41e
+labels:
+  instanceId: 00afae80434378a93cabc0aa1fdd7cef5df411aa288e94fe0535554bdb765b80d61d27106fd4d705fc03d0964302c9ddd67a8a78b1231f112628c9791566eca046b6bfcd27
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:17:04.382835797Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00005-b5w
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: Server closed
+timestamp: '2025-04-24T21:17:04.046239Z'
+---
+insertId: 680aaa500000b2d84f1ff57d
+labels:
+  instanceId: 00afae80434378a93cabc0aa1fdd7cef5df411aa288e94fe0535554bdb765b80d61d27106fd4d705fc03d0964302c9ddd67a8a78b1231f112628c9791566eca046b6bfcd27
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:17:04.050837636Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00005-b5w
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: SIGTERM received, shutting down...
+timestamp: '2025-04-24T21:17:04.045784Z'
+---
+insertId: 680aa9ff00037be46717bdb0
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:15:43.482339693Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: 'Request received: GET /'
+timestamp: '2025-04-24T21:15:43.228324Z'
+---
+httpRequest:
+  latency: 0.050851798s
+  protocol: HTTP/1.1
+  remoteIp: 35.241.139.110
+  requestMethod: GET
+  requestSize: '293'
+  requestUrl: https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/
+  responseSize: '244'
+  serverIp: 216.239.36.53
+  status: 200
+  userAgent: curl/8.5.0
+insertId: 680aa9ff0003c665fd207b77
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Frequests
+receiveTimestamp: '2025-04-24T21:15:43.252581505Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+severity: INFO
+spanId: 9a92edd1b35f88e8
+timestamp: '2025-04-24T21:15:43.188983Z'
+trace: projects/greenlane-cloud-solutions/traces/928a718dff3322a5674ea78015c114ba
+traceSampled: true
+---
+insertId: bpm15hdldqs
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  methodName: /Services.ReplaceService
+  resourceName: namespaces/greenlane-cloud-solutions/services/greenlane-crm-esm-enhanced
+  response:
+    '@type': type.googleapis.com/google.cloud.run.v1.Service
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    metadata:
+      annotations:
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 518.0.0
+        run.googleapis.com/ingress: all
+        run.googleapis.com/ingress-status: all
+        run.googleapis.com/operation-id: dd984b75-56eb-4966-b546-3d0cb71804ae
+        run.googleapis.com/urls: '["https://greenlane-crm-esm-enhanced-869018523985.us-central1.run.app","https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app"]'
+        serving.knative.dev/creator: greenlane.enterprisesltd@gmail.com
+        serving.knative.dev/lastModifier: greenlane.enterprisesltd@gmail.com
+      creationTimestamp: '2025-04-24T15:36:11.231402Z'
+      generation: 6
+      labels:
+        cloud.googleapis.com/location: us-central1
+      name: greenlane-crm-esm-enhanced
+      namespace: '869018523985'
+      resourceVersion: AAYzjLgtY2U
+      selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-crm-esm-enhanced
+      uid: 0c11f44e-666e-4a0f-9c26-8f88fc376c66
+    spec:
+      template:
+        metadata:
+          annotations:
+            autoscaling.knative.dev/maxScale: '10'
+            autoscaling.knative.dev/minScale: '1'
+            run.googleapis.com/client-name: gcloud
+            run.googleapis.com/client-version: 518.0.0
+            run.googleapis.com/startup-cpu-boost: 'true'
+          labels:
+            client.knative.dev/nonce: otityxogmy
+            run.googleapis.com/startupProbeType: Default
+        spec:
+          containerConcurrency: 80
+          containers:
+          - env:
+            - name: NODE_ENV
+              value: production
+            - name: HOST
+              value: 0.0.0.0
+            image: gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced:latest
+            ports:
+            - containerPort: 8080
+              name: http1
+            resources:
+              limits:
+                cpu: '1'
+                memory: 1Gi
+            startupProbe:
+              failureThreshold: 1
+              periodSeconds: 240
+              tcpSocket:
+                port: 8080
+              timeoutSeconds: 240
+          serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+          timeoutSeconds: 300
+      traffic:
+      - latestRevision: true
+        percent: 100
+    status:
+      address:
+        url: https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app
+      conditions:
+      - lastTransitionTime: '2025-04-24T21:15:38.684261Z'
+        status: 'True'
+        type: Ready
+      - lastTransitionTime: '2025-04-24T21:15:37.419537Z'
+        status: 'True'
+        type: ConfigurationsReady
+      - lastTransitionTime: '2025-04-24T21:15:38.646847Z'
+        status: 'True'
+        type: RoutesReady
+      latestCreatedRevisionName: greenlane-crm-esm-enhanced-00006-pb2
+      latestReadyRevisionName: greenlane-crm-esm-enhanced-00006-pb2
+      observedGeneration: 6
+      traffic:
+      - latestRevision: true
+        percent: 100
+        revisionName: greenlane-crm-esm-enhanced-00006-pb2
+      url: https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app
+  serviceName: run.googleapis.com
+  status:
+    message: Ready condition status changed to True for Service greenlane-crm-esm-enhanced.
+receiveTimestamp: '2025-04-24T21:15:38.855444176Z'
+resource:
+  labels:
+    configuration_name: ''
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: ''
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+severity: INFO
+timestamp: '2025-04-24T21:15:38.697133Z'
+---
+insertId: -5rhh44dx0qa
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  methodName: /Services.ReplaceService
+  resourceName: namespaces/greenlane-cloud-solutions/revisions/greenlane-crm-esm-enhanced-00006-pb2
+  response:
+    '@type': type.googleapis.com/google.cloud.run.v1.Revision
+    apiVersion: serving.knative.dev/v1
+    kind: Revision
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '10'
+        autoscaling.knative.dev/minScale: '1'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 518.0.0
+        run.googleapis.com/operation-id: dd984b75-56eb-4966-b546-3d0cb71804ae
+        run.googleapis.com/startup-cpu-boost: 'true'
+        serving.knative.dev/creator: greenlane.enterprisesltd@gmail.com
+      creationTimestamp: '2025-04-24T21:14:53.631707Z'
+      generation: 1
+      labels:
+        client.knative.dev/nonce: otityxogmy
+        cloud.googleapis.com/location: us-central1
+        run.googleapis.com/startupProbeType: Default
+        serving.knative.dev/configuration: greenlane-crm-esm-enhanced
+        serving.knative.dev/configurationGeneration: '6'
+        serving.knative.dev/route: greenlane-crm-esm-enhanced
+        serving.knative.dev/service: greenlane-crm-esm-enhanced
+        serving.knative.dev/serviceUid: 0c11f44e-666e-4a0f-9c26-8f88fc376c66
+      name: greenlane-crm-esm-enhanced-00006-pb2
+      namespace: '869018523985'
+      ownerReferences:
+      - apiVersion: serving.knative.dev/v1
+        blockOwnerDeletion: true
+        controller: true
+        kind: Configuration
+        name: greenlane-crm-esm-enhanced
+        uid: 961a3217-694a-41e2-bed4-08dffd011fdf
+      resourceVersion: AAYzjLgZa3A
+      selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/revisions/greenlane-crm-esm-enhanced-00006-pb2
+      uid: 9779dc60-09e3-44bb-ae5c-7349587c1136
+    spec:
+      containerConcurrency: 80
+      containers:
+      - env:
+        - name: NODE_ENV
+          value: production
+        - name: HOST
+          value: 0.0.0.0
+        image: gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced@sha256:ee5786479b0685b7ef7fe3fb7c868e2ce4eb9c089a6afb19cd8f639b5e193dfd
+        name: greenlane-crm-esm-enhanced-1
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '1'
+            memory: 1Gi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+      serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+      timeoutSeconds: 300
+    status:
+      conditions:
+      - lastTransitionTime: '2025-04-24T21:15:37.375600Z'
+        message: Deploying revision succeeded in 43.74s.
+        status: 'True'
+        type: Ready
+      - lastTransitionTime: '2025-04-24T21:15:35.802073Z'
+        message: Containers became healthy.
+        status: 'True'
+        type: ContainerHealthy
+      - lastTransitionTime: '2025-04-24T21:14:59.753230Z'
+        message: Container image import completed in 5.37s.
+        status: 'True'
+        type: ContainerReady
+      - lastTransitionTime: '2025-04-24T21:15:37.248756Z'
+        message: Min instances provisioned successfully  in 37.28s.
+        status: 'True'
+        type: MinInstancesProvisioned
+      - lastTransitionTime: '2025-04-24T21:15:35.735353Z'
+        message: Provisioning imported containers completed in 35.98s. Checking container
+          health.
+        status: 'True'
+        type: ResourcesAvailable
+      containerStatuses:
+      - imageDigest: gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced@sha256:ee5786479b0685b7ef7fe3fb7c868e2ce4eb9c089a6afb19cd8f639b5e193dfd
+        name: greenlane-crm-esm-enhanced-1
+      desiredReplicas: 1
+      imageDigest: gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced@sha256:ee5786479b0685b7ef7fe3fb7c868e2ce4eb9c089a6afb19cd8f639b5e193dfd
+      logUrl: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-esm-enhanced/revision_name/greenlane-crm-esm-enhanced-00006-pb2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-esm-enhanced%22%0Aresource.labels.revision_name%3D%22greenlane-crm-esm-enhanced-00006-pb2%22
+      observedGeneration: 1
+  serviceName: run.googleapis.com
+  status:
+    message: 'Ready condition status changed to True for Revision greenlane-crm-esm-enhanced-00006-pb2
+      with message: Deploying revision succeeded in 43.74s.'
+receiveTimestamp: '2025-04-24T21:15:37.673709039Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+severity: INFO
+timestamp: '2025-04-24T21:15:37.385559Z'
+---
+insertId: 680aa9f800084243355b91e4
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:15:36.822261254Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: 'Trying to load app from: ./dist/index.js'
+timestamp: '2025-04-24T21:15:36.541251Z'
+---
+insertId: 680aa9f70007ee472370981d
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem
+receiveTimestamp: '2025-04-24T21:15:35.525242450Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+severity: INFO
+textPayload: Default STARTUP TCP probe succeeded after 1 attempt for container "greenlane-crm-esm-enhanced-1"
+  on port 8080.
+timestamp: '2025-04-24T21:15:35.519751Z'
+---
+insertId: 680aa9f70007e266f979ff08
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:15:35.828687435Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: Attempting to load the full application...
+timestamp: '2025-04-24T21:15:35.516710Z'
+---
+insertId: 680aa9f70007e1781f389c0e
+labels:
+  instanceId: 00afae804318b51ebf88597c8b6e76bbb3f045886c22c2a326d084cf4305b94866b8b83c27b1fba4a389c8c59773eb050bec6acd48d9bbee913036a98edd9176ba6b3b8b03
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout
+receiveTimestamp: '2025-04-24T21:15:35.828687435Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-esm-enhanced
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-esm-enhanced-00006-pb2
+    service_name: greenlane-crm-esm-enhanced
+  type: cloud_run_revision
+textPayload: Enhanced ES Module server listening on 0.0.0.0:8080
+timestamp: '2025-04-24T21:15:35.516472Z'
