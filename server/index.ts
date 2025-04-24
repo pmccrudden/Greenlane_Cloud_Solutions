@@ -2,6 +2,62 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { join } from "path";
 import fs from "fs";
+import { db } from "./db";
+import { tenants } from "../shared/schema";
+import { eq } from "drizzle-orm";
+
+// Tenant detection middleware
+async function tenantMiddleware(req: Request, res: Response, next: NextFunction) {
+  const host = req.hostname;
+  const baseDomain = process.env.BASE_DOMAIN || 'greenlanecloudsolutions.com';
+  
+  // Skip tenant detection for main domains
+  if (host === baseDomain || 
+      host === `api.${baseDomain}` || 
+      host === `app.${baseDomain}` ||
+      host.includes('.run.app')) { // Cloud Run URLs
+    return next();
+  }
+  
+  // Extract subdomain
+  const subdomain = host.replace(`.${baseDomain}`, '');
+  
+  // Skip for special subdomains
+  if (subdomain === 'www' || subdomain === 'app' || subdomain === 'api') {
+    return next();
+  }
+  
+  try {
+    // Find tenant by subdomain
+    const tenant = await db.query.tenants.findFirst({
+      where: eq(tenants.id, subdomain)
+    });
+    
+    if (tenant) {
+      // Attach tenant to request
+      (req as any).tenant = tenant;
+      console.log(`Tenant identified: ${tenant.companyName} (${tenant.id})`);
+      
+      // Check if tenant is active
+      if (!tenant.isActive) {
+        return res.status(402).send({
+          error: 'Tenant account is suspended',
+          message: 'This account has been suspended. Please contact support.'
+        });
+      }
+    } else {
+      console.log(`Unknown tenant subdomain: ${subdomain}`);
+      return res.status(404).send({
+        error: 'Tenant not found',
+        message: 'The requested tenant domain does not exist.'
+      });
+    }
+  } catch (error) {
+    console.error('Error identifying tenant:', error);
+  }
+  
+  next();
+}
 
 // Define the missing functions
 function serveStatic(app: express.Express) {
@@ -17,6 +73,17 @@ function serveStatic(app: express.Express) {
     app.get("*", (req, res, next) => {
       if (req.path.startsWith("/api")) {
         return next();
+      }
+      
+      // Handle tenant subdomains with custom branding
+      const tenant = (req as any).tenant;
+      if (tenant) {
+        const indexPath = join(staticPath, "index.html");
+        if (fs.existsSync(indexPath)) {
+          // You could customize the HTML here based on tenant
+          // For now, we'll just send the standard index.html
+          return res.sendFile(indexPath);
+        }
       }
       
       const indexPath = join(staticPath, "index.html");
@@ -62,6 +129,9 @@ function serveStatic(app: express.Express) {
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Register tenant detection middleware
+app.use(tenantMiddleware);
 
 // Logging middleware
 app.use((req, res, next) => {

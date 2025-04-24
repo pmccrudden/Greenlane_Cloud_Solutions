@@ -8,6 +8,15 @@ import { Strategy as LocalStrategy } from "passport-local";
 import crypto from "crypto";
 import Stripe from "stripe";
 import { z } from "zod";
+
+// Type definitions for extended Request object
+declare global {
+  namespace Express {
+    interface Request {
+      tenant?: any;
+    }
+  }
+}
 import { 
   insertUserSchema,
   insertTenantSchema,
