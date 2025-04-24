@@ -1,84 +1,93 @@
 #!/bin/bash
 
-# Script to check the status of Greenlane CRM deployments
+# Script to check the deployment status and logs for Greenlane CRM
+# This helps diagnose deployment and startup issues
 
-echo "=== Checking Greenlane CRM Deployment Status ==="
+# Default values
+SERVICE="greenlane-crm-diagnostic"
+REGION="us-central1"
+LOG_LINES=100
+FORMAT="json"
 
-# Check minimal deployment
-echo "Checking minimal deployment (greenlane-minimal)..."
-MINIMAL_STATUS=$(gcloud run services describe greenlane-minimal --region=us-central1 --format="value(status.conditions[0].status)")
-MINIMAL_URL=$(gcloud run services describe greenlane-minimal --region=us-central1 --format="value(status.url)")
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --service|-s)
+      SERVICE="$2"
+      shift 2
+      ;;
+    --region|-r)
+      REGION="$2"
+      shift 2
+      ;;
+    --lines|-l)
+      LOG_LINES="$2"
+      shift 2
+      ;;
+    --format|-f)
+      FORMAT="$2" # json or text
+      shift 2
+      ;;
+    --help|-h)
+      echo "Usage: $0 [OPTIONS]"
+      echo "Options:"
+      echo "  --service, -s SERVICE  Service name (default: greenlane-crm-diagnostic)"
+      echo "  --region, -r REGION    Region (default: us-central1)"
+      echo "  --lines, -l LINES      Number of log lines (default: 100)"
+      echo "  --format, -f FORMAT    Log format: json or text (default: json)"
+      echo "  --help, -h             Show this help"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
 
-if [[ "$MINIMAL_STATUS" == *"True"* ]]; then
-  echo "✅ Minimal deployment is HEALTHY"
-  echo "   URL: $MINIMAL_URL"
-  
-  # Test the health endpoint
-  echo "   Testing health endpoint..."
-  HEALTH_RESPONSE=$(curl -s "${MINIMAL_URL}/health")
-  echo "   Health response: $HEALTH_RESPONSE"
+echo "=== Checking deployment status for $SERVICE in $REGION ==="
+
+# Check if the service exists
+if ! gcloud run services describe "$SERVICE" --region="$REGION" &>/dev/null; then
+  echo "Error: Service $SERVICE does not exist in region $REGION"
+  exit 1
+fi
+
+# Get the service URL
+SERVICE_URL=$(gcloud run services describe "$SERVICE" --region="$REGION" --format="value(status.url)")
+echo "Service URL: $SERVICE_URL"
+
+# Get the service status
+echo ""
+echo "=== Service Status ==="
+gcloud run services describe "$SERVICE" --region="$REGION" | grep -A 20 "status:"
+
+# Try to access the service and the debug endpoint
+echo ""
+echo "=== Testing Service Access ==="
+echo "Checking main endpoint..."
+curl -s -o /dev/null -w "Status code: %{http_code}\n" "$SERVICE_URL"
+
+echo "Checking debug endpoint..."
+curl -s -o /dev/null -w "Status code: %{http_code}\n" "$SERVICE_URL/debug"
+
+# Get the latest revision name
+REVISION=$(gcloud run services describe "$SERVICE" --region="$REGION" --format="value(status.latestCreatedRevisionName)")
+echo ""
+echo "Latest revision: $REVISION"
+
+# Get logs for the service
+echo ""
+echo "=== Service Logs ==="
+echo "Fetching last $LOG_LINES lines of logs in $FORMAT format..."
+
+if [ "$FORMAT" = "json" ]; then
+  gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=$SERVICE AND resource.labels.revision_name=$REVISION" --limit="$LOG_LINES" --format=json
 else
-  echo "❌ Minimal deployment has issues:"
-  echo "   $MINIMAL_STATUS"
-  
-  # Check logs for minimal deployment
-  echo "   Recent logs for minimal deployment:"
-  gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=greenlane-minimal" --limit 5
+  gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=$SERVICE AND resource.labels.revision_name=$REVISION" --limit="$LOG_LINES"
 fi
 
 echo ""
-
-# Check full app deployment
-echo "Checking full app deployment (greenlane-crm-app)..."
-FULL_STATUS=$(gcloud run services describe greenlane-crm-app --region=us-central1 --format="value(status.conditions[0].status)" 2>/dev/null)
-FULL_URL=$(gcloud run services describe greenlane-crm-app --region=us-central1 --format="value(status.url)" 2>/dev/null)
-
-if [ -z "$FULL_STATUS" ]; then
-  echo "ℹ️ Full app deployment not found"
-elif [[ "$FULL_STATUS" == *"True"* ]]; then
-  echo "✅ Full app deployment is HEALTHY"
-  echo "   URL: $FULL_URL"
-else
-  echo "❌ Full app deployment has issues:"
-  echo "   $FULL_STATUS"
-  
-  # Check logs for full deployment
-  echo "   Recent logs for full deployment:"
-  gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=greenlane-crm-app" --limit 5
-fi
-
-echo ""
-
-# Check DNS configuration
-echo "Checking DNS configuration for greenlanecloudsolutions.com..."
-BASE_DOMAIN="greenlanecloudsolutions.com"
-
-# Check main domain
-echo "Resolving app.$BASE_DOMAIN..."
-APP_DNS=$(dig +short app.$BASE_DOMAIN)
-if [ -n "$APP_DNS" ]; then
-  echo "✅ app.$BASE_DOMAIN resolves to: $APP_DNS"
-else
-  echo "❌ app.$BASE_DOMAIN does not resolve"
-fi
-
-# Check API domain
-echo "Resolving api.$BASE_DOMAIN..."
-API_DNS=$(dig +short api.$BASE_DOMAIN)
-if [ -n "$API_DNS" ]; then
-  echo "✅ api.$BASE_DOMAIN resolves to: $API_DNS"
-else
-  echo "❌ api.$BASE_DOMAIN does not resolve"
-fi
-
-# Check test tenant domain
-echo "Resolving test.$BASE_DOMAIN (sample tenant)..."
-TEST_DNS=$(dig +short test.$BASE_DOMAIN)
-if [ -n "$TEST_DNS" ]; then
-  echo "✅ test.$BASE_DOMAIN resolves to: $TEST_DNS"
-else
-  echo "❌ test.$BASE_DOMAIN does not resolve"
-fi
-
-echo ""
-echo "Deployment status check completed."
+echo "=== Deployment Check Complete ==="
+echo "For continuous log monitoring, run:"
+echo "gcloud logging read 'resource.type=cloud_run_revision AND resource.labels.service_name=$SERVICE' --limit=10 --format=json --follow"
