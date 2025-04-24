@@ -109,7 +109,132 @@ async function checkEnvironment() {
 const server = http.createServer(async (req, res) => {
   console.log(`Request received: ${req.method} ${req.url}`);
   
-  if (req.url === '/health' || req.url === '/') {
+  // Check for special marketing headers
+  const headers = req.headers;
+  const forwardedHost = headers['x-forwarded-host'];
+  const showMarketing = headers['x-show-marketing'];
+  const forceMarketing = headers['x-force-marketing'];
+  
+  // Log headers for debugging
+  console.log('Request headers:', JSON.stringify(headers));
+  
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ 
+      status: 'running',
+      version: 'enhanced-esm',
+      timestamp: new Date().toISOString(),
+      node_version: process.version
+    }));
+    return;
+  }
+  
+  // Handle root path specially
+  if (req.url === '/') {
+    // Check if this should be a marketing page
+    const baseDomain = process.env.BASE_DOMAIN || 'greenlanecloudsolutions.com';
+    const isMarketingSite = forceMarketing === 'true' || 
+                            showMarketing === 'true' || 
+                            forwardedHost === baseDomain ||
+                            forwardedHost === `www.${baseDomain}`;
+    
+    if (isMarketingSite) {
+      console.log('Marketing site request detected, checking for index.html');
+      
+      // Try to find index.html in various locations
+      const possiblePaths = [
+        path.join(process.cwd(), 'dist', 'public', 'index.html'),
+        path.join(process.cwd(), 'dist', 'client', 'index.html'),
+        path.join(process.cwd(), 'dist', 'index.html'),
+        path.join(process.cwd(), 'public', 'index.html')
+      ];
+      
+      for (const htmlPath of possiblePaths) {
+        try {
+          const exists = await fs.access(htmlPath).then(() => true).catch(() => false);
+          if (exists) {
+            console.log(`Found index.html at ${htmlPath}, serving marketing page`);
+            const content = await fs.readFile(htmlPath, 'utf8');
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(content);
+            return;
+          }
+        } catch (error) {
+          console.error(`Error checking ${htmlPath}:`, error);
+        }
+      }
+      
+      console.log('Marketing page not found in any expected location, serving Greenlane CRM page');
+      
+      // If no index.html found, serve a more meaningful marketing-like page
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(`
+        <html>
+          <head>
+            <title>Greenlane Cloud Solutions - CRM Platform</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 0; padding: 0; color: #333; line-height: 1.6; }
+              .hero { background: linear-gradient(135deg, #21c983, #1a8d5f); color: white; padding: 80px 20px; text-align: center; }
+              .hero h1 { font-size: 2.5rem; margin-bottom: 20px; }
+              .hero p { font-size: 1.2rem; max-width: 800px; margin: 0 auto 30px; }
+              .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+              .cta-button { display: inline-block; background: white; color: #21c983; padding: 12px 30px; text-decoration: none; 
+                          border-radius: 30px; font-weight: bold; font-size: 1.1rem; transition: all 0.3s ease; }
+              .cta-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+              .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 60px; }
+              .feature { background: white; border-radius: 8px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+              .feature h3 { color: #21c983; margin-top: 0; }
+            </style>
+          </head>
+          <body>
+            <div class="hero">
+              <h1>Greenlane Cloud Solutions</h1>
+              <p>Transform your customer relationships with our powerful, AI-enhanced CRM platform built for the modern business.</p>
+              <a href="/free-trial" class="cta-button">Start Your Free Trial</a>
+            </div>
+            
+            <div class="container">
+              <h2 style="text-align: center; margin-bottom: 50px;">A Complete Solution for Your Business</h2>
+              
+              <div class="features">
+                <div class="feature">
+                  <h3>Comprehensive Account Management</h3>
+                  <p>Easily manage all your customer accounts with detailed profiles, interaction history, and health scores.</p>
+                </div>
+                
+                <div class="feature">
+                  <h3>AI-Powered Analytics</h3>
+                  <p>Leverage advanced AI to gain insights into customer behavior, predict deal outcomes, and optimize your business processes.</p>
+                </div>
+                
+                <div class="feature">
+                  <h3>Digital Journey Planning</h3>
+                  <p>Create personalized customer journeys with our intuitive journey planner and automated communication tools.</p>
+                </div>
+                
+                <div class="feature">
+                  <h3>Flexible Multi-Tenant Architecture</h3>
+                  <p>Each customer gets their own dedicated subdomain with personalized branding and secure data isolation.</p>
+                </div>
+                
+                <div class="feature">
+                  <h3>Premium Add-On Modules</h3>
+                  <p>Extend core functionality with optional modules like Support Tickets, Community Platform, and Marketing Hub.</p>
+                </div>
+                
+                <div class="feature">
+                  <h3>Cloud-Native Deployment</h3>
+                  <p>Built for reliability and scalability using modern cloud technologies and best practices.</p>
+                </div>
+              </div>
+            </div>
+          </body>
+        </html>
+      `);
+      return;
+    }
+    
+    // Default status JSON if not a marketing site request
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ 
       status: 'running',
