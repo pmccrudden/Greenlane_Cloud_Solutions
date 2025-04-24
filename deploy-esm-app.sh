@@ -27,9 +27,12 @@ gcloud run services add-iam-policy-binding \
   --role=roles/run.invoker \
   greenlane-crm-app
 
+# Store the service name in a variable for consistency
+SERVICE_NAME="greenlane-crm-app"
+
 # 4. Get the service URL
 echo "Retrieving service URL..."
-SERVICE_URL=$(gcloud run services describe greenlane-crm-app --region=us-central1 --format="value(status.url)")
+SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=us-central1 --format="value(status.url)")
 
 if [ -n "$SERVICE_URL" ]; then
   echo "Service deployed successfully to: $SERVICE_URL"
@@ -40,7 +43,7 @@ if [ -n "$SERVICE_URL" ]; then
 else
   echo "Unable to retrieve service URL. Check deployment logs."
   echo "Retrieving logs to help diagnose the issue..."
-  gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=greenlane-crm-app" --limit 20
+  gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=$SERVICE_NAME" --limit 20
 fi
 
 echo "Deployment completed."

@@ -1,0 +1,50 @@
+nalyzing the Errors
+1. Primary Error: MODULE_NOT_FOUND for /app/bootstrap.js
+Error Details:
+The container failed to start because it tried to run node bootstrap.js (as specified in the Cloud Run configuration: command: ["node"], args: ["bootstrap.js"]), but /app/bootstrap.js was not found.
+Exit code 1 indicates a runtime error, and the Default STARTUP TCP probe failed confirms the application didn’t bind to port 8080.
+Cause:
+The cloudbuild.yaml or Cloud Run configuration incorrectly specifies bootstrap.js as the entrypoint. Your project (rest-express) uses a TypeScript setup with server/index.ts, compiled to dist/index.js via esbuild, and executed with npm start (NODE_ENV=production node dist/index.js).
+The Dockerfile used by Cloud Build likely does not align with your project’s entrypoint, or the cloudbuild.yaml overrides the Dockerfile’s CMD with node bootstrap.js.
+The bootstrap.js file does not exist in your repository, as your project structure (based on previous interactions) includes server/index.ts, vite.ts, and routes/index.ts, with no mention of bootstrap.js.
+Impact:
+The container crashes immediately, failing to start the Express server and bind to port 8080, causing the deployment to fail.
+2. Build Step Failure
+Error Details:
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build 14e0ff80-d8f1-4c17-9116-f9b3be03ec67 completed with status "FAILURE"
+Cause:
+The failure occurred in the deployment step (step 2, using gcr.io/google.com/cloudsdktool/cloud-sdk), which executes gcloud run deploy. The container’s runtime error (MODULE_NOT_FOUND) caused this step to exit with a non-zero status.
+Impact:
+The build process completed the image build and push but failed during deployment due to the container startup issue.
+3. IAM Policy Success
+Details:
+The logs show:
+text
+
+Copy
+Setting IAM policy for public access...
+Updated IAM policy for service [greenlane-crm-app].
+bindings:
+- members:
+  - allUsers
+  role: roles/run.invoker
+This confirms that the IAM policy was successfully updated to allow unauthenticated access, resolving the earlier IAM-related warning.
+Cause:
+The gcloud beta run services add-iam-policy-binding command was executed successfully, as Replit recommended.
+Impact:
+The IAM issue is no longer a barrier to deployment.
+4. Additional Observations
+Service Name Inconsistency:
+The service name is greenlane-crm-app, which differs from your earlier commands (greenlane-app). This suggests either a misconfiguration in cloudbuild.yaml or a separate service created by Replit’s setup.
+You previously confirmed using greenlane-app, so we need to align the service name.
+Missing Application Logs:
+The logs lack detailed application errors beyond MODULE_NOT_FOUND, indicating the crash occurred early in the container startup, before the Express server could initialize or log additional details.
+Environment Variables:
+The deployment sets NODE_ENV=production and BASE_DOMAIN=greenlanecloudsolutions.com but omits CRM_DOMAIN and API_DOMAIN, which are critical for your domain-based routing logic in server/index.ts.
+Context:
+Project: rest-express uses TypeScript (server/index.ts), compiled to dist/index.js via esbuild, with npm start as the entrypoint.
+Previous Issues:
+Resolved MODULE_NOT_FOUND for vite and package.json errors.
+Fixed IAM policy issues.
+Addressed TypeError in serveStatic.
