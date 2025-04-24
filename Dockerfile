@@ -33,8 +33,8 @@ COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV PORT=8080
 ENV HOST=0.0.0.0
+# Note: PORT is automatically set by Cloud Run
 
 # Expose port
 EXPOSE 8080
