@@ -1,0 +1,58 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-frontend-fix.sh
+=== Deploying Frontend-Fixed Version to Cloud Run ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-6595]
+Current GCP project: greenlane-cloud-solutions
+Building Docker image with frontend fix...
+[+] Building 26.1s (18/19)                                                                                                                                            docker:default
+ => [internal] load build definition from Dockerfile.frontend-fix                                                                                                               0.0s
+ => => transferring dockerfile: 1.28kB                                                                                                                                          0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)                                                                                                  0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                                               0.7s
+ => [internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 482B                                                                                                                                               0.0s
+ => [builder 1/9] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                 0.0s
+ => [internal] load build context                                                                                                                                               0.0s
+ => => transferring context: 27.29kB                                                                                                                                            0.0s
+ => CACHED [builder 2/9] WORKDIR /app                                                                                                                                           0.0s
+ => CACHED [builder 3/9] COPY package.json package-lock.json ./                                                                                                                 0.0s
+ => [builder 4/9] COPY client ./client                                                                                                                                          0.1s
+ => [stage-1 4/9] COPY server-esm.js ./                                                                                                                                         0.0s
+ => [stage-1 5/9] COPY server ./server                                                                                                                                          0.0s
+ => [builder 5/9] COPY shared ./shared                                                                                                                                          0.0s
+ => [stage-1 6/9] COPY shared ./shared                                                                                                                                          0.0s
+ => [builder 6/9] COPY server ./server                                                                                                                                          0.0s
+ => [stage-1 7/9] RUN npm ci --only=production                                                                                                                                 23.2s
+ => [builder 7/9] COPY vite.config.ts postcss.config.js tailwind.config.ts ./                                                                                                   0.1s
+ => [builder 8/9] RUN npm ci                                                                                                                                                   23.1s
+ => [builder 9/9] RUN npm run build &&     echo "Frontend build complete. Checking build output:" &&     ls -la ./dist &&     ls -la ./dist/public || echo "No dist/public dir  1.2s
+ => ERROR [stage-1 8/9] COPY --from=builder /app/dist ./dist                                                                                                                    0.0s 
+------                                                                                                                                                                               
+ > [stage-1 8/9] COPY --from=builder /app/dist ./dist:                                                                                                                               
+------                                                                                                                                                                               
+                                                                                                                                                                                     
+ 1 warning found (use docker --debug to expand):                                                                                                                                     
+ - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)                                                                                                              
+Dockerfile.frontend-fix:36                                                                                                                                                           
+--------------------                                                                                                                                                                 
+  34 |                                                                                                                                                                               
+  35 |     # Copy the built frontend files from the builder                                                                                                                          
+  36 | >>> COPY --from=builder /app/dist ./dist
+  37 |     
+  38 |     # Verify the frontend files exist
+--------------------
+ERROR: failed to solve: failed to compute cache key: failed to calculate checksum of ref c66fed27-4244-4fd1-a41c-136d3b221d63::523lnuqnc7inegp1wb00txmql: "/app/dist": not found
+Pushing image to Google Container Registry...
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-frontend-fix]
+An image does not exist locally with the tag: gcr.io/greenlane-cloud-solutions/greenlane-crm-frontend-fix
+Deploying to Cloud Run...
+Deploying container to Cloud Run service [greenlane-crm-frontend-fix] in project [greenlane-cloud-solutions] region [us-central1]
+X Deploying new service...                                                                                                                                                          
+  - Creating Revision...                                                                                                                                                            
+  . Routing traffic...                                                                                                                                                              
+  ✓ Setting IAM Policy...                                                                                                                                                           
+Deployment failed                                                                                                                                                                   
+ERROR: (gcloud.run.deploy) Revision 'greenlane-crm-frontend-fix-00001-jsn' is not ready and cannot serve traffic. Image 'gcr.io/greenlane-cloud-solutions/greenlane-crm-frontend-fix:latest' not found.
+Deployment completed.
+Checking service status...
+Service not yet available. Check Cloud Run logs for details.

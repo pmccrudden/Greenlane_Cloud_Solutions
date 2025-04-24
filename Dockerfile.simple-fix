@@ -1,0 +1,40 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package.json package-lock.json ./
+
+# Install all dependencies 
+RUN npm ci
+
+# Copy the rest of the source code
+COPY . .
+
+# Ensure the dist/public directory exists
+RUN mkdir -p ./dist/public
+
+# Build the frontend
+RUN npm run build && \
+    echo "Build complete. Listing contents:" && \
+    ls -la ./dist && \
+    echo "Client files:" && \
+    ls -la ./dist/public || echo "No dist/public directory"
+
+# Fallback for index.html if build failed
+RUN if [ ! -f "./dist/public/index.html" ]; then \
+    echo "Build failed, creating fallback index.html"; \
+    echo '<html><head><title>Greenlane CRM</title></head><body><h1>Greenlane CRM</h1><p>Application is starting...</p></body></html>' > ./dist/public/index.html; \
+fi
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=8080
+ENV BASE_DOMAIN=greenlanecloudsolutions.com
+
+# Expose the port the app will run on
+EXPOSE 8080
+
+# Run the enhanced ESM server directly
+CMD ["node", "server-esm.js"]

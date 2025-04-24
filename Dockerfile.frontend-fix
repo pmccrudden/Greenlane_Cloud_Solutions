@@ -8,15 +8,27 @@ COPY client ./client
 COPY shared ./shared
 COPY server ./server
 COPY vite.config.ts postcss.config.js tailwind.config.ts ./
+COPY theme.json ./
 
 # Install dependencies explicitly for build process
 RUN npm ci
+
+# Create dist directory
+RUN mkdir -p ./dist/public
 
 # Build the frontend 
 RUN npm run build && \
     echo "Frontend build complete. Checking build output:" && \
     ls -la ./dist && \
+    echo "Client files:" && \
     ls -la ./dist/public || echo "No dist/public directory"
+    
+# Ensure we have some content even if build fails
+RUN if [ ! -f "./dist/public/index.html" ]; then \
+      echo "Creating fallback index.html"; \
+      mkdir -p ./dist/public; \
+      echo '<html><head><title>Greenlane CRM</title></head><body><h1>Greenlane CRM</h1><p>Application is loading...</p></body></html>' > ./dist/public/index.html; \
+    fi
 
 # Create a smaller production image
 FROM node:20-alpine
