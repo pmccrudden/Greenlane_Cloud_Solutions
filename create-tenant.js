@@ -57,21 +57,36 @@ function isValidSubdomain(subdomain) {
 
 /**
  * Creates a new tenant with admin user and default modules
+ * @param {string} [providedTenantId] - The tenant ID (subdomain)
+ * @param {string} [providedCompanyName] - The company name
+ * @param {string} [providedAdminEmail] - The admin email
+ * @param {string} [providedAdminPassword] - The admin password
+ * @returns {Promise<object>} - The created tenant
  */
-async function createTenantAndAdmin() {
-  // Get command line arguments
-  const args = process.argv.slice(2);
+async function createTenantAndAdmin(providedTenantId, providedCompanyName, providedAdminEmail, providedAdminPassword) {
+  let tenantId, companyName, adminEmail, adminPassword;
   
-  if (args.length < 3) {
-    console.error('Usage: node create-tenant.js <tenant-id> <company-name> <admin-email> [admin-password]');
-    console.error('Example: node create-tenant.js acme "Acme Corporation" admin@acme.com');
-    process.exit(1);
+  // If function is called with parameters, use those
+  if (providedTenantId && providedCompanyName && providedAdminEmail) {
+    tenantId = providedTenantId;
+    companyName = providedCompanyName;
+    adminEmail = providedAdminEmail;
+    adminPassword = providedAdminPassword || crypto.randomBytes(8).toString('hex');
+  } else {
+    // Otherwise get command line arguments
+    const args = process.argv.slice(2);
+    
+    if (args.length < 3) {
+      console.error('Usage: node create-tenant.js <tenant-id> <company-name> <admin-email> [admin-password]');
+      console.error('Example: node create-tenant.js acme "Acme Corporation" admin@acme.com');
+      process.exit(1);
+    }
+    
+    tenantId = args[0];
+    companyName = args[1];
+    adminEmail = args[2];
+    adminPassword = args[3] || crypto.randomBytes(8).toString('hex');
   }
-  
-  const tenantId = args[0];
-  const companyName = args[1];
-  const adminEmail = args[2];
-  const adminPassword = args[3] || crypto.randomBytes(8).toString('hex');
   
   if (!isValidSubdomain(tenantId)) {
     console.error(`Invalid tenant ID: '${tenantId}'. Must be 3-20 characters, lowercase letters, numbers, and hyphens only.`);
@@ -106,11 +121,9 @@ async function createTenantAndAdmin() {
           is_active, 
           domain_name, 
           admin_email, 
-          custom_subdomain,
-          created_at,
-          updated_at
+          custom_subdomain
         ) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7) 
         RETURNING *`,
         [
           tenantId,
@@ -135,11 +148,9 @@ async function createTenantAndAdmin() {
           first_name, 
           last_name, 
           role, 
-          tenant_id,
-          created_at,
-          updated_at
+          tenant_id
         ) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7) 
         RETURNING *`,
         [
           adminEmail,
@@ -216,12 +227,9 @@ async function createTenantAndAdmin() {
             description, 
             enabled, 
             version, 
-            last_updated,
-            created_at,
-            updated_at,
             settings
           ) 
-          VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW(), NOW(), $7)`,
+          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
           [
             module.id,
             module.name,
