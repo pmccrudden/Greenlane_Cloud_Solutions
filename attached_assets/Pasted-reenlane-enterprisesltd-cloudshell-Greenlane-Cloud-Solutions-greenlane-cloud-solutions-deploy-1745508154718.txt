@@ -1,0 +1,68 @@
+reenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-esm.sh
+=== Deploying Greenlane CRM to Cloud Run (ESM) ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-16860]
+Current GCP project: greenlane-cloud-solutions
+Building Docker image locally...
+[+] Building 19.2s (20/20) FINISHED                                                                                                                                   docker:default
+ => [internal] load build definition from Dockerfile.esm                                                                                                                        0.0s
+ => => transferring dockerfile: 1.18kB                                                                                                                                          0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)                                                                                                  0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 18)                                                                                                 0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                                               0.7s
+ => [internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 482B                                                                                                                                               0.0s
+ => [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                 0.0s
+ => [internal] load build context                                                                                                                                               0.0s
+ => => transferring context: 46.12kB                                                                                                                                            0.0s
+ => CACHED [builder 2/6] WORKDIR /app                                                                                                                                           0.0s
+ => CACHED [builder 3/6] COPY package.json package-lock.json ./                                                                                                                 0.0s
+ => CACHED [builder 4/6] RUN npm ci                                                                                                                                             0.0s
+ => [builder 5/6] COPY . .                                                                                                                                                      0.1s
+ => [builder 6/6] RUN npm run build                                                                                                                                            17.6s
+ => CACHED [production  4/12] RUN npm ci --only=production                                                                                                                      0.0s 
+ => CACHED [production  5/12] COPY --from=builder /app/dist ./dist                                                                                                              0.0s 
+ => CACHED [production  6/12] COPY --from=builder /app/shared ./shared                                                                                                          0.0s 
+ => CACHED [production  7/12] COPY --from=builder /app/server ./server                                                                                                          0.0s 
+ => CACHED [production  8/12] COPY server.js ./                                                                                                                                 0.0s 
+ => CACHED [production  9/12] RUN echo "Files in /app:"                                                                                                                         0.0s 
+ => CACHED [production 10/12] RUN ls -la /app                                                                                                                                   0.0s
+ => CACHED [production 11/12] RUN echo "Contents of /app/dist:"                                                                                                                 0.0s
+ => CACHED [production 12/12] RUN ls -la /app/dist || echo "dist directory missing or empty"                                                                                    0.0s
+ => exporting to image                                                                                                                                                          0.0s
+ => => exporting layers                                                                                                                                                         0.0s
+ => => writing image sha256:bb08669031298635168ffa661c0b5d595c8bb00e01b5061dbdb5f5b85f461833                                                                                    0.0s
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-esm:latest                                                                                                      0.0s
+
+ 2 warnings found (use docker --debug to expand):
+ - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)
+ - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 18)
+Pushing image to Google Container Registry...
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-esm]
+23c060f3ae20: Layer already exists 
+9d23af608eb1: Layer already exists 
+d0669430b033: Layer already exists 
+a3606b032b1f: Layer already exists 
+bc9cc175ac37: Layer already exists 
+e6467decc6e7: Layer already exists 
+28313b2e6d46: Layer already exists 
+a03ff8ccd9f5: Layer already exists 
+b8185dcc9be5: Layer already exists 
+2c9cabe10289: Layer already exists 
+75228a052fed: Layer already exists 
+08000c18d16d: Layer already exists 
+latest: digest: sha256:806597ac7f6336232db7f1620373fef9000b192a3f10aeec19e2ae221128fb24 size: 3444
+Deploying to Cloud Run...
+Deploying container to Cloud Run service [greenlane-crm-esm] in project [greenlane-cloud-solutions] region [us-central1]
+X Deploying new service...                                                                                                                                                          
+  - Creating Revision...                                                                                                                                                            
+  . Routing traffic...                                                                                                                                                              
+  ✓ Setting IAM Policy...                                                                                                                                                           
+Deployment failed                                                                                                                                                                   
+ERROR: (gcloud.run.deploy) Revision 'greenlane-crm-esm-00001-h6v' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-esm/revision_name/greenlane-crm-esm-00001-h6v&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-esm%22%0Aresource.labels.revision_name%3D%22greenlane-crm-esm-00001-h6v%22 
+For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+Deployment completed.
+Checking service status...
+Service not yet available. Check Cloud Run logs for details.
