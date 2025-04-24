@@ -1,11 +1,11 @@
 steps:
   # Build the enhanced ESM container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/greenlane-crm-esm-enhanced:$COMMIT_SHA', '-f', 'Dockerfile.esm-enhanced', '.']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/greenlane-crm-app:latest', '-f', 'Dockerfile.esm-enhanced', '.']
 
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/greenlane-crm-esm-enhanced:$COMMIT_SHA']
+    args: ['push', 'gcr.io/$PROJECT_ID/greenlane-crm-app:latest']
 
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -13,9 +13,9 @@ steps:
     args:
     - 'run'
     - 'deploy'
-    - 'greenlane-crm-esm-enhanced'
-    - '--image=gcr.io/$PROJECT_ID/greenlane-crm-esm-enhanced:$COMMIT_SHA'
-    - '--region=us-central1'
+    - '${_APP_NAME}'
+    - '--image=gcr.io/$PROJECT_ID/greenlane-crm-app:latest'
+    - '--region=${_REGION}'
     - '--platform=managed'
     - '--allow-unauthenticated'
     - '--memory=1Gi'
@@ -23,13 +23,17 @@ steps:
     - '--concurrency=80'
     - '--max-instances=10'
     - '--min-instances=1'
-    - '--timeout=300s'
-    - '--set-env-vars=NODE_ENV=production,HOST=0.0.0.0'
+    - '--timeout=600s'
+    - '--set-env-vars=NODE_ENV=production,HOST=0.0.0.0,DATABASE_URL=${_DATABASE_URL},BASE_DOMAIN=greenlanecloudsolutions.com'
+    - '--add-cloudsql-instances=greenlane-cloud-solutions:us-central1:greenlanecrmdb'
     - '--quiet'
 
-# Tag the image with the commit hash and 'latest'
+# Tag the image
 images:
-  - 'gcr.io/$PROJECT_ID/greenlane-crm-esm-enhanced:$COMMIT_SHA'
-  - 'gcr.io/$PROJECT_ID/greenlane-crm-esm-enhanced:latest'
+  - 'gcr.io/$PROJECT_ID/greenlane-crm-app:latest'
 
-timeout: '1800s' # 30 minute timeout
+# Default substitution values
+substitutions:
+  _APP_NAME: greenlane-crm-app
+  _REGION: us-central1
+  _DATABASE_URL: ''
