@@ -1,0 +1,88 @@
+Run `npm audit` for details.
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-multi-tenant-esm.sh
+Loading environment variables from .env.deploy
+Loading environment variables from .env.production
+Starting multi-tenant deployment (ESM)...
+Loaded environment variables from .env.deploy
+Loaded environment variables from .env.production
+Starting multi-tenant deployment (ESM Enhanced)...
+Executing: ./deploy-esm-enhanced.sh
+ESM Enhanced deployment completed.
+=== Deploying Enhanced ESM Server to Cloud Run ===
+greenlane.enterprisesltd@gmail.com
+Current GCP project: greenlane-cloud-solutions
+Building enhanced ESM Docker image...
+Pushing image to Google Container Registry...
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced]
+e09be2ae63b7: Preparing
+e09be2ae63b7: Preparing
+e09be2ae63b7: Preparing
+e09be2ae63b7: Preparing
+d70d315a4a3b: Preparing
+13f06df7f9b6: Preparing
+e040a5bea17d: Preparing
+75acd7854901: Preparing
+86ce4cbacba7: Preparing
+0285c5bdbaeb: Preparing
+3cb52306c6f7: Preparing
+b8185dcc9be5: Preparing
+2c9cabe10289: Preparing
+75228a052fed: Preparing
+08000c18d16d: Preparing
+3cb52306c6f7: Waiting
+b8185dcc9be5: Waiting
+2c9cabe10289: Waiting
+75228a052fed: Waiting
+08000c18d16d: Waiting
+86ce4cbacba7: Waiting
+0285c5bdbaeb: Waiting
+13f06df7f9b6: Pushed
+75acd7854901: Pushed
+d70d315a4a3b: Pushed
+e09be2ae63b7: Pushed
+3cb52306c6f7: Layer already exists
+e040a5bea17d: Pushed
+2c9cabe10289: Layer already exists
+b8185dcc9be5: Layer already exists
+75228a052fed: Layer already exists
+08000c18d16d: Layer already exists
+0285c5bdbaeb: Pushed
+86ce4cbacba7: Pushed
+latest: digest: sha256:905b84f5fadb26afc389f98ea9a7d258543764ee1858eb078c9379dfc394e78d size: 3444
+Deploying to Cloud Run...
+Deployment completed.
+Checking service status...
+Service is available at: https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app
+
+Testing the endpoints:
+Main endpoint:
+Status code: 200
+Debug endpoint:
+https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/debug
+
+View logs:
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%20resource.labels.service_name%3D%22greenlane-crm-esm-enhanced%22?project=greenlane-cloud-solutions
+
+Service hostname: greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app
+Setting up Cloudflare DNS...
+Executing: node setup-cloudflare-dns.js
+
+===== Multi-Tenant Deployment Complete =====
+App URL: https://app.greenlanecloudsolutions.com
+API URL: https://api.greenlanecloudsolutions.com
+Tenant URL pattern: https://<tenant-id>.greenlanecloudsolutions.com
+
+You can create a tenant with:
+  node create-tenant.js
+
+Or create and verify DNS for an existing tenant with:
+  node add-tenant-subdomain.js <tenant-id>
+Multi-tenant deployment (ESM) completed successfully!
+
+You can now set up tenants with:
+1. Use API to create tenants through the app
+2. Add DNS records for existing tenants with: node add-tenant-subdomain.js <tenant-id>
+
+Main application: https://app.greenlanecloudsolutions.com
+API endpoint: https://api.greenlanecloudsolutions.com
+Tenant subdomains: https://<tenant-id>.greenlanecloudsolutions.com
