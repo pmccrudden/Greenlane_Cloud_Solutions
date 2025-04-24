@@ -16,6 +16,7 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 const HOST = process.env.HOST || '0.0.0.0';
 
 console.log('Starting Greenlane CRM Server');
+// Log key environment info for diagnostics
 console.log('Environment:', {
   NODE_ENV: process.env.NODE_ENV,
   PORT: PORT,
@@ -23,6 +24,19 @@ console.log('Environment:', {
   CWD: process.cwd(),
   DIRNAME: __dirname
 });
+
+// Check for mounted files
+try {
+  const fs = await import('fs');
+  if (fs.existsSync('/app/.env')) {
+    console.log('Found mounted .env file');
+  }
+  
+  // List files in the current directory for diagnostics
+  console.log('Files in working directory:', fs.readdirSync('.'));
+} catch (error) {
+  console.error('Error checking for mounted files:', error);
+}
 
 // Create a minimal HTTP server immediately for health checks
 const server = http.createServer((req, res) => {

@@ -30,6 +30,8 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server.js ./server.js
 COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
+COPY --from=builder /app/shared ./shared
+COPY --from=builder /app/server ./server
 
 # Set environment variables
 ENV NODE_ENV=production

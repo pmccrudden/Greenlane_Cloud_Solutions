@@ -37,8 +37,8 @@ steps:
       - '--cpu-boost'
       - '--no-traffic'
       - '--command'
-      - ''
+      - 'node'
       - '--args'
-      - ''
+      - 'server.js'
 images:
   - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
