@@ -33,7 +33,7 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/server ./server
 COPY --from=builder /app/server-esm.js ./server-esm.js
-COPY --from=builder /app/bootstrap.js ./bootstrap.js
+COPY --from=builder /app/bootstrap.cjs ./bootstrap.cjs
 COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
 
 # Copy all the TypeScript files that might be needed
