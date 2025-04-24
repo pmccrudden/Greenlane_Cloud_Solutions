@@ -4,7 +4,7 @@
 
 import { exec } from 'child_process';
 import { promises as fs } from 'fs';
-import dotenv from 'dotenv';
+import * as fsSync from 'fs';
 
 /**
  * Load environment variables from a file
@@ -13,16 +13,31 @@ import dotenv from 'dotenv';
  */
 function loadEnvFromFile(file) {
   try {
-    const config = dotenv.config({ path: file });
-    if (config.error) {
-      throw config.error;
+    if (fsSync.existsSync(file)) {
+      const content = fsSync.readFileSync(file, 'utf8');
+      const lines = content.split('\n');
+      const result = {};
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (trimmedLine && !trimmedLine.startsWith('#')) {
+          const [key, ...valueParts] = trimmedLine.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts.join('=').trim();
+            // Remove quotes if present
+            const cleanValue = value.replace(/^["'](.*)["']$/, '$1');
+            process.env[key.trim()] = cleanValue;
+            result[key.trim()] = cleanValue;
+          }
+        }
+      }
+      console.log(`Loaded environment variables from ${file}`);
+      return result;
     }
-    console.log(`Loaded environment variables from ${file}`);
-    return config.parsed;
   } catch (error) {
     console.warn(`Warning: Could not load ${file}: ${error.message}`);
-    return {};
   }
+  return {};
 }
 
 // Load environment variables

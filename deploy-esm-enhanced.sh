@@ -59,10 +59,16 @@ if [ -n "$SERVICE_URL" ]; then
   echo "Debug endpoint:"
   echo "$SERVICE_URL/debug"
   
+  # Save the service hostname to a file for DNS configuration
+  SERVICE_HOSTNAME=$(echo "$SERVICE_URL" | sed 's,^https://,,g')
+  echo "$SERVICE_HOSTNAME" > service_hostname.txt
+  echo "Service hostname saved to service_hostname.txt: $SERVICE_HOSTNAME"
+  
   # Open the logs
   echo ""
   echo "View logs:"
   echo "https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%20resource.labels.service_name%3D%22greenlane-crm-esm-enhanced%22?project=greenlane-cloud-solutions"
 else
   echo "Service not yet available. Check Cloud Run logs for details."
+  exit 1
 fi
