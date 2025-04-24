@@ -1,0 +1,905 @@
+Finished Step #1
+Starting Step #2
+Step #2: Pulling image: gcr.io/google.com/cloudsdktool/cloud-sdk
+Step #2: Using default tag: latest
+Step #2: latest: Pulling from google.com/cloudsdktool/cloud-sdk
+Step #2: 23b7d26ef1d2: Already exists
+Step #2: 414194ec006b: Pulling fs layer
+Step #2: 119ced87cd2b: Pulling fs layer
+Step #2: c12f750fbaf0: Pulling fs layer
+Step #2: 2c9f1e00705a: Pulling fs layer
+Step #2: 92c27e79463e: Pulling fs layer
+Step #2: 6b0559dc4a91: Pulling fs layer
+Step #2: 2c9f1e00705a: Waiting
+Step #2: 92c27e79463e: Waiting
+Step #2: 6b0559dc4a91: Waiting
+Step #2: c12f750fbaf0: Download complete
+Step #2: 414194ec006b: Verifying Checksum
+Step #2: 414194ec006b: Download complete
+Step #2: 119ced87cd2b: Verifying Checksum
+Step #2: 119ced87cd2b: Download complete
+Step #2: 6b0559dc4a91: Verifying Checksum
+Step #2: 6b0559dc4a91: Download complete
+Step #2: 92c27e79463e: Verifying Checksum
+Step #2: 92c27e79463e: Download complete
+Step #2: 414194ec006b: Pull complete
+Step #2: 119ced87cd2b: Pull complete
+Step #2: c12f750fbaf0: Pull complete
+Step #2: 2c9f1e00705a: Verifying Checksum
+Step #2: 2c9f1e00705a: Download complete
+Step #2: 2c9f1e00705a: Pull complete
+Step #2: 92c27e79463e: Pull complete
+Step #2: 6b0559dc4a91: Pull complete
+Step #2: Digest: sha256:348ebedf45eb6979ec93359df987ecb007ad570ae9279d1fe46e7f2f3da651b5
+Step #2: Status: Downloaded newer image for gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: gcr.io/google.com/cloudsdktool/cloud-sdk:latest
+Step #2: Deploying container to Cloud Run service [greenlane-crm-app] in project [greenlane-cloud-solutions] region [us-central1]
+Step #2: Deploying...
+Step #2: Setting IAM Policy........warning
+Step #2: Creating Revision.................................................................................................................................................................failed
+Step #2: Deployment failed
+Step #2:   Setting IAM policy failed, try "gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker greenlane-crm-app"
+Step #2: ERROR: (gcloud.run.deploy) Revision 'greenlane-crm-app-00022-795' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+Step #2: 
+Step #2: Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00022-795&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00022-795%22 
+Step #2: For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+Finished Step #2
+ERROR
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build eaecd766-ef39-4cac-a63d-6911b0a3d118 completed with status "FAILURE"
+Setting IAM policy for public access...
+Updated IAM policy for service [greenlane-crm-app].
+bindings:
+- members:
+  - allUsers
+  role: roles/run.invoker
+etag: BwYzgq1plUw=
+version: 1
+Retrieving service URL...
+Unable to retrieve service URL. Check deployment logs.
+Retrieving logs to help diagnose the issue...
+---
+insertId: -ql74fcdmqxy
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  methodName: /Services.ReplaceService
+  resourceName: namespaces/greenlane-cloud-solutions/services/greenlane-crm-app
+  response:
+    '@type': type.googleapis.com/google.cloud.run.v1.Service
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    metadata:
+      annotations:
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 519.0.0
+        run.googleapis.com/ingress: all
+        run.googleapis.com/ingress-status: all
+        run.googleapis.com/operation-id: 254dc140-4c62-467a-a261-33275333a6d3
+        run.googleapis.com/urls: '["https://greenlane-crm-app-869018523985.us-central1.run.app"]'
+        serving.knative.dev/creator: greenlane.enterprisesltd@gmail.com
+        serving.knative.dev/lastModifier: 869018523985-compute@developer.gserviceaccount.com
+      creationTimestamp: '2025-04-21T12:44:21.610638Z'
+      generation: 22
+      labels:
+        cloud.googleapis.com/location: us-central1
+      name: greenlane-crm-app
+      namespace: '869018523985'
+      resourceVersion: AAYzgq0N3FM
+      selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-crm-app
+      uid: bcac8629-8496-4d83-9d37-40f18e75c60c
+    spec:
+      template:
+        metadata:
+          annotations:
+            autoscaling.knative.dev/maxScale: '10'
+            autoscaling.knative.dev/minScale: '1'
+            run.googleapis.com/client-name: gcloud
+            run.googleapis.com/client-version: 519.0.0
+            run.googleapis.com/cpu-throttling: 'false'
+            run.googleapis.com/startup-cpu-boost: 'true'
+          labels:
+            client.knative.dev/nonce: seycvrgkhk
+            run.googleapis.com/startupProbeType: Default
+        spec:
+          containerConcurrency: 80
+          containers:
+          - args:
+            - bootstrap.cjs
+            command:
+            - node
+            env:
+            - name: NODE_ENV
+              value: production
+            - name: BASE_DOMAIN
+              value: greenlanecloudsolutions.com
+            - name: CRM_DOMAIN
+              value: crm.greenlanecloudsolutions.com
+            - name: API_DOMAIN
+              value: api.greenlanecloudsolutions.com
+            image: gcr.io/greenlane-cloud-solutions/greenlane-crm-app
+            ports:
+            - containerPort: 8080
+              name: http1
+            resources:
+              limits:
+                cpu: '1'
+                memory: 1Gi
+            startupProbe:
+              failureThreshold: 1
+              periodSeconds: 240
+              tcpSocket:
+                port: 8080
+              timeoutSeconds: 240
+            volumeMounts:
+            - mountPath: /app
+              name: greenlane-env-kib-dur-zuq
+          serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+          timeoutSeconds: 300
+          volumes:
+          - name: greenlane-env-vex-zuf-pov
+            secret:
+              items:
+              - key: latest
+                path: .env
+              secretName: greenlane-env
+          - name: greenlane-env-kib-dur-zuq
+            secret:
+              items:
+              - key: latest
+                path: .env
+              secretName: greenlane-env
+      traffic:
+      - latestRevision: true
+        percent: 100
+    status:
+      conditions:
+      - lastTransitionTime: '2025-04-24T09:16:42.313431Z'
+        message: |-
+          Revision 'greenlane-crm-app-00022-795' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+          Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00022-795&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00022-795%22 
+          For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+        reason: HealthCheckContainerError
+        status: 'False'
+        type: Ready
+      - lastTransitionTime: '2025-04-24T09:16:42.312929Z'
+        message: |-
+          The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+          Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00022-795&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00022-795%22 
+          For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+        status: 'True'
+        type: ConfigurationsReady
+      - lastTransitionTime: '2025-04-24T09:16:42.313431Z'
+        message: |-
+          Revision 'greenlane-crm-app-00022-795' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+          Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00022-795&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00022-795%22 
+          For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+        reason: HealthCheckContainerError
+        status: 'False'
+        type: RoutesReady
+      latestCreatedRevisionName: greenlane-crm-app-00022-795
+      observedGeneration: 22
+  serviceName: run.googleapis.com
+  status:
+    code: 9
+    message: |-
+      Ready condition status changed to False for Service greenlane-crm-app with message: Revision 'greenlane-crm-app-00022-795' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+      Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00022-795&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00022-795%22 
+      For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+receiveTimestamp: '2025-04-24T09:16:42.662009745Z'
+resource:
+  labels:
+    configuration_name: ''
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: ''
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: ERROR
+timestamp: '2025-04-24T09:16:42.414400Z'
+---
+insertId: 680a017a000402ec0e22fa77
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem
+receiveTimestamp: '2025-04-24T09:16:42.504476767Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Default STARTUP TCP probe failed 1 time consecutively for container "greenlane-crm-app-1" on port 8080. The instance was not started.
+  Connection failed with status CANCELLED.
+timestamp: '2025-04-24T09:16:42.262892Z'
+---
+insertId: 680a017900080e4fbc68f268
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T09:16:41.534460364Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: Node.js v20.19.1
+timestamp: '2025-04-24T09:16:41.527951Z'
+---
+insertId: 680a017900080e4b4195d526
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T09:16:41.534460364Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: '}'
+timestamp: '2025-04-24T09:16:41.527947Z'
+---
+insertId: 680a017900080e481e53b322
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T09:16:41.534460364Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: '  requireStack: []'
+timestamp: '2025-04-24T09:16:41.527944Z'
+---
+insertId: 680a017900080e4436d69342
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T09:16:41.534460364Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: "  code: 'MODULE_NOT_FOUND',"
+timestamp: '2025-04-24T09:16:41.527940Z'
+---
+errorGroups:
+- id: CNWu5da0iZ-3Og
+insertId: 680a017900080e417c7251d1
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T09:16:41.534460364Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Error: Cannot find module '/app/bootstrap.cjs'
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1212:15)
+      at Module._load (node:internal/modules/cjs/loader:1043:27)
+      at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+      at node:internal/main/run_main_module:28:49 {
+timestamp: '2025-04-24T09:16:41.527937Z'
+---
+insertId: 680a017900080e1ab7d8c0dd
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T09:16:41.534460364Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: '  ^'
+timestamp: '2025-04-24T09:16:41.527898Z'
+---
+insertId: 680a017900080e178b87b989
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T09:16:41.534460364Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: '  throw err;'
+timestamp: '2025-04-24T09:16:41.527895Z'
+---
+insertId: 680a017900080e017db11e16
+labels:
+  instanceId: 00afae80430ad28c284f829f33089fb05ecc31f3ab8129733d57d0c5f5c94cc76c8db030d8b65d53425ae806dea80a24e33f84bb61413995a0af6cadb49cef5beb6ad4ce09
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-24T09:16:41.534460364Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00022-795
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: node:internal/modules/cjs/loader:1215
+timestamp: '2025-04-24T09:16:41.527873Z'
+---
+insertId: scdcthe1ddi0
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Factivity
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  authenticationInfo:
+    principalEmail: 869018523985-compute@developer.gserviceaccount.com
+    principalSubject: serviceAccount:869018523985-compute@developer.gserviceaccount.com
+  authorizationInfo:
+  - granted: true
+    permission: run.services.update
+    permissionType: ADMIN_WRITE
+    resource: namespaces/greenlane-cloud-solutions/services/greenlane-crm-app
+    resourceAttributes: {}
+  - granted: true
+    permission: run.services.update
+    permissionType: ADMIN_WRITE
+    resource: namespaces/greenlane-cloud-solutions/services/greenlane-crm-app
+    resourceAttributes:
+      name: namespaces/greenlane-cloud-solutions/services/greenlane-crm-app
+      service: run.googleapis.com/
+      type: run.googleapis.com/Service
+  methodName: google.cloud.run.v1.Services.ReplaceService
+  request:
+    '@type': type.googleapis.com/google.cloud.run.v1.ReplaceServiceRequest
+    name: namespaces/greenlane-cloud-solutions/services/greenlane-crm-app
+    service:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      metadata:
+        annotations:
+          run.googleapis.com/client-name: gcloud
+          run.googleapis.com/client-version: 519.0.0
+          run.googleapis.com/ingress: all
+          run.googleapis.com/ingress-status: all
+          run.googleapis.com/operation-id: d5017988-1e22-4b18-a9d4-c3a137076e97
+          run.googleapis.com/urls: '["https://greenlane-crm-app-869018523985.us-central1.run.app"]'
+          serving.knative.dev/creator: greenlane.enterprisesltd@gmail.com
+          serving.knative.dev/lastModifier: 869018523985-compute@developer.gserviceaccount.com
+        creationTimestamp: '2025-04-21T12:44:21.610638Z'
+        generation: 21
+        labels:
+          cloud.googleapis.com/location: us-central1
+        name: greenlane-crm-app
+        namespace: '869018523985'
+        resourceVersion: AAYzeuOEpqA
+        selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-crm-app
+        uid: bcac8629-8496-4d83-9d37-40f18e75c60c
+      spec:
+        template:
+          metadata:
+            annotations:
+              autoscaling.knative.dev/maxScale: '10'
+              autoscaling.knative.dev/minScale: '1'
+              run.googleapis.com/client-name: gcloud
+              run.googleapis.com/client-version: 519.0.0
+              run.googleapis.com/cpu-throttling: 'False'
+              run.googleapis.com/startup-cpu-boost: 'True'
+            labels:
+              client.knative.dev/nonce: seycvrgkhk
+              run.googleapis.com/startupProbeType: Default
+          spec:
+            containerConcurrency: 80
+            containers:
+            - image: gcr.io/greenlane-cloud-solutions/greenlane-crm-app
+              resources:
+                limits:
+                  cpu: '1'
+                  memory: 1Gi
+            serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+            timeoutSeconds: 300
+            volumes:
+            - name: greenlane-env-vex-zuf-pov
+              secret:
+                items:
+                - key: latest
+                  path: .env
+                secretName: greenlane-env
+            - name: greenlane-env-kib-dur-zuq
+              secret:
+                items:
+                - key: latest
+                  path: .env
+                secretName: greenlane-env
+        traffic:
+        - latestRevision: true
+          percent: 100
+      status:
+        conditions:
+        - lastTransitionTime: '2025-04-23T23:59:16.354580Z'
+          reason: HealthCheckContainerError
+          status: 'False'
+          type: Ready
+        - lastTransitionTime: '2025-04-23T23:59:16.344247Z'
+          status: 'True'
+          type: ConfigurationsReady
+        - lastTransitionTime: '2025-04-23T23:59:16.354580Z'
+          reason: HealthCheckContainerError
+          status: 'False'
+          type: RoutesReady
+        latestCreatedRevisionName: greenlane-crm-app-00021-6g2
+        observedGeneration: 21
+  requestMetadata:
+    callerIp: 34.173.111.106
+    callerSuppliedUserAgent: google-cloud-sdk gcloud/519.0.0 command/gcloud.run.deploy
+      invocation-id/70dc195681004cf8be066aa12e7d3938 environment/GCE environment-version/None
+      client-os/LINUX client-os-ver/5.10.0 client-pltf-arch/x86_64 interactive/False
+      from-script/False python/3.12.8 term/ (Linux 5.10.0-32-cloud-amd64),gzip(gfe)
+    destinationAttributes: {}
+    requestAttributes:
+      auth: {}
+      time: '2025-04-24T09:16:26.558985Z'
+  resourceLocation:
+    currentLocations:
+    - us-central1
+  resourceName: namespaces/greenlane-cloud-solutions/services/greenlane-crm-app
+  serviceName: run.googleapis.com
+receiveTimestamp: '2025-04-24T09:16:27.413012560Z'
+resource:
+  labels:
+    configuration_name: ''
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: ''
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: NOTICE
+timestamp: '2025-04-24T09:16:26.344667Z'
+---
+insertId: dxfan8duoqs
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  methodName: /Services.ReplaceService
+  resourceName: namespaces/greenlane-cloud-solutions/services/greenlane-crm-app
+  response:
+    '@type': type.googleapis.com/google.cloud.run.v1.Service
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    metadata:
+      annotations:
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 519.0.0
+        run.googleapis.com/ingress: all
+        run.googleapis.com/ingress-status: all
+        run.googleapis.com/operation-id: d5017988-1e22-4b18-a9d4-c3a137076e97
+        run.googleapis.com/urls: '["https://greenlane-crm-app-869018523985.us-central1.run.app"]'
+        serving.knative.dev/creator: greenlane.enterprisesltd@gmail.com
+        serving.knative.dev/lastModifier: 869018523985-compute@developer.gserviceaccount.com
+      creationTimestamp: '2025-04-21T12:44:21.610638Z'
+      generation: 21
+      labels:
+        cloud.googleapis.com/location: us-central1
+      name: greenlane-crm-app
+      namespace: '869018523985'
+      resourceVersion: AAYzeuOEpqA
+      selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-crm-app
+      uid: bcac8629-8496-4d83-9d37-40f18e75c60c
+    spec:
+      template:
+        metadata:
+          annotations:
+            autoscaling.knative.dev/maxScale: '10'
+            autoscaling.knative.dev/minScale: '1'
+            run.googleapis.com/client-name: gcloud
+            run.googleapis.com/client-version: 519.0.0
+            run.googleapis.com/cpu-throttling: 'false'
+            run.googleapis.com/startup-cpu-boost: 'true'
+          labels:
+            client.knative.dev/nonce: daibdaayxi
+            run.googleapis.com/startupProbeType: Default
+        spec:
+          containerConcurrency: 80
+          containers:
+          - args:
+            - bootstrap.js
+            command:
+            - node
+            env:
+            - name: NODE_ENV
+              value: production
+            - name: BASE_DOMAIN
+              value: greenlanecloudsolutions.com
+            image: gcr.io/greenlane-cloud-solutions/greenlane-crm-app
+            ports:
+            - containerPort: 8080
+              name: http1
+            resources:
+              limits:
+                cpu: '1'
+                memory: 1Gi
+            startupProbe:
+              failureThreshold: 1
+              periodSeconds: 240
+              tcpSocket:
+                port: 8080
+              timeoutSeconds: 240
+            volumeMounts:
+            - mountPath: /app
+              name: greenlane-env-kib-dur-zuq
+          serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+          timeoutSeconds: 300
+          volumes:
+          - name: greenlane-env-vex-zuf-pov
+            secret:
+              items:
+              - key: latest
+                path: .env
+              secretName: greenlane-env
+          - name: greenlane-env-kib-dur-zuq
+            secret:
+              items:
+              - key: latest
+                path: .env
+              secretName: greenlane-env
+      traffic:
+      - latestRevision: true
+        percent: 100
+    status:
+      conditions:
+      - lastTransitionTime: '2025-04-23T23:59:16.354580Z'
+        message: |-
+          Revision 'greenlane-crm-app-00021-6g2' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+          Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00021-6g2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00021-6g2%22 
+          For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+        reason: HealthCheckContainerError
+        status: 'False'
+        type: Ready
+      - lastTransitionTime: '2025-04-23T23:59:16.344247Z'
+        message: |-
+          The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+          Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00021-6g2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00021-6g2%22 
+          For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+        status: 'True'
+        type: ConfigurationsReady
+      - lastTransitionTime: '2025-04-23T23:59:16.354580Z'
+        message: |-
+          Revision 'greenlane-crm-app-00021-6g2' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+          Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00021-6g2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00021-6g2%22 
+          For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+        reason: HealthCheckContainerError
+        status: 'False'
+        type: RoutesReady
+      latestCreatedRevisionName: greenlane-crm-app-00021-6g2
+      observedGeneration: 21
+  serviceName: run.googleapis.com
+  status:
+    code: 9
+    message: |-
+      Ready condition status changed to False for Service greenlane-crm-app with message: Revision 'greenlane-crm-app-00021-6g2' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+      Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00021-6g2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00021-6g2%22 
+      For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+receiveTimestamp: '2025-04-23T23:59:16.957926994Z'
+resource:
+  labels:
+    configuration_name: ''
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: ''
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: ERROR
+timestamp: '2025-04-23T23:59:16.423382Z'
+---
+insertId: 68097ed40004f7e919fd5553
+labels:
+  instanceId: 00afae80435f9ae4d1dd502458b230ff75fb1dff02c23462bfccca6e8a6e265936a1530fb70ba6d5fb05f29aec3a86f7bd1c9df7fa25cd82e6059241a9b604997d66eac42d
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem
+receiveTimestamp: '2025-04-23T23:59:16.550634062Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00021-6g2
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Default STARTUP TCP probe failed 1 time consecutively for container "greenlane-crm-app-1" on port 8080. The instance was not started.
+  Connection failed with status CANCELLED.
+timestamp: '2025-04-23T23:59:16.325609Z'
+---
+insertId: -5rhh44dr3rs
+logName: projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event
+protoPayload:
+  '@type': type.googleapis.com/google.cloud.audit.AuditLog
+  methodName: /Services.ReplaceService
+  resourceName: namespaces/greenlane-cloud-solutions/revisions/greenlane-crm-app-00021-6g2
+  response:
+    '@type': type.googleapis.com/google.cloud.run.v1.Revision
+    apiVersion: serving.knative.dev/v1
+    kind: Revision
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '10'
+        autoscaling.knative.dev/minScale: '1'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 519.0.0
+        run.googleapis.com/cpu-throttling: 'false'
+        run.googleapis.com/operation-id: d5017988-1e22-4b18-a9d4-c3a137076e97
+        run.googleapis.com/startup-cpu-boost: 'true'
+        serving.knative.dev/creator: 869018523985-compute@developer.gserviceaccount.com
+      creationTimestamp: '2025-04-23T23:59:02.228541Z'
+      generation: 1
+      labels:
+        client.knative.dev/nonce: daibdaayxi
+        cloud.googleapis.com/location: us-central1
+        run.googleapis.com/startupProbeType: Default
+        serving.knative.dev/configuration: greenlane-crm-app
+        serving.knative.dev/configurationGeneration: '21'
+        serving.knative.dev/route: greenlane-crm-app
+        serving.knative.dev/service: greenlane-crm-app
+        serving.knative.dev/serviceUid: bcac8629-8496-4d83-9d37-40f18e75c60c
+      name: greenlane-crm-app-00021-6g2
+      namespace: '869018523985'
+      ownerReferences:
+      - apiVersion: serving.knative.dev/v1
+        blockOwnerDeletion: true
+        controller: true
+        kind: Configuration
+        name: greenlane-crm-app
+        uid: fde63b77-ce96-4317-bd85-2e4736b4c59c
+      resourceVersion: AAYzeuODG2Q
+      selfLink: /apis/serving.knative.dev/v1/namespaces/869018523985/revisions/greenlane-crm-app-00021-6g2
+      uid: 92ed16a1-b884-4aed-aabf-25bb59e76af3
+    spec:
+      containerConcurrency: 80
+      containers:
+      - args:
+        - bootstrap.js
+        command:
+        - node
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: BASE_DOMAIN
+          value: greenlanecloudsolutions.com
+        image: gcr.io/greenlane-cloud-solutions/greenlane-crm-app@sha256:2b78d4ed98671452dee0960acbdf60a210c5726afc20fec0b1505c6286dfef02
+        name: greenlane-crm-app-1
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '1'
+            memory: 1Gi
+        startupProbe:
+          failureThreshold: 1
+          periodSeconds: 240
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 240
+        volumeMounts:
+        - mountPath: /app
+          name: greenlane-env-kib-dur-zuq
+      serviceAccountName: 869018523985-compute@developer.gserviceaccount.com
+      timeoutSeconds: 300
+      volumes:
+      - name: greenlane-env-vex-zuf-pov
+        secret:
+          items:
+          - key: latest
+            path: .env
+          secretName: greenlane-env
+      - name: greenlane-env-kib-dur-zuq
+        secret:
+          items:
+          - key: latest
+            path: .env
+          secretName: greenlane-env
+    status:
+      conditions:
+      - lastTransitionTime: '2025-04-23T23:59:16.310884Z'
+        message: |-
+          The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+          Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00021-6g2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00021-6g2%22 
+          For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+        reason: HealthCheckContainerError
+        status: 'False'
+        type: Ready
+      - lastTransitionTime: '2025-04-23T23:59:16.310884Z'
+        message: |-
+          The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+          Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00021-6g2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00021-6g2%22 
+          For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+        reason: HealthCheckContainerError
+        status: 'False'
+        type: ContainerHealthy
+      - lastTransitionTime: '2025-04-23T23:59:12.804879Z'
+        message: Container image import completed in 9.72s.
+        status: 'True'
+        type: ContainerReady
+      - lastTransitionTime: '2025-04-23T23:59:14.892737Z'
+        message: Provisioning imported containers completed in 2.09s. Checking container
+          health.
+        status: 'True'
+        type: ResourcesAvailable
+      - lastTransitionTime: '2025-04-23T23:59:14.892737Z'
+        message: System will retry after 0:00:00 from lastTransitionTime for attempt
+          0.
+        reason: ImmediateRetry
+        severity: Info
+        status: 'True'
+        type: Retry
+      containerStatuses:
+      - imageDigest: gcr.io/greenlane-cloud-solutions/greenlane-crm-app@sha256:2b78d4ed98671452dee0960acbdf60a210c5726afc20fec0b1505c6286dfef02
+        name: greenlane-crm-app-1
+      desiredReplicas: 1
+      imageDigest: gcr.io/greenlane-cloud-solutions/greenlane-crm-app@sha256:2b78d4ed98671452dee0960acbdf60a210c5726afc20fec0b1505c6286dfef02
+      logUrl: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00021-6g2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00021-6g2%22
+      observedGeneration: 1
+  serviceName: run.googleapis.com
+  status:
+    code: 9
+    message: |-
+      Ready condition status changed to False for Revision greenlane-crm-app-00021-6g2 with message: The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+      Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00021-6g2&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00021-6g2%22 
+      For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+receiveTimestamp: '2025-04-23T23:59:16.714477259Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00021-6g2
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: ERROR
+timestamp: '2025-04-23T23:59:16.321744Z'
+---
+insertId: 68097ed400033fbf9aafdf65
+labels:
+  container_name: greenlane-crm-app-1
+  instanceId: 00afae80435f9ae4d1dd502458b230ff75fb1dff02c23462bfccca6e8a6e265936a1530fb70ba6d5fb05f29aec3a86f7bd1c9df7fa25cd82e6059241a9b604997d66eac42d
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem
+receiveTimestamp: '2025-04-23T23:59:16.217904603Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00021-6g2
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: WARNING
+textPayload: Container called exit(1).
+timestamp: '2025-04-23T23:59:16.212823127Z'
+---
+insertId: 68097ed30009e74cb416eac3
+labels:
+  instanceId: 00afae80435f9ae4d1dd502458b230ff75fb1dff02c23462bfccca6e8a6e265936a1530fb70ba6d5fb05f29aec3a86f7bd1c9df7fa25cd82e6059241a9b604997d66eac42d
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T23:59:15.653281312Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00021-6g2
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: Node.js v20.19.1
+timestamp: '2025-04-23T23:59:15.649036Z'
+---
+insertId: 68097ed30009e749ce6cc047
+labels:
+  instanceId: 00afae80435f9ae4d1dd502458b230ff75fb1dff02c23462bfccca6e8a6e265936a1530fb70ba6d5fb05f29aec3a86f7bd1c9df7fa25cd82e6059241a9b604997d66eac42d
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T23:59:15.653281312Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00021-6g2
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: '}'
+timestamp: '2025-04-23T23:59:15.649033Z'
+---
+insertId: 68097ed30009e7461d55f90c
+labels:
+  instanceId: 00afae80435f9ae4d1dd502458b230ff75fb1dff02c23462bfccca6e8a6e265936a1530fb70ba6d5fb05f29aec3a86f7bd1c9df7fa25cd82e6059241a9b604997d66eac42d
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T23:59:15.653281312Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00021-6g2
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: '  requireStack: []'
+timestamp: '2025-04-23T23:59:15.649030Z'
+---
+insertId: 68097ed30009e743187e814a
+labels:
+  instanceId: 00afae80435f9ae4d1dd502458b230ff75fb1dff02c23462bfccca6e8a6e265936a1530fb70ba6d5fb05f29aec3a86f7bd1c9df7fa25cd82e6059241a9b604997d66eac42d
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T23:59:15.653281312Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00021-6g2
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+textPayload: "  code: 'MODULE_NOT_FOUND',"
+timestamp: '2025-04-23T23:59:15.649027Z'
+---
+errorGroups:
+- id: CNWu5da0iZ-3Og
+insertId: 68097ed30009e740e3bfad18
+labels:
+  instanceId: 00afae80435f9ae4d1dd502458b230ff75fb1dff02c23462bfccca6e8a6e265936a1530fb70ba6d5fb05f29aec3a86f7bd1c9df7fa25cd82e6059241a9b604997d66eac42d
+logName: projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr
+receiveTimestamp: '2025-04-23T23:59:15.653281312Z'
+resource:
+  labels:
+    configuration_name: greenlane-crm-app
+    location: us-central1
+    project_id: greenlane-cloud-solutions
+    revision_name: greenlane-crm-app-00021-6g2
+    service_name: greenlane-crm-app
+  type: cloud_run_revision
+severity: ERROR
+textPayload: |-
+  Error: Cannot find module '/app/bootstrap.js'
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1212:15)
+      at Module._load (node:internal/modules/cjs/loader:1043:27)
+      at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+      at node:internal/main/run_main_module:28:49 {
+timestamp: '2025-04-23T23:59:15.649024Z'
+Deployment completed.
