@@ -8,8 +8,25 @@ import { eq } from "drizzle-orm";
 
 // Tenant detection middleware
 async function tenantMiddleware(req: Request, res: Response, next: NextFunction) {
-  const host = req.hostname;
+  // Check for headers that might be set by Cloudflare Worker
+  const forwardedHost = req.headers['x-forwarded-host'] as string;
+  const forceMarketing = req.headers['x-force-marketing'];
+  const showMarketing = req.headers['x-show-marketing'];
+  
+  // If Cloudflare Worker explicitly requests marketing, set a flag
+  if (forceMarketing || showMarketing) {
+    console.log('Marketing page requested via header');
+    (req as any).isMarketingSite = true;
+  }
+  
+  // Use forwarded host if available, otherwise use hostname
+  const host = forwardedHost || req.hostname;
   const baseDomain = process.env.BASE_DOMAIN || 'greenlanecloudsolutions.com';
+  
+  // Log the host and headers for debugging
+  console.log('Received request with host:', host);
+  console.log('X-Forwarded-Host:', forwardedHost);
+  console.log('Headers:', Object.keys(req.headers).join(', '));
   
   // Skip tenant detection for development/preview environments
   if (host.includes('localhost') || 
@@ -21,12 +38,19 @@ async function tenantMiddleware(req: Request, res: Response, next: NextFunction)
     return next();
   }
   
-  // Skip tenant detection for main domains
+  // Detect main domains
   if (host === baseDomain || 
       host === `api.${baseDomain}` || 
       host === `app.${baseDomain}` ||
       host === `www.${baseDomain}`) {
     console.log('Main domain detected:', host);
+    
+    // Mark as marketing site for root and www domains
+    if (host === baseDomain || host === `www.${baseDomain}`) {
+      console.log('Setting marketing site flag for main domain');
+      (req as any).isMarketingSite = true;
+    }
+    
     return next();
   }
   
@@ -125,6 +149,18 @@ function serveStatic(app: express.Express) {
       }
       
       console.log(`Handling frontend route: ${req.path} for host: ${req.hostname}`);
+      console.log('Is marketing site?', !!(req as any).isMarketingSite);
+      
+      // Check if this is a marketing site request (for root domain)
+      if ((req as any).isMarketingSite) {
+        console.log('Serving marketing page for main domain');
+        const indexPath = join(staticPath, "index.html");
+        if (fs.existsSync(indexPath)) {
+          // Additional logging to help debug
+          console.log('Sending marketing page index.html');
+          return res.sendFile(indexPath);
+        }
+      }
       
       // Handle tenant subdomains with custom branding
       const tenant = (req as any).tenant;
@@ -139,6 +175,7 @@ function serveStatic(app: express.Express) {
       // Serve index.html for client-side routing
       const indexPath = join(staticPath, "index.html");
       if (fs.existsSync(indexPath)) {
+        console.log('Sending regular index.html');
         res.sendFile(indexPath);
       } else {
         console.log('Warning: index.html not found in static path');
