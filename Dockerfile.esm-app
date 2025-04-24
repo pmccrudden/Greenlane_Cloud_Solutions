@@ -54,4 +54,4 @@ EXPOSE 8080
 # Using our pre-built bootstrap.js file for optimal startup time
 
 # Use this ultra-minimal bootstrap script that starts immediately and then launches the real server
-CMD ["node", "bootstrap.js"]
+CMD ["node", "bootstrap.cjs"]
