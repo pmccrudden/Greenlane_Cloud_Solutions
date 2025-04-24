@@ -1,0 +1,89 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ node setup-tenant-simple.js
+Loaded environment variables from .env.production
+======================================================
+        Greenlane Cloud Solutions Tenant Setup        
+======================================================
+
+Enter tenant ID (will be used as subdomain): greenlane
+Enter company name: GreenLane Cloud Solutions
+Enter admin email: greenlane.enterprisesltd@gmail.com
+Enter admin password: SnowBomb42!?
+Creating tenant: greenlane (GreenLane Cloud Solutions)
+Error executing SQL: psql: error: connection to server on socket "/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb/.s.PGSQL.5432" failed: No such file or directory
+        Is the server running locally and accepting connections on that socket?
+
+Error creating tenant: Error: Command failed: psql "postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb" -c "
+      INSERT INTO tenants (
+        id, 
+        company_name, 
+        plan_type, 
+        is_active, 
+        domain_name, 
+        admin_email, 
+        custom_subdomain
+      ) 
+      VALUES (
+        'greenlane', 
+        'GreenLane Cloud Solutions', 
+        'standard', 
+        true, 
+        'greenlane.greenlanecloudsolutions.com', 
+        'greenlane.enterprisesltd@gmail.com', 
+        true
+      )
+    " 
+psql: error: connection to server on socket "/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb/.s.PGSQL.5432" failed: No such file or directory
+        Is the server running locally and accepting connections on that socket?
+
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at ChildProcess.exithandler (node:child_process:414:12)
+    at ChildProcess.emit (node:events:518:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:304:5) {
+  code: 2,
+  killed: false,
+  signal: null,
+  cmd: 'psql "postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb" -c "\n' +
+    '      INSERT INTO tenants (\n' +
+    '        id, \n' +
+    '        company_name, \n' +
+    '        plan_type, \n' +
+    '        is_active, \n' +
+    '        domain_name, \n' +
+    '        admin_email, \n' +
+    '        custom_subdomain\n' +
+    '      ) \n' +
+    '      VALUES (\n' +
+    "        'greenlane', \n" +
+    "        'GreenLane Cloud Solutions', \n" +
+    "        'standard', \n" +
+    '        true, \n' +
+    "        'greenlane.greenlanecloudsolutions.com', \n" +
+    "        'greenlane.enterprisesltd@gmail.com', \n" +
+    '        true\n' +
+    '      )\n' +
+    '    " '
+}
+Error during tenant setup: Failed to create tenant: Command failed: psql "postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb" -c "
+      INSERT INTO tenants (
+        id, 
+        company_name, 
+        plan_type, 
+        is_active, 
+        domain_name, 
+        admin_email, 
+        custom_subdomain
+      ) 
+      VALUES (
+        'greenlane', 
+        'GreenLane Cloud Solutions', 
+        'standard', 
+        true, 
+        'greenlane.greenlanecloudsolutions.com', 
+        'greenlane.enterprisesltd@gmail.com', 
+        true
+      )
+    " 
+psql: error: connection to server on socket "/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb/.s.PGSQL.5432" failed: No such file or directory
+        Is the server running locally and accepting connections on that socket?
