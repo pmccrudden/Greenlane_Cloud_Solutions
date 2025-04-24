@@ -1,0 +1,45 @@
+greenlane_ent./deploy-esm-app.shell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-esm-app.sh
+=== Deploying Minimal ES Module App to Cloud Run ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-27783]
+Current GCP project: greenlane-cloud-solutions
+Building minimal ESM app Docker image...
+[+] Building 0.4s (8/8) FINISHED                                 docker:default
+ => [internal] load build definition from Dockerfile.esm-app               0.0s
+ => => transferring dockerfile: 330B                                       0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine          0.3s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 482B                                          0.0s
+ => [1/3] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b  0.0s
+ => [internal] load build context                                          0.0s
+ => => transferring context: 37B                                           0.0s
+ => CACHED [2/3] WORKDIR /app                                              0.0s
+ => CACHED [3/3] COPY app-minimal.mjs .                                    0.0s
+ => exporting to image                                                     0.0s
+ => => exporting layers                                                    0.0s
+ => => writing image sha256:3deec31d28e91164b8d6777b09c0bd4840a4ba15d66f3  0.0s
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-app:l  0.0s
+Pushing image to Google Container Registry...
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-app]
+ffe9dfd1d35a: Pushed 
+6f921e99520b: Pushed 
+b8185dcc9be5: Layer already exists 
+2c9cabe10289: Layer already exists 
+75228a052fed: Layer already exists 
+08000c18d16d: Layer already exists 
+latest: digest: sha256:2359c0d9bcd3a3126d9f12377c8c9d023410abdda03b8943734af8460c1b2161 size: 1572
+Deploying to Cloud Run...
+Deploying container to Cloud Run service [greenlane-crm-esm-app] in project [greenlane-cloud-solutions] region [us-central1]
+✓ Deploying new service... Done.                                               
+  ✓ Creating Revision...                                                       
+  ✓ Routing traffic...                                                         
+  ✓ Setting IAM Policy...                                                      
+Done.                                                                          
+Service [greenlane-crm-esm-app] revision [greenlane-crm-esm-app-00001-l24] has been deployed and is serving 100 percent of traffic.
+Service URL: https://greenlane-crm-esm-app-869018523985.us-central1.run.app
+Deployment completed.
+Checking service status...
+Service is available at: https://greenlane-crm-esm-app-mx3osic2uq-uc.a.run.app
+
+Testing the endpoint...
+Status code: 200

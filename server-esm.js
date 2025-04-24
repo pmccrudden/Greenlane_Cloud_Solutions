@@ -1,255 +1,265 @@
 /**
- * Cloud Run Bootstrap Server (ESM Version)
- * This standalone server ensures that:
- * 1. We're listening on PORT immediately (Cloud Run health check requirement)
- * 2. We have graceful error handling if the main app fails
- * 3. We provide debugging endpoints to troubleshoot issues
+ * Enhanced ES Module server for Cloud Run
+ * Provides detailed diagnostics and error handling
  */
 
-// Print startup debugging info
-console.log('Starting Greenlane CRM server (ESM Version)');
-console.log(`Environment: NODE_ENV=${process.env.NODE_ENV}, PORT=${process.env.PORT}, HOST=${process.env.HOST}`);
-
-// Using ES modules since package.json has "type": "module"
-import { fileURLToPath } from 'url';
-import { dirname, join, resolve } from 'path';
-import fs from 'fs';
-import express from 'express';
 import http from 'http';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Create a bare-minimum HTTP server first to satisfy Cloud Run health checks
-// This ensures we're listening on the port as quickly as possible
-console.log('SERVER STARTING - Environment details:');
-console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
-console.log(`- PORT: ${process.env.PORT}`);
-console.log(`- BASE_DOMAIN: ${process.env.BASE_DOMAIN}`);
-console.log(`- Current directory: ${process.cwd()}`);
-console.log(`- Files in directory: ${fs.readdirSync('.').join(', ')}`);
+// Enhanced error handling
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Log the stack trace
+  if (reason instanceof Error) {
+    console.error('Stack trace:', reason.stack);
+  }
+});
 
-const port = parseInt(process.env.PORT) || 8080;
-const bareServer = http.createServer((req, res) => {
-  // Handle both /health and / for health checks since Cloud Run might check either
+// Setup environment
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const PORT = parseInt(process.env.PORT || '8080', 10);
+const HOST = process.env.HOST || '0.0.0.0';
+
+console.log('Starting Enhanced ES Module Server');
+console.log('Environment:', {
+  NODE_ENV: process.env.NODE_ENV,
+  PORT: PORT,
+  HOST: HOST,
+  CWD: process.cwd(),
+  DIRNAME: __dirname,
+  NODE_VERSION: process.version
+});
+
+// Print all environment variables for debugging (excluding secrets)
+console.log('Full environment variables:');
+const safeEnv = { ...process.env };
+delete safeEnv.STRIPE_SECRET_KEY;
+delete safeEnv.DATABASE_URL;
+console.log(safeEnv);
+
+// Function to check for required files and log detailed diagnostics
+async function checkEnvironment() {
+  try {
+    // List directory contents recursively (2 levels)
+    console.log('Checking directory contents...');
+    const rootFiles = await fs.readdir('.');
+    console.log('Root directory:', rootFiles);
+    
+    // Check for dist directory
+    if (rootFiles.includes('dist')) {
+      const distFiles = await fs.readdir('./dist');
+      console.log('dist directory:', distFiles);
+      
+      // Check dist/index.js specifically
+      if (distFiles.includes('index.js')) {
+        try {
+          const stats = await fs.stat('./dist/index.js');
+          console.log('dist/index.js size:', stats.size, 'bytes');
+          
+          // Read the first few lines for identification
+          const content = await fs.readFile('./dist/index.js', 'utf8');
+          const preview = content.slice(0, 100).replace(/\n/g, '\\n');
+          console.log('dist/index.js preview:', preview + '...');
+        } catch (err) {
+          console.error('Error reading dist/index.js:', err);
+        }
+      } else {
+        console.error('dist/index.js file not found in dist directory');
+      }
+    } else {
+      console.error('dist directory not found in root');
+    }
+    
+    // Check for package.json and server files
+    for (const file of ['package.json', 'server.js', 'server-esm.js']) {
+      try {
+        const exists = await fs.access(file).then(() => true).catch(() => false);
+        console.log(`${file} ${exists ? 'exists' : 'does not exist'}`);
+        
+        if (exists) {
+          const stats = await fs.stat(file);
+          console.log(`${file} size:`, stats.size, 'bytes');
+        }
+      } catch (err) {
+        console.error(`Error checking ${file}:`, err);
+      }
+    }
+    
+    // Check if shared directory exists
+    if (rootFiles.includes('shared')) {
+      const sharedFiles = await fs.readdir('./shared');
+      console.log('shared directory:', sharedFiles);
+    }
+    
+    // Check if server directory exists
+    if (rootFiles.includes('server')) {
+      const serverFiles = await fs.readdir('./server');
+      console.log('server directory:', serverFiles);
+    }
+    
+  } catch (error) {
+    console.error('Error in environment check:', error);
+  }
+}
+
+// Create a diagnostic HTTP server
+const server = http.createServer(async (req, res) => {
+  console.log(`Request received: ${req.method} ${req.url}`);
+  
   if (req.url === '/health' || req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ 
-      status: 'ok', 
-      startup: true, 
-      timestamp: new Date().toISOString() 
+      status: 'running',
+      version: 'enhanced-esm',
+      timestamp: new Date().toISOString(),
+      node_version: process.version
     }));
     return;
   }
   
   if (req.url === '/debug') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      env: {
-        NODE_ENV: process.env.NODE_ENV,
-        PORT: process.env.PORT,
-        HOST: process.env.HOST,
-      },
-      cwd: process.cwd(),
-      startupTime: new Date().toISOString(),
-      nodeVersion: process.version
-    }));
-    return;
+    try {
+      const dirs = {
+        root: await fs.readdir('./').catch(() => 'not accessible'),
+        dist: await fs.readdir('./dist').catch(() => 'not accessible'),
+        server: await fs.readdir('./server').catch(() => 'not accessible'),
+        shared: await fs.readdir('./shared').catch(() => 'not accessible')
+      };
+      
+      const packageJson = await fs.readFile('./package.json', 'utf8').catch(() => 'not accessible');
+      let packageInfo = 'Error parsing package.json';
+      try {
+        if (packageJson !== 'not accessible') {
+          const parsed = JSON.parse(packageJson);
+          packageInfo = {
+            name: parsed.name,
+            version: parsed.version,
+            type: parsed.type,
+            dependencies: Object.keys(parsed.dependencies || {}).length,
+            scripts: Object.keys(parsed.scripts || {})
+          };
+        }
+      } catch (e) {
+        console.error('Error parsing package.json:', e);
+      }
+      
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        environment: {
+          NODE_ENV: process.env.NODE_ENV,
+          PORT: PORT,
+          HOST: HOST,
+          NODE_VERSION: process.version,
+          DATABASE_URL_EXISTS: !!process.env.DATABASE_URL,
+          STRIPE_SECRET_KEY_EXISTS: !!process.env.STRIPE_SECRET_KEY
+        },
+        directories: dirs,
+        package: packageInfo,
+        cwd: process.cwd(),
+        dirname: __dirname
+      }, null, 2));
+      return;
+    } catch (error) {
+      console.error('Error handling /debug request:', error);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Internal server error', message: error.message }));
+      return;
+    }
   }
-  
+
+  // Default response - HTML with more diagnostics
   res.writeHead(200, { 'Content-Type': 'text/html' });
   res.end(`
     <html>
       <head>
-        <title>Starting Greenlane CRM...</title>
+        <title>Greenlane CRM Enhanced ESM Server</title>
         <style>
-          body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-          .spinner { display: inline-block; width: 50px; height: 50px; border: 3px solid rgba(33, 201, 131, 0.3); border-radius: 50%; border-top-color: #21c983; animation: spin 1s ease-in-out infinite; }
-          @keyframes spin { to { transform: rotate(360deg); } }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #21c983; margin-top: 0; }
+          .status { display: inline-block; background: #e6f7f1; color: #21c983; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+          pre { background: #f1f3f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
         </style>
       </head>
       <body>
-        <div class="spinner"></div>
-        <h2>Starting Greenlane CRM...</h2>
-        <p>Please wait while the application initializes.</p>
+        <div class="container">
+          <h1>Greenlane CRM - Enhanced ESM Server</h1>
+          <div class="status">Status: Running</div>
+          
+          <div style="margin-top: 20px;">
+            <p>This is the enhanced ES Module diagnostic server for Greenlane CRM.</p>
+            <p>Check <a href="/debug">the debug endpoint</a> for detailed system information.</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h2>Server Information</h2>
+            <pre>
+Time: ${new Date().toISOString()}
+Node Version: ${process.version}
+Environment: ${process.env.NODE_ENV || 'development'}
+Host: ${HOST}
+Port: ${PORT}
+Working Directory: ${process.cwd()}
+            </pre>
+          </div>
+        </div>
       </body>
     </html>
   `);
 });
 
-// Start the bare server immediately
-bareServer.listen(port, '0.0.0.0', () => {
-  console.log(`Bare server listening on port ${port} (will be replaced by full server)`);
-  
-  // Now load the main Express application
-  startMainServer();
+// Run the environment check before starting the server
+await checkEnvironment().catch(err => {
+  console.error('Failed to check environment:', err);
 });
 
-async function startMainServer() {
+// Start the server immediately
+server.listen(PORT, HOST, () => {
+  console.log(`Enhanced ES Module server listening on ${HOST}:${PORT}`);
+  
+  // Attempt to dynamically load the application (wrapped in try/catch)
+  console.log('Attempting to load the full application...');
+  
   try {
-    // Show files to debug setup
-    console.log('Current directory:', process.cwd());
-    console.log('Files in directory:', fs.readdirSync('.').join(', '));
-
-    // The application will be served from dist/public
-    const staticPath = './dist/public';
-    console.log('Setting up static file serving from', staticPath);
-
-    // Check if the static path exists for debugging
-    if (fs.existsSync(staticPath)) {
-      console.log('Static path exists:', staticPath);
-      console.log('Files in static path:', fs.readdirSync(staticPath).join(', '));
-    } else {
-      console.log('Warning: Static path does not exist:', staticPath);
-    }
-
-    // Create main express server
-    const app = express();
-
-    // Health check for Cloud Run
-    app.get('/health', (req, res) => {
-      res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
-    });
-
-    // Debug endpoint to show environment and files
-    app.get('/debug', (req, res) => {
+    // Use dynamic import to load the application
+    console.log('Loading dist/index.js via dynamic import...');
+    
+    // Wrap in a timeout to make sure this error doesn't prevent the server from starting
+    setTimeout(async () => {
       try {
-        res.json({
-          env: {
-            NODE_ENV: process.env.NODE_ENV,
-            PORT: process.env.PORT,
-            HOST: process.env.HOST,
-          },
-          cwd: process.cwd(),
-          files: fs.readdirSync('.'),
-          staticPathExists: fs.existsSync(staticPath),
-          staticFiles: fs.existsSync(staticPath) ? fs.readdirSync(staticPath) : null,
-        });
-      } catch (err) {
-        res.status(500).json({ error: err.message });
+        const appModule = await import('./dist/index.js');
+        console.log('Application loaded successfully');
+        console.log('Exported properties:', Object.keys(appModule));
+      } catch (error) {
+        console.error('Failed to load application:', error);
+        console.error('Error code:', error.code);
+        console.error('Error stack:', error.stack);
+        
+        // Log details about the file
+        try {
+          await fs.access('./dist/index.js');
+          console.log('dist/index.js file exists but could not be imported');
+          const stats = await fs.stat('./dist/index.js');
+          console.log('File size:', stats.size, 'bytes');
+        } catch (fsError) {
+          console.error('Cannot access dist/index.js:', fsError.message);
+        }
       }
-    });
-
-    // Serve static files if they exist
-    if (fs.existsSync(staticPath)) {
-      console.log('Serving static files from:', staticPath);
-      app.use(express.static(staticPath));
-    }
-
-    // Add some basic routes
-    app.get('/api/status', (req, res) => {
-      res.json({
-        status: 'ok',
-        environment: process.env.NODE_ENV,
-        timestamp: new Date().toISOString()
-      });
-    });
+    }, 1000);
     
-    // Route for any other requests - catch-all SPA route
-    app.get('*', (req, res) => {
-      const indexPath = join(staticPath, 'index.html');
-      if (fs.existsSync(indexPath)) {
-        res.sendFile(resolve(indexPath));
-      } else {
-        res.send(`
-          <html>
-            <head>
-              <title>Greenlane CRM</title>
-              <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; padding: 3rem 1rem; max-width: 800px; margin: 0 auto; color: #333; }
-                h1 { color: #21c983; }
-                .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(33, 201, 131, 0.3); border-radius: 50%; border-top-color: #21c983; animation: spin 1s ease-in-out infinite; margin-right: 10px; vertical-align: middle; }
-                @keyframes spin { to { transform: rotate(360deg); } }
-                .card { background: #f9f9f9; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-                .api { background: #f5f5f5; border-radius: 4px; padding: 0.5rem; font-family: monospace; }
-              </style>
-            </head>
-            <body>
-              <h1>Greenlane Cloud Solutions</h1>
-              <div class="loading"></div> Server is running successfully!
-              
-              <div class="card">
-                <h2>API Endpoints Available:</h2>
-                <ul>
-                  <li><span class="api">/health</span> - Health check endpoint</li>
-                  <li><span class="api">/debug</span> - Debug information</li>
-                  <li><span class="api">/api/status</span> - API status information</li>
-                </ul>
-              </div>
-              
-              <div class="card">
-                <h2>Server Information:</h2>
-                <ul>
-                  <li>Environment: ${process.env.NODE_ENV || 'development'}</li>
-                  <li>Server Started: ${new Date().toLocaleString()}</li>
-                  <li>Node.js Version: ${process.version}</li>
-                </ul>
-              </div>
-            </body>
-          </html>
-        `);
-      }
-    });
-
-    // Create HTTP server from Express
-    const mainServer = http.createServer(app);
-
-    // Once we have a listening mainServer, shut down the bareServer
-    mainServer.on('listening', () => {
-      console.log(`Main server listening on port ${port}`);
-      bareServer.close(() => {
-        console.log('Bare server closed, request handling transferred to main server');
-      });
-    });
-
-    // Start the main server on the same port
-    mainServer.listen(port, '0.0.0.0');
-    
-    // Handle shutdown gracefully
-    process.on('SIGTERM', () => {
-      console.log('SIGTERM received, shutting down gracefully');
-      mainServer.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-      });
-    });
-    
-    process.on('SIGINT', () => {
-      console.log('SIGINT received, shutting down gracefully');
-      mainServer.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-      });
-    });
-    
-    // Now load the main application (in the background)
-    try {
-      // Check if we're in production (dist/index.js exists) or development
-      let modulePath;
-      if (fs.existsSync('./dist/index.js')) {
-        modulePath = './dist/index.js';
-      } else if (fs.existsSync('./server/index.ts')) {
-        // In development, we might not have dist/index.js
-        console.log('Running in development mode. Using server/index.ts...');
-        modulePath = './server/index.ts';
-      } else {
-        console.log('No main application found. Running standalone bootstrap server.');
-        return; // Exit early
-      }
-      
-      console.log('Attempting to import main application:', modulePath);
-      import(modulePath)
-        .then(() => {
-          console.log('Main application imported successfully');
-        })
-        .catch(err => {
-          console.error('Error importing main application:', err);
-          console.log('Running standalone bootstrap server without main application.');
-        });
-    } catch (err) {
-      console.error('Failed to import main application:', err);
-      console.log('Running standalone bootstrap server without main application.');
-    }
-  } catch (err) {
-    console.error('Fatal error in server startup:', err);
-    // We'll keep the bare server running even on error
-    console.log('Keeping bare server running to handle requests');
+  } catch (error) {
+    console.error('Error during application loading:', error);
   }
-}
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+});
