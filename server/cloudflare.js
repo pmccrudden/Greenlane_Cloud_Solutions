@@ -1,6 +1,37 @@
 // Cloudflare DNS integration for Greenlane CRM tenants
-const fetch = require('node-fetch');
-require('dotenv').config();
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import fetch from 'node-fetch';
+
+// Read environment variables from .env.production file directly
+function loadEnvFromFile(file) {
+  try {
+    if (fs.existsSync(file)) {
+      const content = fs.readFileSync(file, 'utf8');
+      const lines = content.split('\n');
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (trimmedLine && !trimmedLine.startsWith('#')) {
+          const [key, ...valueParts] = trimmedLine.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts.join('=').trim();
+            // Remove quotes if present
+            const cleanValue = value.replace(/^["'](.*)["']$/, '$1');
+            process.env[key.trim()] = cleanValue;
+          }
+        }
+      }
+      console.log(`Loaded environment variables from ${file}`);
+    }
+  } catch (error) {
+    console.error(`Error loading environment file ${file}:`, error);
+  }
+}
+
+// Load environment variables
+loadEnvFromFile('.env.production');
 
 // Required environment variables
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
@@ -10,7 +41,6 @@ const BASE_DOMAIN = process.env.BASE_DOMAIN || 'greenlanecloudsolutions.com';
 // Get the service hostname from file or environment
 let SERVICE_HOSTNAME;
 try {
-  const fs = require('fs');
   const hostnameFile = './service_hostname.txt';
   if (fs.existsSync(hostnameFile)) {
     SERVICE_HOSTNAME = fs.readFileSync(hostnameFile, 'utf8').trim();
@@ -22,7 +52,7 @@ try {
 }
 
 if (!SERVICE_HOSTNAME) {
-  SERVICE_HOSTNAME = 'greenlane-crm-app-mx3osic2uq-uc.a.run.app'; // Fallback
+  SERVICE_HOSTNAME = 'greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app'; // Fallback
 }
 
 // Validate required environment variables
@@ -173,7 +203,8 @@ async function createTenantSubdomain(subdomain) {
   }
 }
 
-module.exports = {
+// Export for ES modules
+export {
   isValidSubdomain,
   isSubdomainAvailable,
   createTenantSubdomain

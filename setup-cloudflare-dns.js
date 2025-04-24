@@ -1,12 +1,36 @@
 // Script to set up Cloudflare DNS for multi-tenant deployment
-import { config } from 'dotenv';
-import fetch from 'node-fetch';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-// Initialize dotenv
-config();
+// Read environment variables from .env.production file directly
+function loadEnvFromFile(file) {
+  try {
+    if (fs.existsSync(file)) {
+      const content = fs.readFileSync(file, 'utf8');
+      const lines = content.split('\n');
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (trimmedLine && !trimmedLine.startsWith('#')) {
+          const [key, ...valueParts] = trimmedLine.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts.join('=').trim();
+            // Remove quotes if present
+            const cleanValue = value.replace(/^["'](.*)["']$/, '$1');
+            process.env[key.trim()] = cleanValue;
+          }
+        }
+      }
+      console.log(`Loaded environment variables from ${file}`);
+    }
+  } catch (error) {
+    console.error(`Error loading environment file ${file}:`, error);
+  }
+}
+
+// Load environment variables
+loadEnvFromFile('.env.production');
 
 // Get environment variables
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;

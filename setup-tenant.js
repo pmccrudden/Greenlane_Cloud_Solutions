@@ -1,9 +1,40 @@
 // Script to create a new tenant and admin user
-require('dotenv').config();
-const crypto = require('crypto');
-const { db } = require('./server/db');
-const { tenants, users, modules } = require('./shared/schema');
-const { createTenantSubdomain } = require('./server/cloudflare');
+import fs from 'fs';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { db } from './server/db.js';
+import { tenants, users, modules } from './shared/schema.js';
+import { createTenantSubdomain } from './server/cloudflare.js';
+
+// Read environment variables from .env.production file directly
+function loadEnvFromFile(file) {
+  try {
+    if (fs.existsSync(file)) {
+      const content = fs.readFileSync(file, 'utf8');
+      const lines = content.split('\n');
+      
+      for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (trimmedLine && !trimmedLine.startsWith('#')) {
+          const [key, ...valueParts] = trimmedLine.split('=');
+          if (key && valueParts.length > 0) {
+            const value = valueParts.join('=').trim();
+            // Remove quotes if present
+            const cleanValue = value.replace(/^["'](.*)["']$/, '$1');
+            process.env[key.trim()] = cleanValue;
+          }
+        }
+      }
+      console.log(`Loaded environment variables from ${file}`);
+    }
+  } catch (error) {
+    console.error(`Error loading environment file ${file}:`, error);
+  }
+}
+
+// Load environment variables
+loadEnvFromFile('.env.production');
 
 async function createTenantAndAdmin() {
   // Get command line arguments
@@ -179,4 +210,11 @@ async function createTenantAndAdmin() {
   }
 }
 
-createTenantAndAdmin();
+// Execute if run directly (using ESM)
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
+  createTenantAndAdmin();
+}
+
+// Export for use in other modules
+export { createTenantAndAdmin };
