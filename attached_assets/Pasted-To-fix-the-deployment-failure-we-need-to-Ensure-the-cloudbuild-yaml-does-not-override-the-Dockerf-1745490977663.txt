@@ -1,0 +1,75 @@
+To fix the deployment failure, we need to:
+
+Ensure the cloudbuild.yaml does not override the Dockerfile’s CMD.
+Update the Cloud Run service configuration to remove any persisted command or args.
+Verify the Dockerfile uses CMD ["npm", "start"] and all files are correctly copied.
+Clear build cache and confirm repository state.
+Test locally to validate the setup.
+Step 1: Update cloudbuild.yaml
+Ensure the cloudbuild.yaml uses the correct entrypoint and avoids reserved environment variables.
+
+Updated cloudbuild.yaml:
+yaml
+
+Copy
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'greenlane-crm-app'
+      - '--image=gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--max-instances=10'
+      - '--min-instances=1'
+      - '--memory=1Gi'
+      - '--cpu=1'
+      - '--concurrency=80'
+      - '--timeout=600s'
+      - '--set-env-vars=NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com,CRM_DOMAIN=crm.greenlanecloudsolutions.com,API_DOMAIN=api.greenlanecloudsolutions.com,HOST=0.0.0.0'
+      - '--update-secrets=/app/.env=greenlane-env:latest'
+Edit cloudbuild.yaml:
+bash
+
+Copy
+nano cloudbuild.yaml
+Save the updated content, ensuring no command or args flags override the Dockerfile’s CMD.
+Step 2: Update Dockerfile
+Confirm the Dockerfile uses CMD ["npm", "start"] and removes references to server.js.
+
+Updated Dockerfile:
+dockerfile
+
+Copy
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Production stage
+FROM node:20-alpine AS production
+ENV NODE_ENV=production
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
+EXPOSE 8080
+ENV PORT=8080
+ENV HOST=0.0.0.0
+CMD ["npm", "start"]
+Edit Dockerfile:
+bash
+
+Copy
+nano Dockerfile
+Save the updated content.
