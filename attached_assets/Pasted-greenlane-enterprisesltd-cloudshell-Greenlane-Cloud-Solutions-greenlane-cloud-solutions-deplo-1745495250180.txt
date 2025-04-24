@@ -1,0 +1,65 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-production.sh
+=== Deploying Greenlane CRM to Cloud Run (Production) ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-16860]
+Current GCP project: greenlane-cloud-solutions
+Preparing server file...
+Building Docker image locally...
+[+] Building 46.6s (20/20) FINISHED                                                                                                                                   docker:default
+ => [internal] load build definition from Dockerfile.production                                                                                                                 0.0s
+ => => transferring dockerfile: 1.16kB                                                                                                                                          0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)                                                                                                  0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 18)                                                                                                 0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                                               0.6s
+ => [internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 482B                                                                                                                                               0.0s
+ => [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                 0.0s
+ => [internal] load build context                                                                                                                                               0.2s
+ => => transferring context: 5.21MB                                                                                                                                             0.1s
+ => CACHED [builder 2/6] WORKDIR /app                                                                                                                                           0.0s
+ => [builder 3/6] COPY package.json package-lock.json ./                                                                                                                        0.0s
+ => [builder 4/6] RUN npm ci                                                                                                                                                   21.5s
+ => [production  4/12] RUN npm ci --only=production                                                                                                                            21.5s
+ => [builder 5/6] COPY . .                                                                                                                                                      0.1s
+ => [builder 6/6] RUN npm run build                                                                                                                                            15.5s 
+ => [production  5/12] COPY --from=builder /app/dist ./dist                                                                                                                     0.1s 
+ => [production  6/12] COPY --from=builder /app/shared ./shared                                                                                                                 0.0s 
+ => [production  7/12] COPY --from=builder /app/server ./server                                                                                                                 0.0s 
+ => [production  8/12] COPY server.js ./                                                                                                                                        0.0s 
+ => [production  9/12] RUN echo "Files in /app:"                                                                                                                                0.3s 
+ => [production 10/12] RUN ls -la /app                                                                                                                                          0.3s 
+ => [production 11/12] RUN echo "Contents of /app/dist:"                                                                                                                        0.3s 
+ => [production 12/12] RUN ls -la /app/dist || echo "dist directory missing or empty"                                                                                           0.3s 
+ => exporting to image                                                                                                                                                          6.5s 
+ => => exporting layers                                                                                                                                                         6.5s 
+ => => writing image sha256:00c8f9c0d7726a2ecce850dd22b77992034f4174bf95b7b459b1bb9cd6122c91                                                                                    0.0s 
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-prod:latest                                                                                                     0.0s 
+Pushing image to Google Container Registry...                                                                                                                                        
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-prod]
+23c060f3ae20: Pushed 
+9d23af608eb1: Pushed 
+d0669430b033: Pushed 
+a3606b032b1f: Pushed 
+bc9cc175ac37: Pushed 
+e6467decc6e7: Pushed 
+28313b2e6d46: Pushed 
+a03ff8ccd9f5: Layer already exists 
+b8185dcc9be5: Layer already exists 
+2c9cabe10289: Layer already exists 
+75228a052fed: Layer already exists 
+08000c18d16d: Layer already exists 
+latest: digest: sha256:ae61aa1638cc51915c8c5e2da042cefb9739a1bec09b0895b465b814e438bdfd size: 3444
+Deploying to Cloud Run...
+Deploying container to Cloud Run service [greenlane-crm-prod] in project [greenlane-cloud-solutions] region [us-central1]
+X Deploying new service...                                                                                                                                                          
+  - Creating Revision...                                                                                                                                                            
+  . Routing traffic...                                                                                                                                                              
+  ✓ Setting IAM Policy...                                                                                                                                                           
+Deployment failed                                                                                                                                                                   
+ERROR: (gcloud.run.deploy) Revision 'greenlane-crm-prod-00001-n2z' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.
+
+Logs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-prod/revision_name/greenlane-crm-prod-00001-n2z&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-prod%22%0Aresource.labels.revision_name%3D%22greenlane-crm-prod-00001-n2z%22 
+For more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start
+Deployment completed.
+Checking service status...
+Service not yet available. Check Cloud Run logs for details.

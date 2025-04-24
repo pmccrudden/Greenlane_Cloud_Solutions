@@ -1,80 +1,53 @@
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 8080;
+/**
+ * Absolute minimal Cloud Run server (CommonJS)
+ * No dependencies, no imports, just a direct HTTP server
+ */
 
-// Simple health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
+const http = require('http');
 
-// Debug endpoint to see environment
-app.get('/debug', (req, res) => {
-  res.json({
-    env: process.env,
-    port: port,
-    nodeVersion: process.version,
-    time: new Date().toISOString()
-  });
-});
+// Extract the port from environment
+const PORT = process.env.PORT || 8080;
 
-// Basic home page
-app.get('/', (req, res) => {
-  res.send(`
+// Log startup for diagnostics
+console.log(`Starting ultra-basic server on port ${PORT}`);
+
+// Create a basic HTTP server
+const server = http.createServer((req, res) => {
+  // Log all incoming requests for debugging
+  console.log(`Received request: ${req.method} ${req.url}`);
+  
+  // Set the response headers
+  res.writeHead(200, {'Content-Type': 'text/html'});
+  
+  // Send a simple HTML response
+  res.end(`
+    <!DOCTYPE html>
     <html>
       <head>
-        <title>Greenlane Cloud Solutions</title>
+        <title>Greenlane CRM</title>
         <style>
-          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; padding: 3rem 1rem; max-width: 800px; margin: 0 auto; color: #333; }
-          h1 { color: #21c983; }
-          .card { background: #f9f9f9; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+          body { font-family: sans-serif; padding: 20px; }
+          .success { color: green; font-weight: bold; }
         </style>
       </head>
       <body>
-        <h1>Greenlane Cloud Solutions</h1>
-        <p>Server is running successfully!</p>
-        
-        <div class="card">
-          <h2>Server Information:</h2>
-          <ul>
-            <li>Environment: ${process.env.NODE_ENV || 'development'}</li>
-            <li>Server Started: ${new Date().toLocaleString()}</li>
-            <li>Node.js Version: ${process.version}</li>
-            <li>Port: ${port}</li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <p>Check the <a href="/health">/health</a> and <a href="/debug">/debug</a> endpoints for more information.</p>
-        </div>
+        <h1>Greenlane CRM</h1>
+        <p class="success">Server is running!</p>
+        <p>Time: ${new Date().toISOString()}</p>
+        <p>Environment: ${process.env.NODE_ENV || 'development'}</p>
       </body>
     </html>
   `);
 });
 
 // Start the server
-const server = app.listen(port, '0.0.0.0', () => {
-  console.log(`Simple server listening on port ${port}`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running at http://0.0.0.0:${PORT}/`);
 });
 
-// Add appropriate error handling
-server.on('error', (error) => {
-  console.error('Server error:', error);
-  if (error.code === 'EADDRINUSE') {
-    console.error(`Port ${port} is already in use`);
-  }
-});
-
-// Handle graceful shutdown
+// Handle shutdown signals
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
-  });
-});
-
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully');
   server.close(() => {
     console.log('Server closed');
     process.exit(0);
