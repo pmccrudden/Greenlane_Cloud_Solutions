@@ -1,0 +1,42 @@
+greenlane_entls -la deploy-esm-enhanced.shnlane_Cloud_Solutions (greenlane-cloud-solutions)$ ls -la deploy-esm-enhanced.sh
+-rwxr-xr-x 1 greenlane_enterprisesltd greenlane_enterprisesltd 2266 Apr 24 15:33 deploy-esm-enhanced.sh
+greenlane_ent./deploy-multi-tenant.sh/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-multi-tenant.sh
+Loading environment variables from .env.production...
+=== Deploying Greenlane CRM Multi-Tenant Application ===
+Base domain: greenlanecloudsolutions.com
+App name: greenlane-crm-app
+Region: us-central1
+Your active configuration is: [cloudshell-27783]
+Project ID: greenlane-cloud-solutions
+Building and deploying container...
+Creating temporary archive of 301 file(s) totalling 5.1 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.m6rAJNhZWt/logs/2025.04.24/16.17.05.783765.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745511426.090105-5e1d134a43924dba9b7d44fdd4967849.tgz]
+Created [https://cloudbuild.googleapis.com/v1/projects/greenlane-cloud-solutions/locations/global/builds/3f36c4d2-3efe-4815-b783-ea15f700b1b8].
+Logs are available at [ https://console.cloud.google.com/cloud-build/builds/3f36c4d2-3efe-4815-b783-ea15f700b1b8?project=869018523985 ].
+Waiting for build to complete. Polling interval: 1 second(s).
+----------------------------- REMOTE BUILD OUTPUT ------------------------------
+starting build "3f36c4d2-3efe-4815-b783-ea15f700b1b8"
+
+FETCHSOURCE
+Fetching storage object: gs://greenlane-cloud-solutions_cloudbuild/source/1745511426.090105-5e1d134a43924dba9b7d44fdd4967849.tgz#1745511428424486
+Copying gs://greenlane-cloud-solutions_cloudbuild/source/1745511426.090105-5e1d134a43924dba9b7d44fdd4967849.tgz#1745511428424486...
+/ [1 files][  2.6 MiB/  2.6 MiB]                                                
+Operation completed over 1 objects/2.6 MiB.
+BUILD
+Starting Step #0
+Step #0: Already have image (with digest): gcr.io/cloud-builders/docker
+Step #0: invalid argument "gcr.io/greenlane-cloud-solutions/greenlane-crm-app:" for "-t, --tag" flag: invalid reference format
+Step #0: See 'docker build --help'.
+Finished Step #0
+ERROR
+ERROR: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 125
+--------------------------------------------------------------------------------
+
+BUILD FAILURE: Build step failure: build step 0 "gcr.io/cloud-builders/docker" failed: step exited with non-zero status: 125
+ERROR: (gcloud.builds.submit) build 3f36c4d2-3efe-4815-b783-ea15f700b1b8 completed with status "FAILURE"

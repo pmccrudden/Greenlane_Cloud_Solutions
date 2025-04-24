@@ -1,7 +1,12 @@
 // Script to set up Cloudflare DNS for multi-tenant deployment
-require('dotenv').config();
-const fetch = require('node-fetch');
-const fs = require('fs');
+import { config } from 'dotenv';
+import fetch from 'node-fetch';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Initialize dotenv
+config();
 
 // Get environment variables
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
@@ -170,12 +175,15 @@ async function setupCloudflareMultiTenantDNS() {
   }
 }
 
-// Execute if run directly
-if (require.main === module) {
+// Execute if run directly (using ESM)
+// In ESM, we can check if this is the main module
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
   setupCloudflareMultiTenantDNS();
 }
 
-module.exports = {
+// Export for use in other modules
+export {
   createOrUpdateCname,
   createWildcardRecord,
   setupCloudflareMultiTenantDNS

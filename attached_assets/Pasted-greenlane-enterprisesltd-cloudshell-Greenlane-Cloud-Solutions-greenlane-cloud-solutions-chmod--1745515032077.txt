@@ -1,0 +1,89 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ chmod +x deploy-esm-enhanced.sh
+./deploy-esm-enhanced.sh
+=== Deploying Enhanced ESM Server to Cloud Run ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-27938]
+Current GCP project: greenlane-cloud-solutions
+Building enhanced ESM Docker image...
+[+] Building 48.3s (20/20) FINISHED                                                                                                                                   docker:default
+ => [internal] load build definition from Dockerfile.esm-enhanced                                                                                                               0.0s
+ => => transferring dockerfile: 1.14kB                                                                                                                                          0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)                                                                                                  0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 18)                                                                                                 0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                                               1.2s
+ => [internal] load .dockerignore                                                                                                                                               0.1s
+ => => transferring context: 482B                                                                                                                                               0.1s
+ => [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                 3.0s
+ => => resolve docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                         0.0s
+ => => sha256:b18325f01afbb59e65e32609c3337f46358ebcb13784103e6d4e41cee6180fa0 1.72kB / 1.72kB                                                                                  0.0s
+ => => sha256:0160beacba2dcf6695e3cf292ed8003aa36f538b6a6fd931878bfc4ea7914555 6.21kB / 6.21kB                                                                                  0.0s
+ => => sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 3.64MB / 3.64MB                                                                                  0.2s
+ => => sha256:a54ab62fca2da06cf1bd0418fcd2dbb09ba6f43db517f705291fdfb723fbc642 42.95MB / 42.95MB                                                                                0.6s
+ => => sha256:6bf3eed75316cc1c58cc9bd678ce26260a7aacf7847462efa4a1cbf240a7c4d8 1.26MB / 1.26MB                                                                                  0.4s
+ => => sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f 7.67kB / 7.67kB                                                                                  0.0s
+ => => extracting sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870                                                                                       0.2s
+ => => sha256:efb51bda5e8760a6e79d8bf56d88f21d5255ac614cb6dd14ee65a868e7aa8387 445B / 445B                                                                                      0.3s
+ => => extracting sha256:a54ab62fca2da06cf1bd0418fcd2dbb09ba6f43db517f705291fdfb723fbc642                                                                                       1.9s
+ => => extracting sha256:6bf3eed75316cc1c58cc9bd678ce26260a7aacf7847462efa4a1cbf240a7c4d8                                                                                       0.1s
+ => => extracting sha256:efb51bda5e8760a6e79d8bf56d88f21d5255ac614cb6dd14ee65a868e7aa8387                                                                                       0.0s
+ => [internal] load build context                                                                                                                                               0.5s
+ => => transferring context: 5.34MB                                                                                                                                             0.5s
+ => [builder 2/6] WORKDIR /app                                                                                                                                                  0.8s
+ => [builder 3/6] COPY package.json package-lock.json ./                                                                                                                        0.0s
+ => [builder 4/6] RUN npm ci                                                                                                                                                   20.3s
+ => [production  4/12] RUN npm ci --only=production                                                                                                                            20.3s
+ => [builder 5/6] COPY . .                                                                                                                                                      0.1s
+ => [builder 6/6] RUN npm run build                                                                                                                                            15.3s
+ => [production  5/12] COPY --from=builder /app/dist ./dist                                                                                                                     0.1s 
+ => [production  6/12] COPY --from=builder /app/shared ./shared                                                                                                                 0.0s 
+ => [production  7/12] COPY --from=builder /app/server ./server                                                                                                                 0.0s 
+ => [production  8/12] COPY server-esm.js ./                                                                                                                                    0.0s 
+ => [production  9/12] RUN echo "Files in /app:"                                                                                                                                0.3s 
+ => [production 10/12] RUN ls -la /app                                                                                                                                          0.3s 
+ => [production 11/12] RUN echo "Contents of /app/dist:"                                                                                                                        0.3s 
+ => [production 12/12] RUN ls -la /app/dist || echo "dist directory missing or empty"                                                                                           0.3s 
+ => exporting to image                                                                                                                                                          5.5s 
+ => => exporting layers                                                                                                                                                         5.5s 
+ => => writing image sha256:e4aa2c1ea3de501b0d7b122e50bbaf40e4b2aef3d7fe0680a7d17c6d82fcc9d5                                                                                    0.0s 
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced:latest                                                                                             0.0s 
+
+ 2 warnings found (use docker --debug to expand):
+ - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)
+ - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 18)
+Pushing image to Google Container Registry...
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced]
+a53234e8f0ab: Pushed 
+e52e3b82e12c: Pushed 
+f56cebf9af44: Pushed 
+1acdcc000abe: Pushed 
+33cae4813410: Pushed 
+61fa19309fa3: Pushed 
+509134aaa2f8: Pushed 
+d22f3a1b63cf: Pushed 
+14cd7d65e377: Pushed 
+b8185dcc9be5: Layer already exists 
+2c9cabe10289: Layer already exists 
+75228a052fed: Layer already exists 
+08000c18d16d: Layer already exists 
+latest: digest: sha256:1a44db613d4017f32f42dc8331a434923b633b1ce8bff0a771aa19b8a286a631 size: 3444
+Deploying to Cloud Run...
+Deploying container to Cloud Run service [greenlane-crm-esm-enhanced] in project [greenlane-cloud-solutions] region [us-central1]
+✓ Deploying... Done.                                                                                                                                                                
+  ✓ Creating Revision...                                                                                                                                                            
+  ✓ Routing traffic...                                                                                                                                                              
+  ✓ Setting IAM Policy...                                                                                                                                                           
+Done.                                                                                                                                                                               
+Service [greenlane-crm-esm-enhanced] revision [greenlane-crm-esm-enhanced-00002-6pv] has been deployed and is serving 100 percent of traffic.
+Service URL: https://greenlane-crm-esm-enhanced-869018523985.us-central1.run.app
+Deployment completed.
+Checking service status...
+Service is available at: https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app
+
+Testing the endpoints:
+Main endpoint:
+Status code: 200
+Debug endpoint:
+https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/debug
+
+View logs:
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%20resource.labels.service_name%3D%22greenlane-crm-esm-enhanced%22?project=greenlane-cloud-solutions

@@ -1,0 +1,59 @@
+# Cloudflare configurationloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ cat > .env.deploy << 'EOF'
+CLOUDFLARE_API_TOKEN=MAl51E32GDzu0TYm9LPmh9dpGAIznxRwkk3RRAvR
+BASE_DOMAIN=greenlanecloudsolutions.comPmh9dpGAIznxRwkk3RRAvR
+CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1
+CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1
+# Database configuration
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+EOFABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+greenlane_entcat .env.productionell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ cat .env.production
+cat .env.deploy
+# Database configuration
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+
+# Cloudflare configuration
+CLOUDFLARE_API_TOKEN=MAl51E32GDzu0TYm9LPmh9dpGAIznxRwkk3RRAvR
+CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1
+BASE_DOMAIN=greenlanecloudsolutions.com
+
+# Session Secret
+SESSION_SECRET=greenlane-session-secret-$2j8fd9ljfda8
+
+# Domain for cookies 
+COOKIE_DOMAIN=.greenlanecloudsolutions.com
+
+# NODE_ENV should be 'production' for deployed app
+NODE_ENV=production
+
+# Secure cookie settings for production
+COOKIE_SECURE=true
+COOKIE_HTTP_ONLY=true
+COOKIE_SAME_SITE=none
+# Cloudflare configuration
+CLOUDFLARE_API_TOKEN=MAl51E32GDzu0TYm9LPmh9dpGAIznxRwkk3RRAvR
+BASE_DOMAIN=greenlanecloudsolutions.com
+CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1
+
+# Database configuration
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+greenlane_ent./deploy-multi-tenant.sh/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-multi-tenant.sh
+Loading environment variables from .env.production...
+=== Deploying Greenlane CRM Multi-Tenant Application ===
+Base domain: greenlanecloudsolutions.com
+App name: greenlane-crm-app
+Region: us-central1
+Your active configuration is: [cloudshell-27783]
+Project ID: greenlane-cloud-solutions
+Building and deploying container...
+Creating temporary archive of 301 file(s) totalling 5.1 MiB before compression.
+Some files were not included in the source upload.
+
+Check the gcloud log [/tmp/tmp.m6rAJNhZWt/logs/2025.04.24/16.10.09.146611.log] to see which files and the contents of the
+default gcloudignore file used (see `$ gcloud topic gcloudignore` to learn
+more).
+
+Uploading tarball of [.] to [gs://greenlane-cloud-solutions_cloudbuild/source/1745511009.83631-4ee9498a08834eb1ae35ce2e920ab31e.tgz]
+ERROR: (gcloud.builds.submit) INVALID_ARGUMENT: generic::invalid_argument: key "_APP_NAME" in the substitution data is not matched in the template;key "_DATABASE_URL" in the substitution data is not matched in the template;key "_REGION" in the substitution data is not matched in the template
+greenlane_entsource .env.production:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ source .env.production
+echo "Database URL: $DATABASE_URL"
+Database URL: postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb

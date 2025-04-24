@@ -1,0 +1,79 @@
+greenlane_ent./deploy-multi-tenant.sh/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-multi-tenant.sh
+Loading environment variables from .env.production...
+Error: The following required environment variables are missing:
+  - DATABASE_URL
+Please set th^C
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ cat > .env.production << EOF
+# Database cocat > .env.production << EOF
+# Database configuration
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+
+
+# Cloudflare configuration
+CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
+CLOUDFLARE_ZONE_ID=your_cloudflare_zone_id
+BASE_DOMAIN=greenlanecloudsolutions.com
+
+# Stripe API Keys for subscription management (if needed)
+STRIPE_SECRET_KEY=
+VITE_STRIPE_PUBLIC_KEY=
+STRIPE_PRICE_ID_MONTHLY=
+STRIPE_PRICE_ID_ANNUAL=
+
+# Anthropic API Key for AI features (if needed)
+ANTHROPIC_API_KEY=
+
+# Session Secret (generate a random string)
+SESSION_SECRET=greenlane-session-secret-$2j8fd9ljfda8
+
+# Domain for cookies 
+EOFKIE_SAME_Scat > .env.production << EOF
+# Database configuration
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+# Cloudflare configuration
+CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
+CLOUDFLARE_ZONE_ID=your_cloudflare_zone_id
+BASE_DOMAIN=gcat > .env.production << EOF
+# Database configuration@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ cat > .env.production << EOF
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+ ATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+# Cloudflare configuration
+CLOUDFLARE_API_TOKEN=MAl51E32GDzu0TYm9LPmh9dpGAIznxRwkk3RRAvR
+CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1Rwkk3RRAvR
+> OUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1
+> ^C
+greenlane_entcat > .env.production << EOF
+# Database configuration@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ cat > .env.production << EOF
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+ ATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+# Cloudflare configuration
+CLOUDFLARE_API_TOKEN=MAl51E32GDzu0TYm9LPmh9dpGAIznxRwkk3RRAvR
+CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1Rwkk3RRAvR
+BASE_DOMAIN=greenlanecloudsolutions.com208bd9c713e1
+> SE_DOMAIN=greenlanecloudsolutions.com
+> 
+> 
+> 
+> ^C
+greenlane_ent./deploy-multi-tenant.sh/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-multi-tenant.sh
+Loading environment variables from .env.production...
+Error: The following required environment variables are missing:
+  - DATABASE_URL
+Please set thcat > .env.deploy << EOF export them before running this script.
+# Cloudflare configurationloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ cat > .env.deploy << EOF
+CLOUDFLARE_API_TOKEN=MAl51E32GDzu0TYm9LPmh9dpGAIznxRwkk3RRAvR
+BASE_DOMAIN=greenlanecloudsolutions.comPmh9dpGAIznxRwkk3RRAvR
+CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1
+CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1
+# Database configuration
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb
+
+# This will be populated after you deploy the application to Cloud Run
+# SERVICE_HOSTNAME=your-service-xxxxx-uc.a.run.app
+EOF
+greenlane_ent./deploy-multi-tenant.sh/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-multi-tenant.sh
+Loading environment variables from .env.production...
+Error: The following required environment variables are missing:
+  - DATABASE_URL
+Please set them in .env.production or export them before running this script.
