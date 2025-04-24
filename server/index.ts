@@ -11,11 +11,22 @@ async function tenantMiddleware(req: Request, res: Response, next: NextFunction)
   const host = req.hostname;
   const baseDomain = process.env.BASE_DOMAIN || 'greenlanecloudsolutions.com';
   
+  // Skip tenant detection for development/preview environments
+  if (host.includes('localhost') || 
+      host.includes('127.0.0.1') || 
+      host.includes('.replit.dev') || 
+      host.includes('.repl.co') || 
+      host.includes('.run.app')) { // Development, Replit, or Cloud Run URLs
+    console.log('Development/preview environment detected, skipping tenant check');
+    return next();
+  }
+  
   // Skip tenant detection for main domains
   if (host === baseDomain || 
       host === `api.${baseDomain}` || 
       host === `app.${baseDomain}` ||
-      host.includes('.run.app')) { // Cloud Run URLs
+      host === `www.${baseDomain}`) {
+    console.log('Main domain detected:', host);
     return next();
   }
   
@@ -28,6 +39,7 @@ async function tenantMiddleware(req: Request, res: Response, next: NextFunction)
   }
   
   try {
+    console.log(`Checking for tenant with subdomain: ${subdomain}`);
     // Find tenant by subdomain
     const tenant = await db.query.tenants.findFirst({
       where: eq(tenants.id, subdomain)
@@ -61,50 +73,96 @@ async function tenantMiddleware(req: Request, res: Response, next: NextFunction)
 
 // Define the missing functions
 function serveStatic(app: express.Express) {
-  const staticPath = join(process.cwd(), "dist", "public");
-  console.log('Serving static files from:', staticPath);
+  // First try the standard Vite output directory
+  let staticPath = join(process.cwd(), "dist", "public");
+  
+  // If that doesn't exist, try alternate locations
+  if (!fs.existsSync(staticPath)) {
+    const altPaths = [
+      join(process.cwd(), "dist", "client"),
+      join(process.cwd(), "dist"),
+      join(process.cwd(), "client", "dist"),
+      join(process.cwd(), "public")
+    ];
+    
+    for (const path of altPaths) {
+      if (fs.existsSync(path)) {
+        staticPath = path;
+        break;
+      }
+    }
+  }
+  
+  console.log('Attempting to serve static files from:', staticPath);
   
   // Check if the static path exists
   if (fs.existsSync(staticPath)) {
     console.log('Static path exists, serving files...');
+    
+    // Check for the index.html file
+    const indexPath = join(staticPath, "index.html");
+    if (fs.existsSync(indexPath)) {
+      console.log('Found index.html at:', indexPath);
+    } else {
+      console.warn('Warning: index.html not found in static path');
+      // List files in the directory for debugging
+      try {
+        const files = fs.readdirSync(staticPath);
+        console.log('Files in static directory:', files);
+      } catch (err) {
+        console.error('Error reading static directory:', err);
+      }
+    }
+    
+    // Serve static files
     app.use(express.static(staticPath));
     
     // Serve index.html for all non-API routes to support client-side routing
     app.get("*", (req, res, next) => {
+      // Skip API routes
       if (req.path.startsWith("/api")) {
         return next();
       }
       
+      console.log(`Handling frontend route: ${req.path} for host: ${req.hostname}`);
+      
       // Handle tenant subdomains with custom branding
       const tenant = (req as any).tenant;
       if (tenant) {
+        console.log(`Serving tenant-specific content for: ${tenant.id}`);
         const indexPath = join(staticPath, "index.html");
         if (fs.existsSync(indexPath)) {
-          // You could customize the HTML here based on tenant
-          // For now, we'll just send the standard index.html
           return res.sendFile(indexPath);
         }
       }
       
+      // Serve index.html for client-side routing
       const indexPath = join(staticPath, "index.html");
       if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
       } else {
         console.log('Warning: index.html not found in static path');
-        res.send(`
+        res.status(500).send(`
           <html>
-            <head><title>Greenlane CRM API Server</title></head>
-            <body>
-              <h1>Greenlane CRM API Server</h1>
-              <p>The API server is running, but the frontend has not been built yet.</p>
-              <p>Please run <code>npm run build</code> to build the frontend.</p>
+            <head><title>Greenlane CRM - Configuration Error</title></head>
+            <body style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+              <h1 style="color: #d32f2f;">Greenlane CRM Configuration Error</h1>
+              <p>The API server is running, but the frontend files were not found.</p>
+              <p>This usually indicates one of the following issues:</p>
+              <ul>
+                <li>The frontend has not been built yet. Run <code>npm run build</code> locally before deploying.</li>
+                <li>The build process did not complete successfully.</li>
+                <li>The static files are not being correctly copied to the deployment container.</li>
+              </ul>
+              <p>Static path being checked: <code>${staticPath}</code></p>
+              <p>For more information, please check the server logs.</p>
             </body>
           </html>
         `);
       }
     });
   } else {
-    console.log('Warning: Static path does not exist, serving API only');
+    console.warn('Warning: Static path does not exist, serving API only');
     
     // Handle non-API routes with a friendly message
     app.get("*", (req, res, next) => {
@@ -112,13 +170,16 @@ function serveStatic(app: express.Express) {
         return next();
       }
       
-      res.send(`
+      console.log(`Static route request received: ${req.path} (no static files available)`);
+      res.status(500).send(`
         <html>
-          <head><title>Greenlane CRM API Server</title></head>
-          <body>
-            <h1>Greenlane CRM API Server</h1>
-            <p>The API server is running, but the frontend has not been built yet.</p>
-            <p>Please run <code>npm run build</code> to build the frontend.</p>
+          <head><title>Greenlane CRM - Configuration Error</title></head>
+          <body style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #d32f2f;">Greenlane CRM Configuration Error</h1>
+            <p>The API server is running, but the frontend static files directory was not found.</p>
+            <p>This indicates that the build process did not complete successfully or the static files are not being copied to the correct location.</p>
+            <p>Static path being checked: <code>${staticPath}</code></p>
+            <p>For more information, please check the server logs.</p>
           </body>
         </html>
       `);

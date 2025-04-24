@@ -223,36 +223,97 @@ server.listen(PORT, HOST, () => {
   // Attempt to dynamically load the application (wrapped in try/catch)
   console.log('Attempting to load the full application...');
   
-  try {
-    // Use dynamic import to load the application
-    console.log('Loading dist/index.js via dynamic import...');
+  // Try multiple paths for the application
+  const possibleAppPaths = [
+    './dist/index.js',
+    './dist/server/index.js',
+    './server/index.js'
+  ];
+  
+  // Try to build the frontend if it doesn't exist
+  const buildFrontend = async () => {
+    try {
+      console.log('Static files not found, attempting to build frontend...');
+      
+      // Check if Vite is available
+      const viteExists = await fs.access('./node_modules/.bin/vite')
+        .then(() => true)
+        .catch(() => false);
+      
+      if (viteExists) {
+        console.log('Running: vite build');
+        const { exec } = await import('child_process');
+        return new Promise((resolve, reject) => {
+          exec('node_modules/.bin/vite build', (error, stdout, stderr) => {
+            if (error) {
+              console.error('Build failed:', error);
+              console.error(stderr);
+              reject(error);
+              return;
+            }
+            console.log('Build output:', stdout);
+            resolve(true);
+          });
+        });
+      } else {
+        console.log('Vite not found, cannot build frontend');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error building frontend:', error);
+      return false;
+    }
+  };
+  
+  setTimeout(async () => {
+    // Check if frontend is built
+    const frontendExists = await fs.access('./dist/public')
+      .then(() => true)
+      .catch(() => {
+        return fs.access('./dist/client')
+          .then(() => true)
+          .catch(() => {
+            return fs.access('./dist/assets')
+              .then(() => true)
+              .catch(() => false);
+          });
+      });
     
-    // Wrap in a timeout to make sure this error doesn't prevent the server from starting
-    setTimeout(async () => {
+    if (!frontendExists) {
+      await buildFrontend().catch(err => {
+        console.error('Failed to build frontend:', err);
+      });
+    }
+    
+    // Try loading app from each possible path
+    for (const appPath of possibleAppPaths) {
       try {
-        const appModule = await import('./dist/index.js');
-        console.log('Application loaded successfully');
+        console.log(`Trying to load app from: ${appPath}`);
+        const appModule = await import(appPath);
+        console.log(`Successfully loaded app from: ${appPath}`);
         console.log('Exported properties:', Object.keys(appModule));
+        break; // Exit loop if successful
       } catch (error) {
-        console.error('Failed to load application:', error);
-        console.error('Error code:', error.code);
-        console.error('Error stack:', error.stack);
+        console.error(`Failed to load app from ${appPath}:`, error.message);
         
         // Log details about the file
         try {
-          await fs.access('./dist/index.js');
-          console.log('dist/index.js file exists but could not be imported');
-          const stats = await fs.stat('./dist/index.js');
+          await fs.access(appPath);
+          console.log(`${appPath} file exists but could not be imported`);
+          const stats = await fs.stat(appPath);
           console.log('File size:', stats.size, 'bytes');
+          
+          // Try to read the file to look for syntax errors
+          const content = await fs.readFile(appPath, 'utf8');
+          const firstLines = content.split('\n').slice(0, 5).join('\n');
+          console.log(`First few lines of ${appPath}:`);
+          console.log(firstLines);
         } catch (fsError) {
-          console.error('Cannot access dist/index.js:', fsError.message);
+          console.error(`Cannot access ${appPath}:`, fsError.message);
         }
       }
-    }, 1000);
-    
-  } catch (error) {
-    console.error('Error during application loading:', error);
-  }
+    }
+  }, 1000);
 });
 
 // Handle graceful shutdown

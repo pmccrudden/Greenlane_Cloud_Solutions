@@ -12,7 +12,14 @@ RUN npm ci
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run build && \
+    echo "Build complete. Listing contents:" && \
+    ls -la ./dist && \
+    echo "Client files:" && \
+    ls -la ./dist/public || echo "No dist/public directory"
+
+# Fix for missing directory
+RUN mkdir -p ./dist/public
 
 # Start a new stage for the production image
 FROM node:20-alpine as production
@@ -29,20 +36,28 @@ RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/shared ./shared
 COPY --from=builder /app/server ./server
+COPY --from=builder /app/client ./client
 
 # Copy enhanced ESM server file
 COPY server-esm.js ./
+
+# Prepare fallback static content
+RUN mkdir -p ./dist/public && \
+    echo '<html><head><title>Greenlane CRM</title></head><body><h1>Greenlane CRM API Server</h1><p>The API server is running.</p></body></html>' > ./dist/public/index.html
 
 # Diagnostic logs
 RUN echo "Files in /app:"
 RUN ls -la /app
 RUN echo "Contents of /app/dist:"
 RUN ls -la /app/dist || echo "dist directory missing or empty"
+RUN echo "Contents of /app/dist/public:"
+RUN ls -la /app/dist/public || echo "dist/public directory missing or empty"
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=8080
+ENV BASE_DOMAIN=greenlanecloudsolutions.com
 
 # Expose the port the app will run on
 EXPOSE 8080
