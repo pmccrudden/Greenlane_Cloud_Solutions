@@ -1,48 +1,24 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app', '-f', 'Dockerfile.esm-app', '.']
-  
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/greenlane-crm-esm-app:$COMMIT_SHA', 
+           '-f', 'Dockerfile.esm-app', '.']
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app']
-  
-  # Deploy container image to Cloud Run with improved startup configuration
+    args: ['push', 'gcr.io/$PROJECT_ID/greenlane-crm-esm-app:$COMMIT_SHA']
+  # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
-      - 'run'
-      - 'deploy'
-      - 'greenlane-crm-app'
-      - '--image'
-      - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
-      - '--platform'
-      - 'managed'
-      - '--region'
-      - 'us-central1'
-      - '--allow-unauthenticated'
-      - '--memory'
-      - '1Gi'
-      - '--cpu'
-      - '1'
-      - '--concurrency'
-      - '80'
-      - '--timeout'
-      - '300s'
-      - '--set-env-vars'
-      - 'NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com,CRM_DOMAIN=crm.greenlanecloudsolutions.com,API_DOMAIN=api.greenlanecloudsolutions.com'
-      - '--no-cpu-throttling'
-      - '--port'
-      - '8080'
-      - '--min-instances'
-      - '1'
-      - '--max-instances'
-      - '10'
-      - '--command'
-      - 'node'
-      - '--args'
-      - 'server.js'
-      - '--cpu-boost'
-
+    - 'run'
+    - 'deploy'
+    - 'greenlane-crm-esm-app'
+    - '--image=gcr.io/$PROJECT_ID/greenlane-crm-esm-app:$COMMIT_SHA'
+    - '--region=us-central1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--memory=512Mi'
+    - '--timeout=300s'
+    - '--set-env-vars=NODE_ENV=production,HOST=0.0.0.0'
 images:
-  - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
+  - 'gcr.io/$PROJECT_ID/greenlane-crm-esm-app:$COMMIT_SHA'

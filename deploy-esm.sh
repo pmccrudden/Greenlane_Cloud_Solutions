@@ -1,45 +1,63 @@
 #!/bin/bash
 
-# ESM deployment script for Cloud Run
+# ES Module deployment script for Cloud Run
+# Uses ESM-compatible Dockerfile and server
 
-echo "=== Deploying ESM App to Cloud Run ==="
+echo "=== Deploying Greenlane CRM to Cloud Run (ESM) ==="
 
-# 1. Test app locally first
-echo "Testing app-minimal.mjs locally..."
-node app-minimal.mjs &
-APP_PID=$!
-sleep 3
-echo "Sending test request to http://localhost:8080/health"
-curl -s http://localhost:8080/health
-echo ""
-kill $APP_PID
+# Check if we're logged in to gcloud
+gcloud auth list --filter=status:ACTIVE --format="value(account)" || {
+  echo "Not logged in to gcloud. Please run 'gcloud auth login' first."
+  exit 1
+}
 
-# 2. Submit build with ESM configuration
-echo "Submitting build to Cloud Build..."
-gcloud builds submit --config cloudbuild.esm.yaml
-
-# 3. Add IAM policy binding
-echo "Setting IAM policy for public access..."
-gcloud run services add-iam-policy-binding \
-  --region=us-central1 \
-  --member=allUsers \
-  --role=roles/run.invoker \
-  greenlane-esm-app
-
-# 4. Get the service URL
-echo "Retrieving service URL..."
-SERVICE_URL=$(gcloud run services describe greenlane-esm-app --region=us-central1 --format="value(status.url)")
-
-if [ -n "$SERVICE_URL" ]; then
-  echo "Service deployed successfully to: $SERVICE_URL"
-  echo "Testing service health endpoint..."
-  curl -s "${SERVICE_URL}/health"
-  echo ""
-  echo "Open this URL in your browser: $SERVICE_URL"
-else
-  echo "Unable to retrieve service URL. Check deployment logs."
-  echo "Retrieving logs to help diagnose the issue..."
-  gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=greenlane-esm-app" --limit 20
+# Make sure we're in the correct GCP project
+PROJECT_ID=$(gcloud config get-value project)
+echo "Current GCP project: $PROJECT_ID"
+if [ "$PROJECT_ID" != "greenlane-cloud-solutions" ]; then
+  echo "Switching to greenlane-cloud-solutions project..."
+  gcloud config set project greenlane-cloud-solutions
 fi
 
+# Build the Docker image locally
+echo "Building Docker image locally..."
+docker build -t gcr.io/greenlane-cloud-solutions/greenlane-crm-esm:latest -f Dockerfile.esm .
+
+# Push the image to GCR
+echo "Pushing image to Google Container Registry..."
+docker push gcr.io/greenlane-cloud-solutions/greenlane-crm-esm:latest
+
+# Deploy to Cloud Run
+echo "Deploying to Cloud Run..."
+gcloud run deploy greenlane-crm-esm \
+  --image=gcr.io/greenlane-cloud-solutions/greenlane-crm-esm:latest \
+  --platform=managed \
+  --region=us-central1 \
+  --allow-unauthenticated \
+  --max-instances=10 \
+  --min-instances=1 \
+  --memory=1Gi \
+  --cpu=1 \
+  --concurrency=80 \
+  --timeout=300s \
+  --set-env-vars="NODE_ENV=production,HOST=0.0.0.0" \
+  --quiet
+
 echo "Deployment completed."
+
+# Check service status
+echo "Checking service status..."
+SERVICE_URL=$(gcloud run services describe greenlane-crm-esm --region=us-central1 --format="value(status.url)" 2>/dev/null)
+
+if [ -n "$SERVICE_URL" ]; then
+  echo "Service is available at: $SERVICE_URL"
+  echo ""
+  echo "Testing the endpoint..."
+  curl -s -o /dev/null -w "Status code: %{http_code}\n" "$SERVICE_URL"
+  
+  echo ""
+  echo "Debug endpoint:"
+  echo "$SERVICE_URL/debug"
+else
+  echo "Service not yet available. Check Cloud Run logs for details."
+fi

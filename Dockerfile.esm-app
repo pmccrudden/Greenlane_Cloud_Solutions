@@ -1,54 +1,16 @@
-# Multi-stage build for optimized production deployment with ESM support
+FROM node:20-alpine
 
-# Stage 1: Build stage
-FROM node:20-alpine AS builder
-
-# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
-
-# Stage 2: Production stage
-FROM node:20-alpine AS production
-
-# Set working directory
-WORKDIR /app
-
-# Install curl for health checks and other essential tools
-RUN apk add --no-cache curl
-
-# Copy package files and install production dependencies only
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Copy built files from build stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server ./server
-COPY --from=builder /app/server.js ./server.js
-COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
-
-# Copy all the TypeScript files that might be needed
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY --from=builder /app/shared ./shared
+# Copy just the minimal server file
+COPY app-minimal.mjs .
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV PORT=8080
 ENV HOST=0.0.0.0
 
-# Health check configuration
-HEALTHCHECK --interval=5s --timeout=10s --start-period=5s --retries=3 CMD curl -f http://localhost:8080/health || exit 1
-
-# Expose port
+# Expose the port the app will run on
 EXPOSE 8080
 
-# Using server.js as our entry point for optimal startup with Cloud Run
-CMD ["node", "server.js"]
+# Run the server directly with node
+CMD ["node", "app-minimal.mjs"]
