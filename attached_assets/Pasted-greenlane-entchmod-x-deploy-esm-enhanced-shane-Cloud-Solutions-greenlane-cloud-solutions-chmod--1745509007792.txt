@@ -1,0 +1,77 @@
+greenlane_entchmod +x deploy-esm-enhanced.shane_Cloud_Solutions (greenlane-cloud-solutions)$ chmod +x deploy-esm-enhanced.sh
+greenlane_ent./deploy-esm-enhanced.sh/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-esm-enhanced.sh
+=== Deploying Enhanced ESM Server to Cloud Run ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-27783]
+Current GCP project: greenlane-cloud-solutions
+Building enhanced ESM Docker image...
+[+] Building 44.8s (20/20) FINISHED                              docker:default
+ => [internal] load build definition from Dockerfile.esm-enhanced          0.0s
+ => => transferring dockerfile: 1.14kB                                     0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (li  0.0s
+ => WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (li  0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine          0.6s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 482B                                          0.0s
+ => [internal] load build context                                          0.5s
+ => => transferring context: 5.24MB                                        0.4s
+ => [builder 1/6] FROM docker.io/library/node:20-alpine@sha256:c628bdc7eb  0.0s
+ => CACHED [builder 2/6] WORKDIR /app                                      0.0s
+ => [builder 3/6] COPY package.json package-lock.json ./                   0.0s
+ => [builder 4/6] RUN npm ci                                              20.4s
+ => [production  4/12] RUN npm ci --only=production                       20.4s
+ => [builder 5/6] COPY . .                                                 0.1s
+ => [builder 6/6] RUN npm run build                                       15.6s
+ => [production  5/12] COPY --from=builder /app/dist ./dist                0.0s 
+ => [production  6/12] COPY --from=builder /app/shared ./shared            0.0s 
+ => [production  7/12] COPY --from=builder /app/server ./server            0.0s 
+ => [production  8/12] COPY server-esm.js ./                               0.0s 
+ => [production  9/12] RUN echo "Files in /app:"                           0.3s 
+ => [production 10/12] RUN ls -la /app                                     0.3s 
+ => [production 11/12] RUN echo "Contents of /app/dist:"                   0.3s
+ => [production 12/12] RUN ls -la /app/dist || echo "dist directory missi  0.3s
+ => exporting to image                                                     5.5s
+ => => exporting layers                                                    5.5s
+ => => writing image sha256:2ea408cac62b09a8f78a4bee24f99debd3ac67fbebeee  0.0s
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhan  0.0s
+
+ 2 warnings found (use docker --debug to expand):
+ - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 1)
+ - FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 18)
+Pushing image to Google Container Registry...
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced]
+f0e0e63d03df: Pushed 
+92d6c345ecda: Pushed 
+d54532347e12: Pushed 
+e9e698ac5612: Pushed 
+251a0ee9791f: Pushed 
+f6c21ff304ad: Pushed 
+c5eb586817d5: Pushed 
+827c720176bd: Pushed 
+6f921e99520b: Layer already exists 
+b8185dcc9be5: Layer already exists 
+2c9cabe10289: Layer already exists 
+75228a052fed: Layer already exists 
+08000c18d16d: Layer already exists 
+latest: digest: sha256:d4a2c6b75531bad87d757c447104c7e290f1a69299cb1d4fdda65ddd5e2f741d size: 3444
+Deploying to Cloud Run...
+Deploying container to Cloud Run service [greenlane-crm-esm-enhanced] in project [greenlane-cloud-solutions] region [us-central1]
+✓ Deploying new service... Done.                                               
+  ✓ Creating Revision...                                                       
+  ✓ Routing traffic...                                                         
+  ✓ Setting IAM Policy...                                                      
+Done.                                                                          
+Service [greenlane-crm-esm-enhanced] revision [greenlane-crm-esm-enhanced-00001-mwq] has been deployed and is serving 100 percent of traffic.
+Service URL: https://greenlane-crm-esm-enhanced-869018523985.us-central1.run.app
+Deployment completed.
+Checking service status...
+Service is available at: https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app
+
+Testing the endpoints:
+Main endpoint:
+Status code: 200
+Debug endpoint:
+https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/debug
+
+View logs:
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%20resource.labels.service_name%3D%22greenlane-crm-esm-enhanced%22?project=greenlane-cloud-solutions

@@ -1,0 +1,2132 @@
+[
+  {
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "authenticationInfo": {
+        "principalEmail": "greenlane.enterprisesltd@gmail.com",
+        "principalSubject": "user:greenlane.enterprisesltd@gmail.com"
+      },
+      "requestMetadata": {
+        "callerIp": "34.79.143.69",
+        "callerSuppliedUserAgent": "google-cloud-sdk gcloud/518.0.0 command/gcloud.run.deploy invocation-id/9f9483cd39214524943c17622f249a9f environment/devshell environment-version/None client-os/LINUX client-os-ver/6.6.72 client-pltf-arch/x86_64 interactive/True from-script/True python/3.12.8 term/screen (Linux 6.6.72+),gzip(gfe)",
+        "requestAttributes": {
+          "time": "2025-04-24T15:36:11.279103Z",
+          "auth": {}
+        },
+        "destinationAttributes": {}
+      },
+      "serviceName": "run.googleapis.com",
+      "methodName": "google.cloud.run.v1.Services.CreateService",
+      "authorizationInfo": [
+        {
+          "resource": "namespaces/greenlane-cloud-solutions/services/greenlane-crm-esm-enhanced",
+          "permission": "run.services.create",
+          "granted": true,
+          "resourceAttributes": {},
+          "permissionType": "ADMIN_WRITE"
+        },
+        {
+          "resource": "namespaces/greenlane-cloud-solutions/services/greenlane-crm-esm-enhanced",
+          "permission": "run.services.create",
+          "granted": true,
+          "resourceAttributes": {
+            "service": "run.googleapis.com/",
+            "name": "namespaces/greenlane-cloud-solutions/services/greenlane-crm-esm-enhanced",
+            "type": "run.googleapis.com/Service"
+          },
+          "permissionType": "ADMIN_WRITE"
+        }
+      ],
+      "resourceName": "namespaces/greenlane-cloud-solutions/services/greenlane-crm-esm-enhanced",
+      "request": {
+        "parent": "namespaces/greenlane-cloud-solutions",
+        "service": {
+          "kind": "Service",
+          "metadata": {
+            "namespace": "greenlane-cloud-solutions",
+            "annotations": {
+              "run.googleapis.com/client-version": "518.0.0",
+              "run.googleapis.com/client-name": "gcloud"
+            },
+            "name": "greenlane-crm-esm-enhanced"
+          },
+          "apiVersion": "serving.knative.dev/v1",
+          "status": {},
+          "spec": {
+            "template": {
+              "spec": {
+                "containerConcurrency": 80,
+                "containers": [
+                  {
+                    "resources": {
+                      "limits": {
+                        "cpu": "1",
+                        "memory": "1Gi"
+                      }
+                    },
+                    "image": "gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced:latest",
+                    "name": ""
+                  }
+                ],
+                "timeoutSeconds": 300
+              },
+              "metadata": {
+                "labels": {
+                  "client.knative.dev/nonce": "hnkcbdrnpn"
+                },
+                "annotations": {
+                  "run.googleapis.com/client-name": "gcloud",
+                  "autoscaling.knative.dev/maxScale": "10",
+                  "run.googleapis.com/startup-cpu-boost": "True",
+                  "run.googleapis.com/client-version": "518.0.0",
+                  "autoscaling.knative.dev/minScale": "1"
+                }
+              }
+            }
+          }
+        },
+        "@type": "type.googleapis.com/google.cloud.run.v1.CreateServiceRequest"
+      },
+      "resourceLocation": {
+        "currentLocations": [
+          "us-central1"
+        ]
+      }
+    },
+    "insertId": "1yilduze1ccb5",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": ""
+      }
+    },
+    "timestamp": "2025-04-24T15:36:11.050772Z",
+    "severity": "NOTICE",
+    "logName": "projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Factivity",
+    "receiveTimestamp": "2025-04-24T15:36:11.512462347Z"
+  },
+  {
+    "textPayload": "Starting Enhanced ES Module Server",
+    "insertId": "680a5a74000a4b712e98fe50",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.674673Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:20.678712867Z"
+  },
+  {
+    "textPayload": "Environment: {",
+    "insertId": "680a5a74000a67e647d2801d",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681958Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  NODE_ENV: 'production',",
+    "insertId": "680a5a74000a67ef3533d954",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681967Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  PORT: 8080,",
+    "insertId": "680a5a74000a67f22e404681",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681970Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  HOST: '0.0.0.0',",
+    "insertId": "680a5a74000a67f5d477adce",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681973Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  CWD: '/app',",
+    "insertId": "680a5a74000a67f8e62d14f2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681976Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  DIRNAME: '/app',",
+    "insertId": "680a5a74000a67fa3def6050",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681978Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  NODE_VERSION: 'v20.19.1'",
+    "insertId": "680a5a74000a67fdd82704ac",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681981Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "}",
+    "insertId": "680a5a74000a6800b36e26f2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681984Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "Full environment variables:",
+    "insertId": "680a5a74000a6805d6e73d21",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.681989Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "{",
+    "insertId": "680a5a74000a69f4c01e24bb",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682484Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  NODE_VERSION: '20.19.1',",
+    "insertId": "680a5a74000a69f8335697d0",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682488Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  YARN_VERSION: '1.22.22',",
+    "insertId": "680a5a74000a69faae698f33",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682490Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  K_REVISION: 'greenlane-crm-esm-enhanced-00001-mwq',",
+    "insertId": "680a5a74000a69fe50013c76",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682494Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  SHLVL: '1',",
+    "insertId": "680a5a74000a6a01c44eb914",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682497Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  PORT: '8080',",
+    "insertId": "680a5a74000a6a0464ec5550",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682500Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  HOME: '/root',",
+    "insertId": "680a5a74000a6a069ff5faaa",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682502Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  CLOUD_RUN_TIMEOUT_SECONDS: '300',",
+    "insertId": "680a5a74000a6a0845b209ff",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682504Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  K_CONFIGURATION: 'greenlane-crm-esm-enhanced',",
+    "insertId": "680a5a74000a6a0b776f26fa",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682507Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  PATH: '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',",
+    "insertId": "680a5a74000a6a0eab8cc3f1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682510Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  HOST: '0.0.0.0',",
+    "insertId": "680a5a74000a6a10143012a0",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682512Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  K_SERVICE: 'greenlane-crm-esm-enhanced',",
+    "insertId": "680a5a74000a6a13f1b1b262",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682515Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  PWD: '/app',",
+    "insertId": "680a5a74000a6a16c850c25f",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682518Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  NODE_ENV: 'production'",
+    "insertId": "680a5a74000a6a18f177cf7f",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682520Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "}",
+    "insertId": "680a5a74000a6a1a7305e1b7",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.682522Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "Checking directory contents...",
+    "insertId": "680a5a74000a70c85680dff7",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.684232Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "Root directory: [",
+    "insertId": "680a5a74000a7a63a495ab4d",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686691Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'dist',",
+    "insertId": "680a5a74000a7a684378ba48",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686696Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'node_modules',",
+    "insertId": "680a5a74000a7a6cbabb35ee",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686700Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'package-lock.json',",
+    "insertId": "680a5a74000a7a6f912296b2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686703Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'package.json',",
+    "insertId": "680a5a74000a7a855078da27",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686725Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'server',",
+    "insertId": "680a5a74000a7a888c0fa041",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686728Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'server-esm.js',",
+    "insertId": "680a5a74000a7a8a8ca45b06",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686730Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'shared'",
+    "insertId": "680a5a74000a7a8dce2f90dc",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686733Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "]",
+    "insertId": "680a5a74000a7a90df461211",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.686736Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "dist directory: [ 'index.js', 'public' ]",
+    "insertId": "680a5a74000a7c695cb3d44d",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.687209Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "dist/index.js size: 202715 bytes",
+    "insertId": "680a5a74000a7feabde11f1e",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.688106Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "dist/index.js preview: var __defProp = Object.defineProperty;\\nvar __getOwnPropDesc = Object.getOwnPropertyDescriptor;\\nvar _...",
+    "insertId": "680a5a74000aac4d3bdb887b",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.699469Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "package.json exists",
+    "insertId": "680a5a74000acdc2290e25a2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.708034Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "package.json size: 3793 bytes",
+    "insertId": "680a5a74000acf8a7cf0e146",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.708490Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "server.js does not exist",
+    "insertId": "680a5a74000ad2374c84ce40",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.709175Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "server-esm.js exists",
+    "insertId": "680a5a74000ad2c0ce1dc46b",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.709312Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "server-esm.js size: 9081 bytes",
+    "insertId": "680a5a74000ad903a7a3fe69",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.710915Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "shared directory: [ 'schema.ts', 'workflow-schema.ts' ]",
+    "insertId": "680a5a74000adb5f4b91aa08",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.711519Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "server directory: [",
+    "insertId": "680a5a74000adec5fc75d0ff",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712389Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'anthropic.ts',",
+    "insertId": "680a5a74000adecb0a8c2180",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712395Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'cloudflare.js',",
+    "insertId": "680a5a74000adece8ad62b5d",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712398Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'db.ts',",
+    "insertId": "680a5a74000aded1e8740f2b",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712401Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'index.ts',",
+    "insertId": "680a5a74000aded547e48bfd",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712405Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'mem-storage-fixed.ts',",
+    "insertId": "680a5a74000aded96cba2f38",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712409Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'routes.ts',",
+    "insertId": "680a5a74000adedc61e30db1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712412Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  's3Service.ts',",
+    "insertId": "680a5a74000adedf71b299d2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712415Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'storage-fixed.ts',",
+    "insertId": "680a5a74000adee29a0dfdb9",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712418Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'storage-reports-impl.ts',",
+    "insertId": "680a5a74000adee5e041301a",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712421Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'storage.ts',",
+    "insertId": "680a5a74000adee764b97983",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712423Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'stripe-routes.ts',",
+    "insertId": "680a5a74000adee95a176799",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712425Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'stripeService.js',",
+    "insertId": "680a5a74000adeec8b75e180",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712428Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "  'vite.ts'",
+    "insertId": "680a5a74000adeeef0416254",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712430Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "]",
+    "insertId": "680a5a74000adef3d1385e51",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.712435Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "Enhanced ES Module server listening on 0.0.0.0:8080",
+    "insertId": "680a5a74000b10c29ecc9257",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.725186Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "Attempting to load the full application...",
+    "insertId": "680a5a74000b1176f231c667",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.725366Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "Loading dist/index.js via dynamic import...",
+    "insertId": "680a5a74000b117a6eb8b3aa",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.725370Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:21.014172318Z"
+  },
+  {
+    "textPayload": "Default STARTUP TCP probe succeeded after 1 attempt for container \"greenlane-crm-esm-enhanced-1\" on port 8080.",
+    "insertId": "680a5a74000b1be6528e7aed",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:20.728038Z",
+    "severity": "INFO",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T15:36:20.731964327Z"
+  },
+  {
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "status": {
+        "message": "Ready condition status changed to True for Revision greenlane-crm-esm-enhanced-00001-mwq with message: Deploying revision succeeded in 11.26s."
+      },
+      "serviceName": "run.googleapis.com",
+      "methodName": "/Services.CreateService",
+      "resourceName": "namespaces/greenlane-cloud-solutions/revisions/greenlane-crm-esm-enhanced-00001-mwq",
+      "response": {
+        "metadata": {
+          "name": "greenlane-crm-esm-enhanced-00001-mwq",
+          "namespace": "869018523985",
+          "selfLink": "/apis/serving.knative.dev/v1/namespaces/869018523985/revisions/greenlane-crm-esm-enhanced-00001-mwq",
+          "uid": "579cc157-9051-432b-82e5-3c6e038d6fac",
+          "resourceVersion": "AAYzh/rcGvY",
+          "generation": 1,
+          "creationTimestamp": "2025-04-24T15:36:11.335954Z",
+          "labels": {
+            "client.knative.dev/nonce": "hnkcbdrnpn",
+            "serving.knative.dev/configuration": "greenlane-crm-esm-enhanced",
+            "serving.knative.dev/configurationGeneration": "1",
+            "serving.knative.dev/service": "greenlane-crm-esm-enhanced",
+            "serving.knative.dev/serviceUid": "0c11f44e-666e-4a0f-9c26-8f88fc376c66",
+            "serving.knative.dev/route": "greenlane-crm-esm-enhanced",
+            "cloud.googleapis.com/location": "us-central1",
+            "run.googleapis.com/startupProbeType": "Default"
+          },
+          "annotations": {
+            "run.googleapis.com/client-name": "gcloud",
+            "run.googleapis.com/startup-cpu-boost": "true",
+            "serving.knative.dev/creator": "greenlane.enterprisesltd@gmail.com",
+            "run.googleapis.com/client-version": "518.0.0",
+            "autoscaling.knative.dev/minScale": "1",
+            "run.googleapis.com/operation-id": "de43f58c-bcc9-48bc-a484-78b4a7d1b5a0",
+            "autoscaling.knative.dev/maxScale": "10"
+          },
+          "ownerReferences": [
+            {
+              "kind": "Configuration",
+              "name": "greenlane-crm-esm-enhanced",
+              "uid": "961a3217-694a-41e2-bed4-08dffd011fdf",
+              "apiVersion": "serving.knative.dev/v1",
+              "controller": true,
+              "blockOwnerDeletion": true
+            }
+          ]
+        },
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Revision",
+        "spec": {
+          "containerConcurrency": 80,
+          "timeoutSeconds": 300,
+          "serviceAccountName": "869018523985-compute@developer.gserviceaccount.com",
+          "containers": [
+            {
+              "name": "greenlane-crm-esm-enhanced-1",
+              "image": "gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced@sha256:d4a2c6b75531bad87d757c447104c7e290f1a69299cb1d4fdda65ddd5e2f741d",
+              "ports": [
+                {
+                  "name": "http1",
+                  "containerPort": 8080
+                }
+              ],
+              "env": [
+                {
+                  "name": "NODE_ENV",
+                  "value": "production"
+                },
+                {
+                  "name": "HOST",
+                  "value": "0.0.0.0"
+                }
+              ],
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "1Gi"
+                }
+              },
+              "startupProbe": {
+                "timeoutSeconds": 240,
+                "periodSeconds": 240,
+                "failureThreshold": 1,
+                "tcpSocket": {
+                  "port": 8080
+                }
+              }
+            }
+          ]
+        },
+        "status": {
+          "observedGeneration": 1,
+          "conditions": [
+            {
+              "type": "Ready",
+              "status": "True",
+              "message": "Deploying revision succeeded in 11.26s.",
+              "lastTransitionTime": "2025-04-24T15:36:22.594294Z"
+            },
+            {
+              "type": "ContainerHealthy",
+              "status": "True",
+              "message": "Containers became healthy.",
+              "lastTransitionTime": "2025-04-24T15:36:20.966931Z"
+            },
+            {
+              "type": "ContainerReady",
+              "status": "True",
+              "message": "Container image import completed in 6.02s.",
+              "lastTransitionTime": "2025-04-24T15:36:18.104559Z"
+            },
+            {
+              "type": "MinInstancesProvisioned",
+              "status": "True",
+              "message": "Min instances provisioned successfully  in 4.34s.",
+              "lastTransitionTime": "2025-04-24T15:36:22.542696Z"
+            },
+            {
+              "type": "ResourcesAvailable",
+              "status": "True",
+              "message": "Provisioning imported containers completed in 2.79s. Checking container health.",
+              "lastTransitionTime": "2025-04-24T15:36:20.897911Z"
+            }
+          ],
+          "logUrl": "https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-esm-enhanced/revision_name/greenlane-crm-esm-enhanced-00001-mwq&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-esm-enhanced%22%0Aresource.labels.revision_name%3D%22greenlane-crm-esm-enhanced-00001-mwq%22",
+          "imageDigest": "gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced@sha256:d4a2c6b75531bad87d757c447104c7e290f1a69299cb1d4fdda65ddd5e2f741d",
+          "containerStatuses": [
+            {
+              "name": "greenlane-crm-esm-enhanced-1",
+              "imageDigest": "gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced@sha256:d4a2c6b75531bad87d757c447104c7e290f1a69299cb1d4fdda65ddd5e2f741d"
+            }
+          ],
+          "desiredReplicas": 1
+        },
+        "@type": "type.googleapis.com/google.cloud.run.v1.Revision"
+      }
+    },
+    "insertId": "-jlf17e14neu",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:22.605530Z",
+    "severity": "INFO",
+    "logName": "projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event",
+    "receiveTimestamp": "2025-04-24T15:36:23.042547847Z"
+  },
+  {
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "status": {
+        "message": "Ready condition status changed to True for Service greenlane-crm-esm-enhanced."
+      },
+      "serviceName": "run.googleapis.com",
+      "methodName": "/Services.CreateService",
+      "resourceName": "namespaces/greenlane-cloud-solutions/services/greenlane-crm-esm-enhanced",
+      "response": {
+        "metadata": {
+          "name": "greenlane-crm-esm-enhanced",
+          "namespace": "869018523985",
+          "selfLink": "/apis/serving.knative.dev/v1/namespaces/869018523985/services/greenlane-crm-esm-enhanced",
+          "uid": "0c11f44e-666e-4a0f-9c26-8f88fc376c66",
+          "resourceVersion": "AAYzh/sBPAo",
+          "generation": 1,
+          "creationTimestamp": "2025-04-24T15:36:11.231402Z",
+          "labels": {
+            "cloud.googleapis.com/location": "us-central1"
+          },
+          "annotations": {
+            "run.googleapis.com/client-name": "gcloud",
+            "run.googleapis.com/client-version": "518.0.0",
+            "serving.knative.dev/creator": "greenlane.enterprisesltd@gmail.com",
+            "serving.knative.dev/lastModifier": "greenlane.enterprisesltd@gmail.com",
+            "run.googleapis.com/operation-id": "de43f58c-bcc9-48bc-a484-78b4a7d1b5a0",
+            "run.googleapis.com/ingress": "all",
+            "run.googleapis.com/ingress-status": "all",
+            "run.googleapis.com/urls": "[\"https://greenlane-crm-esm-enhanced-869018523985.us-central1.run.app\",\"https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app\"]"
+          }
+        },
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Service",
+        "spec": {
+          "template": {
+            "metadata": {
+              "labels": {
+                "client.knative.dev/nonce": "hnkcbdrnpn",
+                "run.googleapis.com/startupProbeType": "Default"
+              },
+              "annotations": {
+                "autoscaling.knative.dev/maxScale": "10",
+                "autoscaling.knative.dev/minScale": "1",
+                "run.googleapis.com/client-name": "gcloud",
+                "run.googleapis.com/client-version": "518.0.0",
+                "run.googleapis.com/startup-cpu-boost": "true"
+              }
+            },
+            "spec": {
+              "containerConcurrency": 80,
+              "timeoutSeconds": 300,
+              "serviceAccountName": "869018523985-compute@developer.gserviceaccount.com",
+              "containers": [
+                {
+                  "image": "gcr.io/greenlane-cloud-solutions/greenlane-crm-esm-enhanced:latest",
+                  "ports": [
+                    {
+                      "name": "http1",
+                      "containerPort": 8080
+                    }
+                  ],
+                  "env": [
+                    {
+                      "name": "NODE_ENV",
+                      "value": "production"
+                    },
+                    {
+                      "name": "HOST",
+                      "value": "0.0.0.0"
+                    }
+                  ],
+                  "resources": {
+                    "limits": {
+                      "cpu": "1",
+                      "memory": "1Gi"
+                    }
+                  },
+                  "startupProbe": {
+                    "timeoutSeconds": 240,
+                    "periodSeconds": 240,
+                    "failureThreshold": 1,
+                    "tcpSocket": {
+                      "port": 8080
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "traffic": [
+            {
+              "percent": 100,
+              "latestRevision": true
+            }
+          ]
+        },
+        "status": {
+          "observedGeneration": 1,
+          "conditions": [
+            {
+              "type": "Ready",
+              "status": "True",
+              "lastTransitionTime": "2025-04-24T15:36:25.027594Z"
+            },
+            {
+              "type": "ConfigurationsReady",
+              "status": "True",
+              "lastTransitionTime": "2025-04-24T15:36:22.631560Z"
+            },
+            {
+              "type": "RoutesReady",
+              "status": "True",
+              "lastTransitionTime": "2025-04-24T15:36:24.990103Z"
+            }
+          ],
+          "latestReadyRevisionName": "greenlane-crm-esm-enhanced-00001-mwq",
+          "latestCreatedRevisionName": "greenlane-crm-esm-enhanced-00001-mwq",
+          "traffic": [
+            {
+              "revisionName": "greenlane-crm-esm-enhanced-00001-mwq",
+              "percent": 100,
+              "latestRevision": true
+            }
+          ],
+          "url": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app",
+          "address": {
+            "url": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app"
+          }
+        },
+        "@type": "type.googleapis.com/google.cloud.run.v1.Service"
+      }
+    },
+    "insertId": "-95xzodqjbu",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "",
+        "configuration_name": "",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:25.044073Z",
+    "severity": "INFO",
+    "logName": "projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event",
+    "receiveTimestamp": "2025-04-24T15:36:25.763188241Z"
+  },
+  {
+    "insertId": "680a5a7d000d125e77241cc8",
+    "httpRequest": {
+      "requestMethod": "GET",
+      "requestUrl": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/",
+      "requestSize": "292",
+      "status": 200,
+      "responseSize": "244",
+      "userAgent": "curl/8.5.0",
+      "remoteIp": "34.79.143.69",
+      "serverIp": "216.239.38.53",
+      "latency": "0.048929433s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:29.714329Z",
+    "severity": "INFO",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/greenlane-cloud-solutions/traces/f23625e7b1aa5408212f61cdb23fded7",
+    "receiveTimestamp": "2025-04-24T15:36:29.861324438Z",
+    "spanId": "fa39802fa2fff76c",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "Request received: GET /",
+    "insertId": "680a5a7d000cc7c11662658f",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:36:29.837569Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:36:30.005074144Z"
+  },
+  {
+    "insertId": "680a5acc000699e462d37221",
+    "httpRequest": {
+      "requestMethod": "GET",
+      "requestUrl": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/",
+      "requestSize": "1177",
+      "status": 200,
+      "responseSize": "244",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+      "remoteIp": "149.50.166.43",
+      "referer": "https://shell.cloud.google.com/",
+      "serverIp": "216.239.34.53",
+      "latency": "0.721168318s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:47.702804Z",
+    "severity": "INFO",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/greenlane-cloud-solutions/traces/3f6a826579d37dedec80958aa5724653",
+    "receiveTimestamp": "2025-04-24T15:37:48.438728439Z",
+    "spanId": "7a19ff277649bf14",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "Warning: STRIPE_SECRET_KEY is not set, Stripe functionality will be unavailable",
+    "insertId": "680a5acc00064fc11dbb9366",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.413633Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T15:37:48.418056677Z"
+  },
+  {
+    "textPayload": "Warning: connect.session() MemoryStore is not",
+    "insertId": "680a5acc00066e53241f1230",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.421459Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T15:37:48.752843617Z"
+  },
+  {
+    "textPayload": "designed for a production environment, as it will leak",
+    "insertId": "680a5acc00066e5a785a362f",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.421466Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T15:37:48.752843617Z"
+  },
+  {
+    "textPayload": "memory, and will not scale past a single process.",
+    "insertId": "680a5acc00066e5d68050d65",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.421469Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T15:37:48.752843617Z"
+  },
+  {
+    "textPayload": "Serving static files from: /app/dist/public",
+    "insertId": "680a5acc00067764773729cd",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.423780Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:48.429717485Z"
+  },
+  {
+    "textPayload": "Static path exists, serving files...",
+    "insertId": "680a5acc00067817843cb707",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.423959Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:48.762175052Z"
+  },
+  {
+    "textPayload": "Server imported as module - not starting listener (already running via bootstrap)",
+    "insertId": "680a5acc0006793660fbd2f2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.424246Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:48.762175052Z"
+  },
+  {
+    "textPayload": "Application loaded successfully",
+    "insertId": "680a5acc0006796a5392e3e2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.424298Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:48.762175052Z"
+  },
+  {
+    "textPayload": "Exported properties: []",
+    "insertId": "680a5acc000679c5efdf64d9",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "location": "us-central1",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.424389Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:48.762175052Z"
+  },
+  {
+    "textPayload": "Request received: GET /",
+    "insertId": "680a5acc00069012f50816cd",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.430098Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:48.762175052Z"
+  },
+  {
+    "insertId": "680a5acc000df1ab051debff",
+    "httpRequest": {
+      "requestMethod": "GET",
+      "requestUrl": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/favicon.ico",
+      "requestSize": "1091",
+      "status": 200,
+      "responseSize": "1517",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+      "remoteIp": "149.50.166.43",
+      "referer": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/",
+      "serverIp": "216.239.34.53",
+      "latency": "0.002600482s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.909736Z",
+    "severity": "INFO",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/greenlane-cloud-solutions/traces/553afcb18ab77276ec80958aa5724760",
+    "receiveTimestamp": "2025-04-24T15:37:49.105562896Z",
+    "spanId": "1417edb2ba8d1b8e"
+  },
+  {
+    "textPayload": "Request received: GET /favicon.ico",
+    "insertId": "680a5acc000dedf34aeec6e5",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:48.912883Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:49.094477335Z"
+  },
+  {
+    "insertId": "680a5ad100076596ebdaf9af",
+    "httpRequest": {
+      "requestMethod": "GET",
+      "requestUrl": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/debug",
+      "requestSize": "1182",
+      "status": 200,
+      "responseSize": "1213",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+      "remoteIp": "149.50.166.43",
+      "referer": "https://shell.cloud.google.com/",
+      "serverIp": "216.239.34.53",
+      "latency": "0.004322983s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:53.478799Z",
+    "severity": "INFO",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/greenlane-cloud-solutions/traces/2f79078a3052e1a75d01b3e6e9a1e60b",
+    "receiveTimestamp": "2025-04-24T15:37:53.763981695Z",
+    "spanId": "6c78ac4c468f94c7"
+  },
+  {
+    "textPayload": "Request received: GET /debug",
+    "insertId": "680a5ad1000759c66749a875",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "service_name": "greenlane-crm-esm-enhanced",
+        "project_id": "greenlane-cloud-solutions",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:53.481734Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:53.756296273Z"
+  },
+  {
+    "insertId": "680a5ad1000d7e42dd3e0890",
+    "httpRequest": {
+      "requestMethod": "GET",
+      "requestUrl": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/favicon.ico",
+      "requestSize": "1097",
+      "status": 200,
+      "responseSize": "1517",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+      "remoteIp": "149.50.166.43",
+      "referer": "https://greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app/debug",
+      "serverIp": "216.239.34.53",
+      "latency": "0.003126069s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "greenlane-crm-esm-enhanced",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:53.879217Z",
+    "severity": "INFO",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/greenlane-cloud-solutions/traces/91fc4134de18cd975d01b3e6e9a1e170",
+    "receiveTimestamp": "2025-04-24T15:37:54.099382940Z",
+    "spanId": "0b5f5add6a5d2761"
+  },
+  {
+    "textPayload": "Request received: GET /favicon.ico",
+    "insertId": "680a5ad1000d77454ca016e5",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "greenlane-cloud-solutions",
+        "configuration_name": "greenlane-crm-esm-enhanced",
+        "location": "us-central1",
+        "revision_name": "greenlane-crm-esm-enhanced-00001-mwq",
+        "service_name": "greenlane-crm-esm-enhanced"
+      }
+    },
+    "timestamp": "2025-04-24T15:37:53.882501Z",
+    "labels": {
+      "instanceId": "00afae80438721b548fe50ee4f6c1bbaca8881e6ab56a497ff4d80917a00cf57c96a924ef68e77159e0484a37fcff8f36002f69fdd01c5b7e494257299e0f8a6afc9714f765e"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-04-24T15:37:54.087938214Z"
+  }
+]
