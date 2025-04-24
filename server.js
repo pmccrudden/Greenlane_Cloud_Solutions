@@ -8,6 +8,11 @@ import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Unhandled rejection handler for better debugging
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 // Setup environment
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,18 +30,66 @@ console.log('Environment:', {
   DIRNAME: __dirname
 });
 
-// Check for mounted files
-try {
-  const fs = await import('fs');
-  if (fs.existsSync('/app/.env')) {
-    console.log('Found mounted .env file');
+// Check for required files and environment
+async function checkEnvironment() {
+  try {
+    const fs = await import('fs');
+    
+    // Check for mounted secrets
+    if (fs.existsSync('/app/.env')) {
+      console.log('Found mounted .env file');
+      try {
+        const envContent = fs.readFileSync('/app/.env', 'utf8');
+        console.log('ENV file loaded successfully, length:', envContent.length);
+        console.log('ENV contains STRIPE_SECRET_KEY:', envContent.includes('STRIPE_SECRET_KEY'));
+        console.log('ENV contains DATABASE_URL:', envContent.includes('DATABASE_URL'));
+      } catch (err) {
+        console.error('Error reading .env file:', err);
+      }
+    } else {
+      console.warn('Warning: No mounted .env file found');
+    }
+    
+    // Check for critical files
+    const criticalFiles = [
+      './dist/index.js',
+      './stripeConfig.json'
+    ];
+    
+    criticalFiles.forEach(file => {
+      if (fs.existsSync(file)) {
+        console.log(`Found ${file}`);
+        // For stripeConfig, check content structure
+        if (file === './stripeConfig.json') {
+          try {
+            const stripeConfig = JSON.parse(fs.readFileSync(file, 'utf8'));
+            console.log('Stripe config loaded successfully with keys:', Object.keys(stripeConfig));
+          } catch (err) {
+            console.error(`Error parsing ${file}:`, err);
+          }
+        }
+      } else {
+        console.error(`Critical file missing: ${file}`);
+      }
+    });
+    
+    // List directory contents for debugging
+    console.log('Root directory:', fs.readdirSync('.'));
+    if (fs.existsSync('./dist')) {
+      console.log('dist directory:', fs.readdirSync('./dist'));
+    } else {
+      console.error('dist directory missing!');
+    }
+    
+  } catch (error) {
+    console.error('Error checking environment:', error);
   }
-  
-  // List files in the current directory for diagnostics
-  console.log('Files in working directory:', fs.readdirSync('.'));
-} catch (error) {
-  console.error('Error checking for mounted files:', error);
 }
+
+// Run environment check - use top-level await in modules
+checkEnvironment().catch(err => {
+  console.error('Failed to check environment:', err);
+});
 
 // Create a minimal HTTP server immediately for health checks
 const server = http.createServer((req, res) => {
@@ -52,16 +105,31 @@ const server = http.createServer((req, res) => {
   }
 
   if (req.url === '/debug') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({
-      environment: {
-        NODE_ENV: process.env.NODE_ENV,
-        PORT: PORT,
-        HOST: HOST
-      },
-      cwd: process.cwd(),
-      dirname: __dirname
-    }));
+    // Can't use await here because we're in a callback
+    import('fs').then(fs => {
+      const dirs = {
+        root: fs.existsSync('./') ? fs.readdirSync('./') : 'not accessible',
+        dist: fs.existsSync('./dist') ? fs.readdirSync('./dist') : 'not accessible'
+      };
+      
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        environment: {
+          NODE_ENV: process.env.NODE_ENV,
+          PORT: PORT,
+          HOST: HOST,
+          DATABASE_URL_EXISTS: !!process.env.DATABASE_URL,
+          STRIPE_SECRET_KEY_EXISTS: !!process.env.STRIPE_SECRET_KEY
+        },
+        files: dirs,
+        cwd: process.cwd(),
+        dirname: __dirname
+      }));
+    }).catch(err => {
+      console.error('Failed to import fs module:', err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Failed to load file system module' }));
+    });
     return;
   }
 
@@ -98,16 +166,30 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, HOST, () => {
   console.log(`Minimal health check server listening on ${HOST}:${PORT}`);
   
-  // Now load the full application
+  // Now load the full application with extended error handling
   console.log('Loading full application...');
+  
+  // Add a timeout to keep the server alive even if the application fails
+  // This ensures Cloud Run health checks still pass
+  setTimeout(() => {
+    console.log('Health check server still running while application initializes');
+  }, 5000);
+  
   import('./dist/index.js')
-    .then(() => {
+    .then((module) => {
       console.log('Application loaded successfully');
+      console.log('Exported properties:', Object.keys(module));
       // Application takes over via its own routes
     })
     .catch((error) => {
       console.error('Failed to load application:', error);
-      console.error(error.stack);
+      console.error('Error stack:', error.stack);
+      // Log more details about the error
+      if (error.code === 'MODULE_NOT_FOUND') {
+        console.error('Module not found details:', error.message);
+        // Continue running the minimal server to keep the container alive
+        console.log('Continuing to run minimal server despite application error');
+      }
     });
 });
 

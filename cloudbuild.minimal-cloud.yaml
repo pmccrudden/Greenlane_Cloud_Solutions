@@ -1,26 +1,28 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-minimal', '-f', 'Dockerfile.minimal-cloud', '.']
-  
+    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-minimal-cloud', '-f', 'Dockerfile.minimal-cloud', '.']
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-minimal']
-  
+    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-minimal-cloud']
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'greenlane-minimal'
+      - 'greenlane-crm-minimal'
       - '--image'
-      - 'gcr.io/greenlane-cloud-solutions/greenlane-minimal'
+      - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-minimal-cloud'
       - '--platform'
       - 'managed'
       - '--region'
       - 'us-central1'
       - '--allow-unauthenticated'
+      - '--max-instances'
+      - '2'
+      - '--min-instances'
+      - '1'
       - '--memory'
       - '512Mi'
       - '--cpu'
@@ -28,12 +30,8 @@ steps:
       - '--concurrency'
       - '80'
       - '--timeout'
-      - '300s'
+      - '60s'
       - '--set-env-vars'
-      - 'NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com'
-      - '--port'
-      - '8080'
-      - '--cpu=1'
-
+      - 'NODE_ENV=production,HOST=0.0.0.0'
 images:
-  - 'gcr.io/greenlane-cloud-solutions/greenlane-minimal'
+  - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-minimal-cloud'
