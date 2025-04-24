@@ -1,0 +1,1025 @@
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error code ENOENT",
+    "timestamp": "2025-04-24T10:51:41.289564Z"
+  },
+  {
+    "insertId": "680a17bc00039c6bb05a3d6a",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T10:51:40.240901403Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"greenlane-crm-app-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2025-04-24T10:51:40.236651Z"
+  },
+  {
+    "insertId": "680a17bc000262f25964b26f",
+    "labels": {
+      "container_name": "greenlane-crm-app-1",
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T10:51:40.240901403Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(254).",
+    "timestamp": "2025-04-24T10:51:40.156393521Z"
+  },
+  {
+    "insertId": "680a17bb00088a74643decea",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:39.873817253Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error A complete log of this run can be found in: /root/.npm/_logs/2025-04-24T10_51_39_416Z-debug-0.log",
+    "timestamp": "2025-04-24T10:51:39.559732Z"
+  },
+  {
+    "insertId": "680a17bb00088653ce838b38",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:39.873817253Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent",
+    "timestamp": "2025-04-24T10:51:39.558675Z"
+  },
+  {
+    "insertId": "680a17bb0008864fa5b83e5a",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:39.873817253Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent This is related to npm not being able to find a file.",
+    "timestamp": "2025-04-24T10:51:39.558671Z"
+  },
+  {
+    "insertId": "680a17bb0008863a3c9c7e2e",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:39.873817253Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/app/package.json'",
+    "timestamp": "2025-04-24T10:51:39.558650Z"
+  },
+  {
+    "insertId": "680a17bb000885be1f9263d7",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:39.873817253Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error errno -2",
+    "timestamp": "2025-04-24T10:51:39.558526Z"
+  },
+  {
+    "insertId": "680a17bb000883a5f3ac712e",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:39.873817253Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error path /app/package.json",
+    "timestamp": "2025-04-24T10:51:39.557989Z"
+  },
+  {
+    "insertId": "680a17bb00088373e0480b27",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:39.873817253Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error syscall open",
+    "timestamp": "2025-04-24T10:51:39.557939Z"
+  },
+  {
+    "insertId": "680a17bb000881dea99955f9",
+    "labels": {
+      "instanceId": "00afae8043340f953dade6f9b402b5889cd9f8130d73f258d8aa55383a2685416cffc2c2f122e076bd9ad352e1b38cb4e17c34d4b473c53285fc913b248d841f633f9a0ab7"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:39.873817253Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error code ENOENT",
+    "timestamp": "2025-04-24T10:51:39.557534Z"
+  },
+  {
+    "insertId": "680a17ba0003dc4862db0c76",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T10:51:38.576374753Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"greenlane-crm-app-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2025-04-24T10:51:38.253Z"
+  },
+  {
+    "insertId": "680a17ba00029c87604d9b1c",
+    "labels": {
+      "container_name": "greenlane-crm-app-1",
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T10:51:38.242967659Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(254).",
+    "timestamp": "2025-04-24T10:51:38.171134398Z"
+  },
+  {
+    "insertId": "680a17b9000c2726a45a275f",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:37.875065172Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error A complete log of this run can be found in: /root/.npm/_logs/2025-04-24T10_51_37_552Z-debug-0.log",
+    "timestamp": "2025-04-24T10:51:37.796454Z"
+  },
+  {
+    "insertId": "680a17b9000c10327841cd26",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:37.875065172Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent",
+    "timestamp": "2025-04-24T10:51:37.790578Z"
+  },
+  {
+    "insertId": "680a17b9000c10277c4c2f3e",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:37.875065172Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent This is related to npm not being able to find a file.",
+    "timestamp": "2025-04-24T10:51:37.790567Z"
+  },
+  {
+    "insertId": "680a17b9000c0fd15740ffe0",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:37.875065172Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/app/package.json'",
+    "timestamp": "2025-04-24T10:51:37.790481Z"
+  },
+  {
+    "insertId": "680a17b9000c0eeb80b95c0b",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:37.875065172Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error errno -2",
+    "timestamp": "2025-04-24T10:51:37.790251Z"
+  },
+  {
+    "insertId": "680a17b9000c0aabf72b7ce3",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:37.875065172Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error path /app/package.json",
+    "timestamp": "2025-04-24T10:51:37.789163Z"
+  },
+  {
+    "insertId": "680a17b9000c0a46c957ba49",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:37.875065172Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error syscall open",
+    "timestamp": "2025-04-24T10:51:37.789062Z"
+  },
+  {
+    "insertId": "680a17b9000c070c5f771924",
+    "labels": {
+      "instanceId": "00afae80434ddbe4df5e8addbf131e4733483d88c0a7e1b9ce297cf8d87d02d4db77351ee5ebef630f8c0fd7abf4b964d5bf8594547b7ac561dd0074f79278b67e2fa2c0e3"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:37.875065172Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error code ENOENT",
+    "timestamp": "2025-04-24T10:51:37.788236Z"
+  },
+  {
+    "insertId": "-pibcjfdvsl4",
+    "logName": "projects/greenlane-cloud-solutions/logs/cloudaudit.googleapis.com%2Fsystem_event",
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "methodName": "/Services.CreateService",
+      "resourceName": "namespaces/greenlane-cloud-solutions/revisions/greenlane-crm-app-00001-45f",
+      "response": {
+        "@type": "type.googleapis.com/google.cloud.run.v1.Revision",
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Revision",
+        "metadata": {
+          "annotations": {
+            "autoscaling.knative.dev/maxScale": "10",
+            "autoscaling.knative.dev/minScale": "1",
+            "run.googleapis.com/client-name": "gcloud",
+            "run.googleapis.com/client-version": "519.0.0",
+            "run.googleapis.com/operation-id": "9a4445ec-1e51-4700-a798-a5f842e64a32",
+            "run.googleapis.com/startup-cpu-boost": "true",
+            "serving.knative.dev/creator": "869018523985-compute@developer.gserviceaccount.com"
+          },
+          "creationTimestamp": "2025-04-24T10:51:21.833281Z",
+          "generation": 1,
+          "labels": {
+            "client.knative.dev/nonce": "tuvkjuffxh",
+            "cloud.googleapis.com/location": "us-central1",
+            "run.googleapis.com/startupProbeType": "Default",
+            "serving.knative.dev/configuration": "greenlane-crm-app",
+            "serving.knative.dev/configurationGeneration": "1",
+            "serving.knative.dev/route": "greenlane-crm-app",
+            "serving.knative.dev/service": "greenlane-crm-app",
+            "serving.knative.dev/serviceUid": "e727189a-b29c-433b-a462-facc2121e6d8"
+          },
+          "name": "greenlane-crm-app-00001-45f",
+          "namespace": "869018523985",
+          "ownerReferences": [
+            {
+              "apiVersion": "serving.knative.dev/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "Configuration",
+              "name": "greenlane-crm-app",
+              "uid": "64793132-57e9-45f8-b835-4c1e19a14c36"
+            }
+          ],
+          "resourceVersion": "AAYzhABpA5s",
+          "selfLink": "/apis/serving.knative.dev/v1/namespaces/869018523985/revisions/greenlane-crm-app-00001-45f",
+          "uid": "645ec0d6-ac74-4f74-ad53-41d28c451958"
+        },
+        "spec": {
+          "containerConcurrency": 80,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "NODE_ENV",
+                  "value": "production"
+                },
+                {
+                  "name": "BASE_DOMAIN",
+                  "value": "greenlanecloudsolutions.com"
+                },
+                {
+                  "name": "CRM_DOMAIN",
+                  "value": "crm.greenlanecloudsolutions.com"
+                },
+                {
+                  "name": "API_DOMAIN",
+                  "value": "api.greenlanecloudsolutions.com"
+                },
+                {
+                  "name": "HOST",
+                  "value": "0.0.0.0"
+                }
+              ],
+              "image": "gcr.io/greenlane-cloud-solutions/greenlane-crm-app@sha256:16579a0456a70d9f53923891ceb6eba4cd3b45ded06348dcd60b3ab19fd3afd6",
+              "name": "greenlane-crm-app-1",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http1"
+                }
+              ],
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "1Gi"
+                }
+              },
+              "startupProbe": {
+                "failureThreshold": 1,
+                "periodSeconds": 240,
+                "tcpSocket": {
+                  "port": 8080
+                },
+                "timeoutSeconds": 240
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/app",
+                  "name": "greenlane-env-qin-col-kiw"
+                }
+              ]
+            }
+          ],
+          "serviceAccountName": "869018523985-compute@developer.gserviceaccount.com",
+          "timeoutSeconds": 600,
+          "volumes": [
+            {
+              "name": "greenlane-env-qin-col-kiw",
+              "secret": {
+                "items": [
+                  {
+                    "key": "latest",
+                    "path": ".env"
+                  }
+                ],
+                "secretName": "greenlane-env"
+              }
+            }
+          ]
+        },
+        "status": {
+          "conditions": [
+            {
+              "lastTransitionTime": "2025-04-24T10:51:35.845787Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00001-45f&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00001-45f%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastTransitionTime": "2025-04-24T10:51:35.845787Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00001-45f&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00001-45f%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "ContainerHealthy"
+            },
+            {
+              "lastTransitionTime": "2025-04-24T10:51:31.871121Z",
+              "message": "Container image import completed in 9.26s.",
+              "status": "True",
+              "type": "ContainerReady"
+            },
+            {
+              "lastTransitionTime": "2025-04-24T10:51:34.508650Z",
+              "reason": "MinInstancesWarming",
+              "status": "Unknown",
+              "type": "MinInstancesProvisioned"
+            },
+            {
+              "lastTransitionTime": "2025-04-24T10:51:34.508650Z",
+              "message": "Provisioning imported containers completed in 2.63s. Checking container health.",
+              "status": "True",
+              "type": "ResourcesAvailable"
+            },
+            {
+              "lastTransitionTime": "2025-04-24T10:51:34.508650Z",
+              "message": "System will retry after 0:00:00 from lastTransitionTime for attempt 0.",
+              "reason": "ImmediateRetry",
+              "severity": "Info",
+              "status": "True",
+              "type": "Retry"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "imageDigest": "gcr.io/greenlane-cloud-solutions/greenlane-crm-app@sha256:16579a0456a70d9f53923891ceb6eba4cd3b45ded06348dcd60b3ab19fd3afd6",
+              "name": "greenlane-crm-app-1"
+            }
+          ],
+          "desiredReplicas": 1,
+          "imageDigest": "gcr.io/greenlane-cloud-solutions/greenlane-crm-app@sha256:16579a0456a70d9f53923891ceb6eba4cd3b45ded06348dcd60b3ab19fd3afd6",
+          "logUrl": "https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00001-45f&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00001-45f%22",
+          "observedGeneration": 1
+        }
+      },
+      "serviceName": "run.googleapis.com",
+      "status": {
+        "code": 9,
+        "message": "Ready condition status changed to False for Revision greenlane-crm-app-00001-45f with message: The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=greenlane-cloud-solutions&resource=cloud_run_revision/service_name/greenlane-crm-app/revision_name/greenlane-crm-app-00001-45f&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22greenlane-crm-app%22%0Aresource.labels.revision_name%3D%22greenlane-crm-app-00001-45f%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start"
+      }
+    },
+    "receiveTimestamp": "2025-04-24T10:51:35.944315781Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-04-24T10:51:35.857785Z"
+  },
+  {
+    "insertId": "680a17b7000cee7bd833776d",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T10:51:35.911813533Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"greenlane-crm-app-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2025-04-24T10:51:35.847483Z"
+  },
+  {
+    "insertId": "680a17b7000b7542e35f96a1",
+    "labels": {
+      "container_name": "greenlane-crm-app-1",
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T10:51:35.911813533Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(254).",
+    "timestamp": "2025-04-24T10:51:35.750895073Z"
+  },
+  {
+    "insertId": "680a17b70003087d30e1cc9a",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:35.211194715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error A complete log of this run can be found in: /root/.npm/_logs/2025-04-24T10_51_35_058Z-debug-0.log",
+    "timestamp": "2025-04-24T10:51:35.198781Z"
+  },
+  {
+    "insertId": "680a17b7000303722437d5b0",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:35.211194715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent",
+    "timestamp": "2025-04-24T10:51:35.197490Z"
+  },
+  {
+    "insertId": "680a17b70003036e87bca50e",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:35.211194715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent This is related to npm not being able to find a file.",
+    "timestamp": "2025-04-24T10:51:35.197486Z"
+  },
+  {
+    "insertId": "680a17b7000303580943b93c",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:35.211194715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/app/package.json'",
+    "timestamp": "2025-04-24T10:51:35.197464Z"
+  },
+  {
+    "insertId": "680a17b7000302be75bdd00d",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:35.211194715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error errno -2",
+    "timestamp": "2025-04-24T10:51:35.197310Z"
+  },
+  {
+    "insertId": "680a17b70003007e033830d3",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:35.211194715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error path /app/package.json",
+    "timestamp": "2025-04-24T10:51:35.196734Z"
+  },
+  {
+    "insertId": "680a17b70003003c788d52cb",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:35.211194715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error syscall open",
+    "timestamp": "2025-04-24T10:51:35.196668Z"
+  },
+  {
+    "insertId": "680a17b70002fe4f33e7e094",
+    "labels": {
+      "instanceId": "00afae804330df778a42a7008231b9e39cdef23cd0283ca79256d738a51c8482892cf8e4589e4358565f369bfefd4611ad0411132b292812374e61d22a2c9f7583950fcb20"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:35.211194715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error code ENOENT",
+    "timestamp": "2025-04-24T10:51:35.196175Z"
+  },
+  {
+    "insertId": "680a17b60004d53f1cd0b4e5",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T10:51:34.579575367Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"greenlane-crm-app-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2025-04-24T10:51:34.316735Z"
+  },
+  {
+    "insertId": "680a17b60003b48dced95e01",
+    "labels": {
+      "container_name": "greenlane-crm-app-1",
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-04-24T10:51:34.246537333Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(254).",
+    "timestamp": "2025-04-24T10:51:34.242746265Z"
+  },
+  {
+    "insertId": "680a17b6000332de19b8bdc6",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:34.544161219Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error A complete log of this run can be found in: /root/.npm/_logs/2025-04-24T10_51_33_957Z-debug-0.log",
+    "timestamp": "2025-04-24T10:51:34.209630Z"
+  },
+  {
+    "insertId": "680a17b600032d760facf00c",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:34.544161219Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent",
+    "timestamp": "2025-04-24T10:51:34.208246Z"
+  },
+  {
+    "insertId": "680a17b600032d738da80791",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:34.544161219Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent This is related to npm not being able to find a file.",
+    "timestamp": "2025-04-24T10:51:34.208243Z"
+  },
+  {
+    "insertId": "680a17b600032d66b0f552b2",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:34.544161219Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/app/package.json'",
+    "timestamp": "2025-04-24T10:51:34.208230Z"
+  },
+  {
+    "insertId": "680a17b600032cc51fb77e99",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:34.544161219Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error errno -2",
+    "timestamp": "2025-04-24T10:51:34.208069Z"
+  },
+  {
+    "insertId": "680a17b600032a998471e2d1",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:34.544161219Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error path /app/package.json",
+    "timestamp": "2025-04-24T10:51:34.207513Z"
+  },
+  {
+    "insertId": "680a17b600032a72a7f4f458",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:34.544161219Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error syscall open",
+    "timestamp": "2025-04-24T10:51:34.207474Z"
+  },
+  {
+    "insertId": "680a17b60003289110003ce8",
+    "labels": {
+      "instanceId": "00afae804380468690331ec9a825e77c6a50cb60210c552571e75f8692db86ea43b0a8585af549554c79fff53048bc36d31c5b2cd5c966b454762b802fe2e3a76732356f17"
+    },
+    "logName": "projects/greenlane-cloud-solutions/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-04-24T10:51:34.211033806Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "greenlane-crm-app",
+        "location": "us-central1",
+        "project_id": "greenlane-cloud-solutions",
+        "revision_name": "greenlane-crm-app-00001-45f",
+        "service_name": "greenlane-crm-app"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "npm error code ENOENT",
+    "timestamp": "2025-04-24T10:51:34.206993Z"
+  }
+]
+
+=== Deployment Check Complete ===
+For continuous log monitoring, run:
+gcloud logging read 'resource.type=cloud_run_revision AND resource.labels.service_name=greenlane-crm-app' --limit=10 --format=json --follow
+=== Checking deployment status for greenlane-crm-diagnostic in us-central1 ===
+Error: Service greenlane-crm-diagnostic does not exist in region us-central1
