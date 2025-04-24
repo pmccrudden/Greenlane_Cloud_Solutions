@@ -1,8 +1,5 @@
-// Cloudflare DNS integration for Greenlane CRM tenants
+// Script to add a subdomain for an existing tenant
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-// Using native fetch available in Node.js
 
 // Read environment variables from .env.production file directly
 function loadEnvFromFile(file) {
@@ -55,15 +52,6 @@ if (!SERVICE_HOSTNAME) {
   SERVICE_HOSTNAME = 'greenlane-crm-esm-enhanced-mx3osic2uq-uc.a.run.app'; // Fallback
 }
 
-// Validate required environment variables
-if (!CLOUDFLARE_API_TOKEN) {
-  console.warn('Warning: CLOUDFLARE_API_TOKEN environment variable is not set.');
-}
-
-if (!CLOUDFLARE_ZONE_ID) {
-  console.warn('Warning: CLOUDFLARE_ZONE_ID environment variable is not set.');
-}
-
 /**
  * Validates a subdomain name
  * @param {string} subdomain - The subdomain to validate
@@ -73,44 +61,6 @@ function isValidSubdomain(subdomain) {
   // Allow lowercase letters, numbers, and hyphens, 3-20 chars, no consecutive hyphens
   const subdomainPattern = /^[a-z0-9](?:[a-z0-9-]{1,18}[a-z0-9])?$/;
   return subdomainPattern.test(subdomain);
-}
-
-/**
- * Checks if a subdomain is available
- * @param {string} subdomain - The subdomain to check
- * @returns {Promise<boolean>} - Whether the subdomain is available
- */
-async function isSubdomainAvailable(subdomain) {
-  if (!CLOUDFLARE_API_TOKEN || !CLOUDFLARE_ZONE_ID) {
-    console.warn('Cannot check subdomain availability: Cloudflare credentials missing');
-    return true; // Assume available if we can't check
-  }
-
-  try {
-    const recordName = `${subdomain}.${BASE_DOMAIN}`;
-    
-    const response = await fetch(
-      `https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records?type=CNAME&name=${recordName}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    const data = await response.json();
-    if (!data.success) {
-      console.error('Cloudflare API error:', data.errors);
-      throw new Error('Failed to check existing DNS records');
-    }
-
-    const existingRecords = data.result;
-    return existingRecords.length === 0;
-  } catch (error) {
-    console.error('Error checking subdomain availability:', error);
-    return true; // Assume available on error (safer than blocking)
-  }
 }
 
 /**
@@ -138,7 +88,7 @@ async function createTenantSubdomain(subdomain) {
     console.log(`Setting up CNAME record: ${recordName} → ${SERVICE_HOSTNAME}`);
 
     // Check if record exists
-    const response = await fetch(
+    const checkResponse = await fetch(
       `https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records?type=CNAME&name=${recordName}`,
       {
         headers: {
@@ -148,20 +98,44 @@ async function createTenantSubdomain(subdomain) {
       }
     );
 
-    const data = await response.json();
-    if (!data.success) {
-      console.error('Cloudflare API error:', data.errors);
+    const checkData = await checkResponse.json();
+    if (!checkData.success) {
+      console.error('Cloudflare API error:', checkData.errors);
       throw new Error('Failed to check existing DNS records');
     }
 
-    const existingRecords = data.result;
+    const existingRecords = checkData.result;
     const record = existingRecords.length > 0 ? existingRecords[0] : null;
 
     if (record) {
-      // Record already exists
+      // Record already exists, update it
+      const updateResponse = await fetch(
+        `https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records/${record.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            type: 'CNAME',
+            name: subdomain,
+            content: SERVICE_HOSTNAME,
+            ttl: 1, // Auto TTL
+            proxied: true // Enable Cloudflare proxy
+          })
+        }
+      );
+
+      const updateData = await updateResponse.json();
+      if (!updateData.success) {
+        console.error('Cloudflare API error:', updateData.errors);
+        throw new Error(`Failed to update CNAME record for ${recordName}`);
+      }
+
       return {
         success: true,
-        message: `Subdomain ${subdomain} is already configured.`
+        message: `Updated DNS record for ${subdomain}.${BASE_DOMAIN}`
       };
     } else {
       // Create new record
@@ -191,7 +165,7 @@ async function createTenantSubdomain(subdomain) {
 
       return {
         success: true,
-        message: `DNS record created for ${subdomain}.${BASE_DOMAIN}`
+        message: `Created DNS record for ${subdomain}.${BASE_DOMAIN}`
       };
     }
   } catch (error) {
@@ -203,9 +177,43 @@ async function createTenantSubdomain(subdomain) {
   }
 }
 
-// Export for ES modules
-export {
-  isValidSubdomain,
-  isSubdomainAvailable,
-  createTenantSubdomain
-};
+/**
+ * Main function to add a subdomain for a tenant
+ */
+async function addTenantSubdomain() {
+  // Get command line arguments
+  const args = process.argv.slice(2);
+  
+  if (args.length < 1) {
+    console.error('Usage: node add-tenant-subdomain.js <tenant-id>');
+    console.error('Example: node add-tenant-subdomain.js acme');
+    process.exit(1);
+  }
+  
+  const tenantId = args[0];
+  
+  if (!isValidSubdomain(tenantId)) {
+    console.error(`Invalid tenant ID: '${tenantId}'. Must be 3-20 characters, lowercase letters, numbers, and hyphens only.`);
+    process.exit(1);
+  }
+  
+  try {
+    console.log(`Setting up DNS for tenant subdomain: ${tenantId}`);
+    const result = await createTenantSubdomain(tenantId);
+    
+    if (result.success) {
+      console.log(`✅ ${result.message}`);
+      console.log(`Tenant URL: https://${tenantId}.${BASE_DOMAIN}`);
+      console.log('\nNote: DNS changes may take some time to propagate.');
+    } else {
+      console.error(`❌ ${result.message}`);
+      process.exit(1);
+    }
+  } catch (error) {
+    console.error('Error adding tenant subdomain:', error);
+    process.exit(1);
+  }
+}
+
+// Run the script
+addTenantSubdomain();
