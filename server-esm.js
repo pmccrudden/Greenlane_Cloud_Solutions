@@ -116,7 +116,11 @@ const server = http.createServer(async (req, res) => {
   const forceMarketing = headers['x-force-marketing'];
   
   // Log headers for debugging
-  console.log('Request headers:', JSON.stringify(headers));
+  console.log('Host:', headers.host);
+  console.log('X-Forwarded-Host:', forwardedHost);
+  console.log('X-App-Request:', headers['x-app-request']);
+  console.log('X-Show-Marketing:', showMarketing);
+  console.log('X-Force-Marketing:', forceMarketing);
   
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -244,6 +248,89 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // Check if this is a request for a static file
+  if (req.url && (req.url.endsWith('.js') || req.url.endsWith('.css') || 
+     req.url.endsWith('.png') || req.url.endsWith('.jpg') || req.url.endsWith('.svg') ||
+     req.url.endsWith('.json') || req.url.endsWith('.ico') || req.url.endsWith('.woff2'))) {
+    
+    console.log(`Static file request: ${req.url}`);
+    
+    // Try to locate the file in various static directories
+    // First normalize the URL to remove potential path traversal attempts and leading slashes
+    const normalizedUrl = req.url.replace(/^\/+/, ''); // Remove leading slashes
+    
+    const possiblePaths = [
+      path.join(process.cwd(), 'dist', 'public', normalizedUrl),
+      path.join(process.cwd(), 'dist', 'client', normalizedUrl),
+      path.join(process.cwd(), 'dist', normalizedUrl),
+      path.join(process.cwd(), 'public', normalizedUrl),
+      path.join(process.cwd(), 'dist', 'assets', normalizedUrl),
+      path.join(process.cwd(), 'dist', 'client', 'assets', normalizedUrl)
+    ];
+    
+    for (const filePath of possiblePaths) {
+      try {
+        const exists = await fs.access(filePath).then(() => true).catch(() => false);
+        if (exists) {
+          console.log(`Found static file at ${filePath}`);
+          
+          // Set content type based on file extension
+          let contentType = 'application/octet-stream'; // Default
+          if (req.url.endsWith('.js')) contentType = 'application/javascript';
+          else if (req.url.endsWith('.css')) contentType = 'text/css';
+          else if (req.url.endsWith('.html')) contentType = 'text/html';
+          else if (req.url.endsWith('.json')) contentType = 'application/json';
+          else if (req.url.endsWith('.png')) contentType = 'image/png';
+          else if (req.url.endsWith('.jpg') || req.url.endsWith('.jpeg')) contentType = 'image/jpeg';
+          else if (req.url.endsWith('.svg')) contentType = 'image/svg+xml';
+          else if (req.url.endsWith('.ico')) contentType = 'image/x-icon';
+          else if (req.url.endsWith('.woff2')) contentType = 'font/woff2';
+          
+          const content = await fs.readFile(filePath);
+          res.writeHead(200, { 'Content-Type': contentType });
+          res.end(content);
+          return;
+        }
+      } catch (error) {
+        console.error(`Error serving ${filePath}:`, error);
+      }
+    }
+    
+    // File not found
+    console.log(`Static file not found: ${req.url}`);
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('File not found');
+    return;
+  }
+  
+  // At this point, it could be a frontend route that needs to serve index.html
+  if (req.url && req.url !== '/' && !req.url.startsWith('/api/')) {
+    console.log(`Potential frontend route: ${req.url}`);
+    
+    // Look for index.html to serve for client-side routing
+    const possiblePaths = [
+      path.join(process.cwd(), 'dist', 'public', 'index.html'),
+      path.join(process.cwd(), 'dist', 'client', 'index.html'),
+      path.join(process.cwd(), 'dist', 'index.html'),
+      path.join(process.cwd(), 'public', 'index.html')
+    ];
+    
+    for (const htmlPath of possiblePaths) {
+      try {
+        const exists = await fs.access(htmlPath).then(() => true).catch(() => false);
+        if (exists) {
+          console.log(`Serving index.html from ${htmlPath} for route ${req.url}`);
+          const content = await fs.readFile(htmlPath, 'utf8');
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(content);
+          return;
+        }
+      } catch (error) {
+        console.error(`Error serving index.html from ${htmlPath}:`, error);
+      }
+    }
+  }
+  
   // No additional checks needed here as the main domain redirect 
   // is already handled above in the root path (/) endpoint handler
   
