@@ -1,0 +1,57 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-ultra-minimal.sh
+=== Deploying Ultra-Minimal Server to Cloud Run ===
+greenlane.enterprisesltd@gmail.com
+Your active configuration is: [cloudshell-16860]
+Current GCP project: greenlane-cloud-solutions
+Building ultra-minimal Docker image locally...
+[+] Building 4.7s (8/8) FINISHED                                                                                                                                      docker:default
+ => [internal] load build definition from Dockerfile.minimal                                                                                                                    0.0s
+ => => transferring dockerfile: 186B                                                                                                                                            0.0s
+ => [internal] load metadata for docker.io/library/node:16-alpine                                                                                                               1.0s
+ => [internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 482B                                                                                                                                               0.0s
+ => [1/3] FROM docker.io/library/node:16-alpine@sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787                                                         2.8s
+ => => resolve docker.io/library/node:16-alpine@sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787                                                         0.0s
+ => => sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787 1.43kB / 1.43kB                                                                                  0.0s
+ => => sha256:72e89a86be58c922ed7b1475e5e6f151537676470695dd106521738b060e139d 1.16kB / 1.16kB                                                                                  0.0s
+ => => sha256:2573171e0124bb95d14d128728a52a97bb917ef45d7c4fa8cfe76bc44aa78b73 6.73kB / 6.73kB                                                                                  0.0s
+ => => sha256:7264a8db6415046d36d16ba98b79778e18accee6ffa71850405994cffa9be7de 3.40MB / 3.40MB                                                                                  0.2s
+ => => sha256:eee371b9ce3ffdbb8aa703b9a14d318801ddc3468f096bb6cfeabbeb715147f9 36.63MB / 36.63MB                                                                                0.6s
+ => => sha256:93b3025fe10392717d06ec0d012a9ffa2039d766a322aac899c6831dd93382c2 2.34MB / 2.34MB                                                                                  0.4s
+ => => extracting sha256:7264a8db6415046d36d16ba98b79778e18accee6ffa71850405994cffa9be7de                                                                                       0.1s
+ => => sha256:d9059661ce70092af66d2773666584fc8addcb78a2be63f720022f4875577ea9 452B / 452B                                                                                      0.3s
+ => => extracting sha256:eee371b9ce3ffdbb8aa703b9a14d318801ddc3468f096bb6cfeabbeb715147f9                                                                                       1.9s
+ => => extracting sha256:93b3025fe10392717d06ec0d012a9ffa2039d766a322aac899c6831dd93382c2                                                                                       0.1s
+ => => extracting sha256:d9059661ce70092af66d2773666584fc8addcb78a2be63f720022f4875577ea9                                                                                       0.0s
+ => [internal] load build context                                                                                                                                               0.0s
+ => => transferring context: 2.03kB                                                                                                                                             0.0s
+ => [2/3] WORKDIR /app                                                                                                                                                          0.7s
+ => [3/3] COPY app-minimal.js .                                                                                                                                                 0.0s
+ => exporting to image                                                                                                                                                          0.1s
+ => => exporting layers                                                                                                                                                         0.0s
+ => => writing image sha256:48bdc06ccabce2f68117a578aa25379417962ac9111636d156c5eea0f7b32da5                                                                                    0.0s
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-minimal:latest                                                                                                  0.0s
+Pushing image to Google Container Registry...
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-minimal]
+2fd5e3653881: Pushed 
+085e0ec02785: Pushed 
+365ccd918307: Layer already exists 
+1bba629c69e9: Layer already exists 
+139c1270acf1: Layer already exists 
+4693057ce236: Layer already exists 
+latest: digest: sha256:339794086a18f7c80e894f6d1700ba9754829a009f5b6ec797b29f7a85d33efb size: 1572
+Deploying to Cloud Run...
+Deploying container to Cloud Run service [greenlane-crm-minimal] in project [greenlane-cloud-solutions] region [us-central1]
+✓ Deploying new service... Done.                                                                                                                                                    
+  ✓ Creating Revision...                                                                                                                                                            
+  ✓ Routing traffic...                                                                                                                                                              
+  ✓ Setting IAM Policy...                                                                                                                                                           
+Done.                                                                                                                                                                               
+Service [greenlane-crm-minimal] revision [greenlane-crm-minimal-00001-9gp] has been deployed and is serving 100 percent of traffic.
+Service URL: https://greenlane-crm-minimal-869018523985.us-central1.run.app
+Deployment completed.
+Checking service status...
+Service is available at: https://greenlane-crm-minimal-mx3osic2uq-uc.a.run.app
+
+Testing the endpoint...
+Status code: 200
