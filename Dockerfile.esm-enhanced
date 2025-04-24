@@ -18,8 +18,20 @@ RUN npm run build && \
     echo "Client files:" && \
     ls -la ./dist/public || echo "No dist/public directory"
 
-# Fix for missing directory
-RUN mkdir -p ./dist/public
+# If build didn't create the dist/public directory, create it
+RUN if [ ! -d "./dist/public" ]; then \
+      echo "dist/public directory missing, running build again with debug info"; \
+      NODE_ENV=production npm run build; \
+      mkdir -p ./dist/public; \
+    fi
+
+# Verify client files exist
+RUN if [ ! -f "./dist/public/index.html" ]; then \
+      echo "WARNING: index.html not found in dist/public, something went wrong with the build"; \
+    else \
+      echo "Verified index.html exists"; \
+      ls -la ./dist/public; \
+    fi
 
 # Start a new stage for the production image
 FROM node:20-alpine as production
@@ -41,9 +53,14 @@ COPY --from=builder /app/client ./client
 # Copy enhanced ESM server file
 COPY server-esm.js ./
 
-# Prepare fallback static content
-RUN mkdir -p ./dist/public && \
-    echo '<html><head><title>Greenlane CRM</title></head><body><h1>Greenlane CRM API Server</h1><p>The API server is running.</p></body></html>' > ./dist/public/index.html
+# Prepare fallback static content only if index.html doesn't exist
+RUN if [ ! -f "./dist/public/index.html" ]; then \
+      echo "WARNING: Creating fallback index.html"; \
+      mkdir -p ./dist/public && \
+      echo '<html><head><title>Greenlane CRM</title></head><body><h1>Greenlane CRM API Server</h1><p>The API server is running.</p></body></html>' > ./dist/public/index.html; \
+    else \
+      echo "Found existing index.html, not overwriting"; \
+    fi
 
 # Diagnostic logs
 RUN echo "Files in /app:"

@@ -147,13 +147,31 @@ const server = http.createServer(async (req, res) => {
     // App subdomain should attempt to load the application
     if (isAppDomain || appRequestHeader === 'true') {
       console.log('App subdomain detected, attempting to load application entry point');
+      console.log('Current directory structure:');
+      try {
+        const rootFiles = await fs.readdir('.');
+        console.log('Root directory:', rootFiles);
+        
+        if (rootFiles.includes('dist')) {
+          const distFiles = await fs.readdir('./dist');
+          console.log('dist directory:', distFiles);
+          
+          if (distFiles.includes('public')) {
+            const publicFiles = await fs.readdir('./dist/public');
+            console.log('dist/public directory:', publicFiles);
+          }
+        }
+      } catch (error) {
+        console.error('Error listing directory structure:', error);
+      }
       
       // First try to find and serve index.html
       const possiblePaths = [
         path.join(process.cwd(), 'dist', 'public', 'index.html'),
         path.join(process.cwd(), 'dist', 'client', 'index.html'),
         path.join(process.cwd(), 'dist', 'index.html'),
-        path.join(process.cwd(), 'public', 'index.html')
+        path.join(process.cwd(), 'public', 'index.html'),
+        path.join(process.cwd(), 'client', 'index.html')
       ];
       
       for (const htmlPath of possiblePaths) {

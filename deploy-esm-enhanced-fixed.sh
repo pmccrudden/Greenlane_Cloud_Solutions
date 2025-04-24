@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Enhanced ES Module deployment script for Cloud Run
-# Uses enhanced diagnostic ESM server
+# Uses enhanced diagnostic ESM server with frontend build fix
 
 echo "=== Deploying Enhanced ESM Server to Cloud Run ==="
 
@@ -19,18 +19,30 @@ if [ "$PROJECT_ID" != "greenlane-cloud-solutions" ]; then
   gcloud config set project greenlane-cloud-solutions
 fi
 
-# Build the frontend first to ensure it exists
-echo "Building frontend..."
+# Clean dist directory to avoid any previous build artifacts
+echo "Cleaning dist directory..."
+rm -rf ./dist
+mkdir -p ./dist/public
+
+# Build the frontend explicitly to ensure it exists
+echo "Building frontend with Vite..."
+export NODE_ENV=production
 npm run build
 
 # Verify the frontend was built successfully
 if [ -f "./dist/public/index.html" ]; then
-  echo "Frontend build successful"
+  echo "Frontend build successful!"
   ls -la ./dist/public/
 else
-  echo "WARNING: Frontend build may have failed. No index.html found in dist/public/"
+  echo "WARNING: Frontend build may have failed. Creating fallback index.html"
   mkdir -p ./dist/public
+  echo '<html><head><title>Greenlane CRM</title><script>window.location.href = "/debug";</script></head><body><h1>Greenlane CRM</h1><p>Loading application...</p></body></html>' > ./dist/public/index.html
 fi
+
+# Copy files to ensure static content is available
+echo "Ensuring frontend files are available..."
+mkdir -p ./dist/public/assets
+cp -r ./client/src/assets ./dist/public/ 2>/dev/null || echo "No assets directory to copy"
 
 # Build the Docker image locally
 echo "Building enhanced ESM Docker image..."
