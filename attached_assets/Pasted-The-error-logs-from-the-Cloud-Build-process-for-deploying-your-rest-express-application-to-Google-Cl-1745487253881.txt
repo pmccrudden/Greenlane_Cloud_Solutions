@@ -1,0 +1,331 @@
+The error logs from the Cloud Build process for deploying your rest-express application to Google Cloud Run indicate a persistent issue with the container failing to start. The primary error is:
+
+text
+
+Copy
+ERROR: (gcloud.run.deploy) Revision 'greenlane-crm-app-00023-gst' is not ready and cannot serve traffic. The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout.
+The specific runtime error in the logs is:
+
+text
+
+Copy
+Error: Cannot find module '/app/server.js'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1212:15)
+    at Module._load (node:internal/modules/cjs/loader:1043:27)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+    at node:internal/main/run_main_module:28:49 {
+  code: 'MODULE_NOT_FOUND'
+}
+This error shows that the container attempted to execute node server.js as specified in the Cloud Run configuration (command: ["node"], args: ["server.js"]), but the file /app/server.js does not exist in the container. This caused the container to exit with code 1, failing to bind to port 8080 and resulting in the deployment failure. The IAM policy warning was resolved post-deployment, as the logs confirm the policy was updated to allow public access (allUsers with roles/run.invoker).
+
+Below, I’ll analyze the errors, identify their causes, and provide a detailed resolution to fix the deployment for your greenlane-cloud-solutions project, ensuring your CRM and marketing website are live at greenlanecloudsolutions.com, crm.greenlanecloudsolutions.com, and api.greenlanecloudsolutions.com in a cost-effective, competitive manner.
+
+Analyzing the Errors
+1. Primary Error: MODULE_NOT_FOUND for /app/server.js
+Error Details:
+The container failed to start because it tried to run node server.js, but /app/server.js was not found.
+Exit code 1 indicates a runtime error, and the Default STARTUP TCP probe failed confirms the application didn’t bind to port 8080.
+Cause:
+The cloudbuild.yaml specifies an incorrect entrypoint (node server.js) in the Cloud Run deployment step, overriding the Dockerfile’s CMD. Your project uses a TypeScript setup with server/index.ts, compiled to dist/index.js via esbuild, and executed with npm start (NODE_ENV=production node dist/index.js).
+The server.js file does not exist in your repository. Previous errors involved bootstrap.js and bootstrap.cjs, indicating a recurring issue with the cloudbuild.yaml specifying non-existent entrypoint files.
+The Dockerfile you intended to use specifies CMD ["npm", "start"], but the Cloud Run configuration in cloudbuild.yaml is overriding it with node server.js.
+Impact:
+The container crashes immediately, failing to start the Express server and bind to port 8080, causing the deployment to fail.
+2. Build Step Failure
+Error Details:
+ERROR: build step 2 "gcr.io/google.com/cloudsdktool/cloud-sdk" failed: step exited with non-zero status: 1
+ERROR: (gcloud.builds.submit) build 94470853-cff3-49bf-9cc9-2a2a310ae974 completed with status "FAILURE"
+Cause:
+The failure occurred in the deployment step (step 2, using gcr.io/google.com/cloudsdktool/cloud-sdk), which executes gcloud run deploy. The container’s runtime error (MODULE_NOT_FOUND) caused this step to exit with a non-zero status.
+Impact:
+The build process successfully built and pushed the Docker image (gcr.io/greenlane-cloud-solutions/greenlane-crm-app) but failed during deployment due to the incorrect entrypoint.
+3. IAM Policy Warning (Resolved)
+Details:
+The deployment initially failed to set the IAM policy:
+text
+
+Copy
+Setting IAM policy failed, try "gcloud beta run services add-iam-policy-binding --region=us-central1 --member=allUsers --role=roles/run.invoker greenlane-crm-app"
+Post-deployment, the logs confirm the policy was updated:
+text
+
+Copy
+Updated IAM policy for service [greenlane-crm-app].
+bindings:
+- members:
+  - allUsers
+  role: roles/run.invoker
+Cause:
+The initial IAM failure was likely due to a permissions issue for the Cloud Build service account, but the subsequent gcloud beta run services add-iam-policy-binding command resolved it.
+Impact:
+The IAM issue is no longer a barrier to deployment.
+4. Additional Observations
+Service Name:
+The service name greenlane-crm-app is consistent with recent deployments but differs from earlier commands (greenlane-app). The environment variables (CRM_DOMAIN=crm.greenlanecloudsolutions.com) suggest greenlane-crm-app is intentional.
+Environment Variables:
+The deployment sets:
+NODE_ENV=production
+BASE_DOMAIN=greenlanecloudsolutions.com
+CRM_DOMAIN=crm.greenlanecloudsolutions.com
+API_DOMAIN=api.greenlanecloudsolutions.com
+These align with your routing logic in server/index.ts.
+Missing Application Logs:
+The logs only show the MODULE_NOT_FOUND error for server.js, indicating the crash occurred early, before the Express server could initialize or log additional details.
+Context:
+Project: rest-express uses TypeScript (server/index.ts), compiled to dist/index.js via esbuild, with npm start as the entrypoint.
+Previous Issues:
+Resolved MODULE_NOT_FOUND for vite, package.json, bootstrap.js, and bootstrap.cjs.
+Fixed IAM policy issues.
+Addressed TypeError in serveStatic.
+Current Setup:
+package.json:
+json
+
+Copy
+"scripts": {
+  "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
+  "start": "NODE_ENV=production node dist/index.js"
+}
+Dockerfile (intended):
+dockerfile
+
+Copy
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS production
+ENV NODE_ENV=production
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
+EXPOSE 8080
+ENV PORT=8080
+ENV HOST=0.0.0.0
+CMD ["npm", "start"]
+cloudbuild.yaml: Incorrectly specifies node server.js (and previously bootstrap.cjs, bootstrap.js).
+Resolution Steps
+To fix the deployment failure, we need to correct the entrypoint in cloudbuild.yaml, ensure the Dockerfile is used correctly, and verify the application starts on port 8080.
+
+Step 1: Update cloudbuild.yaml
+The cloudbuild.yaml is overriding the Dockerfile’s CMD with node server.js. Update it to use the correct entrypoint and service name.
+
+Updated cloudbuild.yaml:
+yaml
+
+Copy
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'greenlane-crm-app'
+      - '--image=gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--max-instances=10'
+      - '--min-instances=1'
+      - '--memory=1Gi'
+      - '--cpu=1'
+      - '--concurrency=80'
+      - '--timeout=600s'
+      - '--set-env-vars=NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com,CRM_DOMAIN=crm.greenlanecloudsolutions.com,API_DOMAIN=api.greenlanecloudsolutions.com,HOST=0.0.0.0'
+      - '--update-secrets=/app/.env=greenlane-env:latest'
+Edit cloudbuild.yaml:
+bash
+
+Copy
+nano cloudbuild.yaml
+Save the updated content, ensuring no command or args override the Dockerfile’s CMD ["npm", "start"].
+Step 2: Verify and Update Dockerfile
+Ensure the Dockerfile aligns with your TypeScript setup and doesn’t reference server.js.
+
+Updated Dockerfile:
+dockerfile
+
+Copy
+# Stage 1: Build stage
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# Stage 2: Production stage
+FROM node:20-alpine AS production
+ENV NODE_ENV=production
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --only=production
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
+EXPOSE 8080
+ENV PORT=8080
+ENV HOST=0.0.0.0
+CMD ["npm", "start"]
+Edit Dockerfile:
+bash
+
+Copy
+nano Dockerfile
+Save the updated content.
+Remove Incorrect Files:
+bash
+
+Copy
+rm server.js bootstrap.cjs bootstrap.js
+git rm server.js bootstrap.cjs bootstrap.js
+git commit -m "Remove incorrect server.js, bootstrap.cjs, and bootstrap.js"
+git push origin main
+Step 3: Verify Application Code
+Ensure routes/index.ts starts the server correctly and server/index.ts matches the domain configuration.
+
+Update routes/index.ts:
+typescript
+
+Copy
+import { type Express } from 'express';
+
+export async function registerRoutes(app: Express) {
+  app.get('/', (req, res) => res.send('Hello from Greenlane Cloud Solutions'));
+  app.get('/debug', (req, res) => res.json({ status: 'running', env: process.env }));
+  app.get('/health', (req, res) => res.json({ status: 'healthy' }));
+  const port = process.env.PORT || 8080;
+  const host = process.env.HOST || '0.0.0.0';
+  app.listen(port, host, () => console.log(`Server running on ${host}:${port}`));
+  return app;
+}
+Verify server/index.ts:
+Ensure it uses crm.greenlanecloudsolutions.com:
+typescript
+
+Copy
+import express, { type Request, Response, NextFunction } from "express";
+import { registerRoutes } from "./routes";
+import { join } from "path";
+
+const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  const path = req.path;
+  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+
+  const originalResJson = res.json;
+  res.json = function (bodyJson, ...args) {
+    capturedJsonResponse = bodyJson;
+    return originalResJson.apply(res, [bodyJson, ...args]);
+  };
+
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    if (path.startsWith("/api")) {
+      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+      if (capturedJsonResponse) {
+        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+      }
+      if (logLine.length > 80) {
+        logLine = logLine.slice(0, 79) + "…";
+      }
+      console.log(logLine);
+    }
+  });
+
+  next();
+});
+
+// Domain-based routing
+app.use((req, res, next) => {
+  const host = req.get('host').toLowerCase();
+  if (host === 'greenlanecloudsolutions.com' || host === 'www.greenlanecloudsolutions.com') {
+    req.isMarketingSite = true;
+  } else if (host === 'crm.greenlanecloudsolutions.com') {
+    req.isCrmFrontend = true;
+  } else if (host === 'api.greenlanecloudsolutions.com') {
+    req.isCrmApi = true;
+  }
+  next();
+});
+
+// Serve static files and handle SPA in production
+if (process.env.NODE_ENV === 'production') {
+  const { serveStatic, handleSpaFallback } = await import('./vite');
+  app.use(serveStatic());
+  app.use('*', handleSpaFallback());
+} else {
+  const { setupVite } = await import('./vite');
+  setupVite(app, require('http').createServer(app));
+}
+
+(async () => {
+  await registerRoutes(app);
+})();
+Commit Changes:
+bash
+
+Copy
+git add server/index.ts routes/index.ts
+git commit -m "Ensure correct domain routing and server startup"
+git push origin main
+Step 4: Verify Secrets
+Ensure greenlane-env includes all required variables.
+
+Update greenlane-env:
+bash
+
+Copy
+echo "NODE_ENV=production" > .env.production
+echo "BASE_DOMAIN=greenlanecloudsolutions.com" >> .env.production
+echo "CRM_DOMAIN=crm.greenlanecloudsolutions.com" >> .env.production
+echo "API_DOMAIN=api.greenlanecloudsolutions.com" >> .env.production
+echo "STRIPE_SECRET_KEY=<your-stripe-secret-key>" >> .env.production
+gcloud secrets create greenlane-env --data-file=.env.production
+Check stripeConfig.json:
+bash
+
+Copy
+cat stripeConfig.json
+Ensure it contains valid keys.
+Step 5: Test Locally
+Build:
+bash
+
+Copy
+npm install
+npm run build
+Run Locally:
+bash
+
+Copy
+PORT=8080 HOST=0.0.0.0 npm start
+Test Container:
+bash
+
+Copy
+docker build -t gcr.io/greenlane-cloud-solutions/greenlane-crm-app .
+docker run -p 8080:8080 -e PORT=8080 -e HOST=0.0.0.0 -e NODE_ENV=production gcr.io/greenlane-cloud-solutions/greenlane-crm-app
+Step 6: Retry Cloud Build
+Submit Build:
+bash
+
+Copy
+gcloud builds submit --config cloudbuild.yaml
+Check Logs:
+bash
+
+Copy
+gcloud builds log 94470853-cff3-49bf-9cc9-2a2a310ae974
