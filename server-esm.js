@@ -136,7 +136,42 @@ const server = http.createServer(async (req, res) => {
     const baseDomain = process.env.BASE_DOMAIN || 'greenlanecloudsolutions.com';
     const isMainDomain = (host === baseDomain || host === `www.${baseDomain}` || 
                          forwardedHost === baseDomain || forwardedHost === `www.${baseDomain}`);
+                         
+    const isAppDomain = (host === `app.${baseDomain}` || forwardedHost === `app.${baseDomain}`);
+    const appRequestHeader = req.headers['x-app-request'];
     
+    // App subdomain should attempt to load the application
+    if (isAppDomain || appRequestHeader === 'true') {
+      console.log('App subdomain detected, attempting to load application entry point');
+      
+      // First try to find and serve index.html
+      const possiblePaths = [
+        path.join(process.cwd(), 'dist', 'public', 'index.html'),
+        path.join(process.cwd(), 'dist', 'client', 'index.html'),
+        path.join(process.cwd(), 'dist', 'index.html'),
+        path.join(process.cwd(), 'public', 'index.html')
+      ];
+      
+      for (const htmlPath of possiblePaths) {
+        try {
+          const exists = await fs.access(htmlPath).then(() => true).catch(() => false);
+          if (exists) {
+            console.log(`Found index.html at ${htmlPath}, serving application`);
+            const content = await fs.readFile(htmlPath, 'utf8');
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(content);
+            return;
+          }
+        } catch (error) {
+          console.error(`Error checking ${htmlPath}:`, error);
+        }
+      }
+      
+      // If we get here, we couldn't find an index.html to serve
+      console.log('Could not find index.html for app domain, serving diagnostic page');
+    }
+    
+    // Main domain should redirect (this should now be handled by Cloudflare Worker)
     if (isMainDomain || forceMarketing === 'true' || showMarketing === 'true') {
       console.log('Main domain detected, redirecting to app subdomain');
       
@@ -148,7 +183,7 @@ const server = http.createServer(async (req, res) => {
       return;
     }
     
-    // Default status JSON if not the main domain
+    // Default status JSON if not the main domain or app domain
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ 
       status: 'running',

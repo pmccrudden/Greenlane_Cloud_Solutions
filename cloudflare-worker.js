@@ -39,11 +39,17 @@ async function handleRequest(request) {
   // Important: explicitly set path for root domain to ensure marketing page shows
   if (hostname === BASE_DOMAIN || hostname === `www.${BASE_DOMAIN}`) {
     // Root domain should show the marketing site
-    console.log('Root domain request, showing marketing site');
+    console.log('Root domain request, redirecting to app subdomain');
+    
     if (path === '/' || path === '') {
-      // Add a special header to signal this is the marketing site
-      headers.set('X-Show-Marketing', 'true');
+      // Create a redirect response directly from the worker
+      // This is more reliable than depending on the server to redirect
+      return Response.redirect(`https://app.${BASE_DOMAIN}/`, 302);
     }
+    
+    // For other paths, add the marketing header and forward to Cloud Run
+    headers.set('X-Show-Marketing', 'true');
+    headers.set('X-Force-Marketing', 'true');
   } else if (hostname === `app.${BASE_DOMAIN}`) {
     // App subdomain should show the main application
     console.log('App subdomain request, showing main application');
