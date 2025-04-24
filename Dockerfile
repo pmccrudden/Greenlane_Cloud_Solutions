@@ -28,7 +28,7 @@ RUN npm ci --omit=dev
 
 # Copy built files from build stage
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server.cjs ./server.cjs
+COPY --from=builder /app/server.js ./server.js
 COPY --from=builder /app/stripeConfig.json ./stripeConfig.json
 
 # Set environment variables
@@ -39,5 +39,5 @@ ENV HOST=0.0.0.0
 # Expose port
 EXPOSE 8080
 
-# Start the server using node directly with CommonJS bootstrap file
-CMD ["node", "server.cjs"]
+# Start the server using npm start, which will run node server.js
+CMD ["npm", "start"]

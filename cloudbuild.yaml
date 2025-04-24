@@ -32,6 +32,7 @@ steps:
       - '--timeout'
       - '300s'
       - '--set-env-vars'
-      - 'NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com'
+      - 'NODE_ENV=production,BASE_DOMAIN=greenlanecloudsolutions.com,CRM_DOMAIN=crm.greenlanecloudsolutions.com,API_DOMAIN=api.greenlanecloudsolutions.com,HOST=0.0.0.0,PORT=8080'
+      - '--cpu-boost'
 images:
   - 'gcr.io/greenlane-cloud-solutions/greenlane-crm-app'
