@@ -1,6 +1,27 @@
 import { apiRequest } from './queryClient';
 import { queryClient } from './queryClient';
 import { User } from './types';
+import { getTenantFromUrl } from './tenant';
+
+// Helper function to safely parse JSON from response
+async function safeParseJson(response: Response) {
+  const contentType = response.headers.get('content-type');
+  
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text();
+    console.warn('Non-JSON response received:', text);
+    
+    // If it's HTML, it might be a server error page
+    if (text.includes('<html>')) {
+      throw new Error('Received HTML instead of JSON. The server might be returning an error page.');
+    }
+    
+    // Otherwise, return a simple object
+    return { success: response.ok, message: text };
+  }
+  
+  return response.json();
+}
 
 /**
  * Sign in with username and password
@@ -10,10 +31,40 @@ import { User } from './types';
  */
 export async function signIn(username: string, password: string): Promise<User> {
   try {
-    const response = await apiRequest('POST', '/api/auth/login', { username, password });
-    const data = await response.json();
-    console.log("Login response:", data); // Debug
-    return data.user;
+    // Get tenant ID from URL
+    const tenantId = getTenantFromUrl();
+    console.log("Signing in with tenant:", tenantId);
+    
+    // Prepare login data
+    const loginData: Record<string, string> = { 
+      username, 
+      password 
+    };
+    
+    // Only add tenant to payload if not already in URL
+    if (!tenantId) {
+      const storedTenant = sessionStorage.getItem('current_tenant');
+      if (storedTenant) {
+        loginData.tenant = storedTenant;
+      }
+    }
+    
+    const response = await apiRequest('POST', '/api/auth/login', loginData);
+    
+    try {
+      const data = await safeParseJson(response);
+      console.log("Login response:", data); // Debug
+      
+      // Store tenant ID if provided in response
+      if (data.tenant && data.tenant.id) {
+        sessionStorage.setItem('current_tenant', data.tenant.id);
+      }
+      
+      return data.user;
+    } catch (parseError) {
+      console.error("Error parsing login response:", parseError);
+      throw new Error('Invalid response from server. Please try again.');
+    }
   } catch (error) {
     console.error("Login error:", error); // Debug
     throw error;
