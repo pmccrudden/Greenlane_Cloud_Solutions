@@ -1,0 +1,13 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions (greenlane-cloud-solutions)$ gcloud run services list --platform managed --region=us-central1
+   SERVICE                         REGION       URL                                                                      LAST DEPLOYED BY                                    LAST DEPLOYED AT
+✔  greenlane-crm-esm-app           us-central1  https://greenlane-crm-esm-app-869018523985.us-central1.run.app           greenlane.enterprisesltd@gmail.com                  2025-04-24T15:26:51.032944Z
+✔  greenlane-crm-esm-enhanced      us-central1  https://greenlane-crm-esm-enhanced-869018523985.us-central1.run.app      greenlane.enterprisesltd@gmail.com                  2025-04-24T23:34:13.702653Z
+X  greenlane-crm-fixed             us-central1  https://greenlane-crm-fixed-869018523985.us-central1.run.app             greenlane.enterprisesltd@gmail.com                  2025-04-24T11:32:37.965399Z
+X  greenlane-crm-frontend-fix      us-central1  https://greenlane-crm-frontend-fix-869018523985.us-central1.run.app      greenlane.enterprisesltd@gmail.com                  2025-04-24T23:46:20.452681Z
+✔  greenlane-crm-minimal           us-central1  https://greenlane-crm-minimal-869018523985.us-central1.run.app           greenlane.enterprisesltd@gmail.com                  2025-04-24T11:36:37.546021Z
+X  greenlane-crm-prod              us-central1  https://greenlane-crm-prod-869018523985.us-central1.run.app              greenlane.enterprisesltd@gmail.com                  2025-04-24T11:46:55.831145Z
+✔  greenlane-crm-simple-fix        us-central1  https://greenlane-crm-simple-fix-869018523985.us-central1.run.app        greenlane.enterprisesltd@gmail.com                  2025-04-24T23:52:03.580643Z
+✔  greenlane-crm-tenant-fix        us-central1  https://greenlane-crm-tenant-fix-869018523985.us-central1.run.app        greenlane.enterprisesltd@gmail.com                  2025-04-25T11:22:36.020245Z
+✔  greenlane-crm-tenant-login-fix  us-central1  https://greenlane-crm-tenant-login-fix-869018523985.us-central1.run.app  greenlane.enterprisesltd@gmail.com                  2025-04-25T16:51:59.382575Z
+✔  greenlane-esm-app               us-central1  https://greenlane-esm-app-869018523985.us-central1.run.app               869018523985-compute@developer.gserviceaccount.com  2025-04-23T20:24:56.932386Z
+X  greenlane-simple-app            us-central1  https://greenlane-simple-app-869018523985.us-central1.run.app            869018523985-compute@developer.gserviceaccount.com  2025-04-23T19:50:02.629345Z

@@ -1,0 +1,350 @@
+
+index-CUDaz78n.js:520 Missing required environment variable: VITE_STRIPE_PUBLIC_KEY
+(anonymous) @ index-CUDaz78n.js:520Understand this error
+index-CUDaz78n.js:727 Found authenticated status in session storage
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 Current tenant detected: greenlane
+index-CUDaz78n.js:48 Making GET request to /api/auth/status with tenant ID: greenlane
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warning
+index-CUDaz78n.js:493 Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'match')
+    at CK (index-CUDaz78n.js:493:126570)
+    at index-CUDaz78n.js:493:127258
+CK @ index-CUDaz78n.js:493
+(anonymous) @ index-CUDaz78n.js:493
+Promise.then
+kK @ index-CUDaz78n.js:493
+(anonymous) @ index-CUDaz78n.js:520Understand this error
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 Current tenant detected: greenlane
+index-CUDaz78n.js:48 Making query to /api/accounts with tenant ID: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 Current tenant detected: greenlane
+index-CUDaz78n.js:48 Making query to /api/deals with tenant ID: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 Current tenant detected: greenlane
+index-CUDaz78n.js:48 Making query to /api/support-tickets with tenant ID: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 Current tenant detected: greenlane
+index-CUDaz78n.js:48 Making query to /api/ai-analytics/health-scores with tenant ID: greenlane
+index-CUDaz78n.js:48 Received non-JSON response: 
+    <html>
+      <head>
+        <title>Greenlane CRM Enhanced ESM Server</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #21c983; margin-top: 0; }
+          .status { display: inline-block; background: #e6f7f1; color: #21c983; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+          pre { background: #f1f3f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Greenlane CRM - Enhanced ESM Server</h1>
+          <div class="status">Status: Running</div>
+          
+          <div style="margin-top: 20px;">
+            <p>This is the enhanced ES Module diagnostic server for Greenlane CRM.</p>
+            <p>Check <a href="/debug">the debug endpoint</a> for detailed system information.</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h2>Server Information</h2>
+            <pre>
+Time: 2025-04-25T21:18:35.737Z
+Node Version: v20.19.1
+Environment: production
+Host: 0.0.0.0
+Port: 8080
+Working Directory: /app
+            </pre>
+          </div>
+        </div>
+      </body>
+    </html>
+  
+FV @ index-CUDaz78n.js:48
+await in FV
+(anonymous) @ index-CUDaz78n.js:48
+await in (anonymous)
+i @ index-CUDaz78n.js:48
+w @ index-CUDaz78n.js:48
+start @ index-CUDaz78n.js:48
+fetch @ index-CUDaz78n.js:48
+of @ index-CUDaz78n.js:48
+onSubscribe @ index-CUDaz78n.js:48
+subscribe @ index-CUDaz78n.js:48
+(anonymous) @ index-CUDaz78n.js:48
+lP @ index-CUDaz78n.js:38
+bg @ index-CUDaz78n.js:40
+od @ index-CUDaz78n.js:40
+(anonymous) @ index-CUDaz78n.js:40
+P @ index-CUDaz78n.js:25
+K @ index-CUDaz78n.js:25Understand this warning
+index-CUDaz78n.js:40 TypeError: t.filter is not a function
+    at _Q (index-CUDaz78n.js:520:77052)
+    at Fb (index-CUDaz78n.js:38:17018)
+    at Wj (index-CUDaz78n.js:40:3139)
+    at GP (index-CUDaz78n.js:40:44833)
+    at zP (index-CUDaz78n.js:40:39790)
+    at hz (index-CUDaz78n.js:40:39718)
+    at wx (index-CUDaz78n.js:40:39570)
+    at Jj (index-CUDaz78n.js:40:35934)
+    at Q4 (index-CUDaz78n.js:40:36738)
+    at ul (index-CUDaz78n.js:38:3279)
+Uj @ index-CUDaz78n.js:40
+SP.r.callback @ index-CUDaz78n.js:40
+A4 @ index-CUDaz78n.js:38
+q4 @ index-CUDaz78n.js:40
+$P @ index-CUDaz78n.js:40
+dz @ index-CUDaz78n.js:40
+pz @ index-CUDaz78n.js:40
+Il @ index-CUDaz78n.js:40
+Q4 @ index-CUDaz78n.js:40
+ul @ index-CUDaz78n.js:38
+(anonymous) @ index-CUDaz78n.js:40
+setTimeout
+a @ index-CUDaz78n.js:48
+o @ index-CUDaz78n.js:48
+batch @ index-CUDaz78n.js:48
+Li @ index-CUDaz78n.js:48
+setData @ index-CUDaz78n.js:48
+onSuccess @ index-CUDaz78n.js:48
+h @ index-CUDaz78n.js:48
+Promise.then
+w @ index-CUDaz78n.js:48
+start @ index-CUDaz78n.js:48
+fetch @ index-CUDaz78n.js:48
+of @ index-CUDaz78n.js:48
+onSubscribe @ index-CUDaz78n.js:48
+subscribe @ index-CUDaz78n.js:48
+(anonymous) @ index-CUDaz78n.js:48
+lP @ index-CUDaz78n.js:38
+bg @ index-CUDaz78n.js:40
+od @ index-CUDaz78n.js:40
+(anonymous) @ index-CUDaz78n.js:40
+P @ index-CUDaz78n.js:25
+K @ index-CUDaz78n.js:25Understand this error
+index-CUDaz78n.js:520 Uncaught TypeError: t.filter is not a function
+    at _Q (index-CUDaz78n.js:520:77052)
+    at Fb (index-CUDaz78n.js:38:17018)
+    at Wj (index-CUDaz78n.js:40:3139)
+    at GP (index-CUDaz78n.js:40:44833)
+    at zP (index-CUDaz78n.js:40:39790)
+    at hz (index-CUDaz78n.js:40:39718)
+    at wx (index-CUDaz78n.js:40:39570)
+    at Jj (index-CUDaz78n.js:40:35934)
+    at Q4 (index-CUDaz78n.js:40:36738)
+    at ul (index-CUDaz78n.js:38:3279)
+_Q @ index-CUDaz78n.js:520
+Fb @ index-CUDaz78n.js:38
+Wj @ index-CUDaz78n.js:40
+GP @ index-CUDaz78n.js:40
+zP @ index-CUDaz78n.js:40
+hz @ index-CUDaz78n.js:40
+wx @ index-CUDaz78n.js:40
+Jj @ index-CUDaz78n.js:40
+Q4 @ index-CUDaz78n.js:40
+ul @ index-CUDaz78n.js:38
+(anonymous) @ index-CUDaz78n.js:40
+setTimeout
+a @ index-CUDaz78n.js:48
+o @ index-CUDaz78n.js:48
+batch @ index-CUDaz78n.js:48
+Li @ index-CUDaz78n.js:48
+setData @ index-CUDaz78n.js:48
+onSuccess @ index-CUDaz78n.js:48
+h @ index-CUDaz78n.js:48
+Promise.then
+w @ index-CUDaz78n.js:48
+start @ index-CUDaz78n.js:48
+fetch @ index-CUDaz78n.js:48
+of @ index-CUDaz78n.js:48
+onSubscribe @ index-CUDaz78n.js:48
+subscribe @ index-CUDaz78n.js:48
+(anonymous) @ index-CUDaz78n.js:48
+lP @ index-CUDaz78n.js:38
+bg @ index-CUDaz78n.js:40
+od @ index-CUDaz78n.js:40
+(anonymous) @ index-CUDaz78n.js:40
+P @ index-CUDaz78n.js:25
+K @ index-CUDaz78n.js:25Understand this error
+index-CUDaz78n.js:48 Received non-JSON response: 
+    <html>
+      <head>
+        <title>Greenlane CRM Enhanced ESM Server</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #21c983; margin-top: 0; }
+          .status { display: inline-block; background: #e6f7f1; color: #21c983; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+          pre { background: #f1f3f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Greenlane CRM - Enhanced ESM Server</h1>
+          <div class="status">Status: Running</div>
+          
+          <div style="margin-top: 20px;">
+            <p>This is the enhanced ES Module diagnostic server for Greenlane CRM.</p>
+            <p>Check <a href="/debug">the debug endpoint</a> for detailed system information.</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h2>Server Information</h2>
+            <pre>
+Time: 2025-04-25T21:18:35.754Z
+Node Version: v20.19.1
+Environment: production
+Host: 0.0.0.0
+Port: 8080
+Working Directory: /app
+            </pre>
+          </div>
+        </div>
+      </body>
+    </html>
+  
+FV @ index-CUDaz78n.js:48
+await in FV
+(anonymous) @ index-CUDaz78n.js:48
+await in (anonymous)
+i @ index-CUDaz78n.js:48
+w @ index-CUDaz78n.js:48
+start @ index-CUDaz78n.js:48
+fetch @ index-CUDaz78n.js:48
+of @ index-CUDaz78n.js:48
+onSubscribe @ index-CUDaz78n.js:48
+subscribe @ index-CUDaz78n.js:48
+(anonymous) @ index-CUDaz78n.js:48
+lP @ index-CUDaz78n.js:38
+bg @ index-CUDaz78n.js:40
+od @ index-CUDaz78n.js:40
+(anonymous) @ index-CUDaz78n.js:40
+P @ index-CUDaz78n.js:25
+K @ index-CUDaz78n.js:25Understand this warning
+index-CUDaz78n.js:48 Received non-JSON response: 
+    <html>
+      <head>
+        <title>Greenlane CRM Enhanced ESM Server</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #21c983; margin-top: 0; }
+          .status { display: inline-block; background: #e6f7f1; color: #21c983; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+          pre { background: #f1f3f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Greenlane CRM - Enhanced ESM Server</h1>
+          <div class="status">Status: Running</div>
+          
+          <div style="margin-top: 20px;">
+            <p>This is the enhanced ES Module diagnostic server for Greenlane CRM.</p>
+            <p>Check <a href="/debug">the debug endpoint</a> for detailed system information.</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h2>Server Information</h2>
+            <pre>
+Time: 2025-04-25T21:18:35.757Z
+Node Version: v20.19.1
+Environment: production
+Host: 0.0.0.0
+Port: 8080
+Working Directory: /app
+            </pre>
+          </div>
+        </div>
+      </body>
+    </html>
+  
+FV @ index-CUDaz78n.js:48
+await in FV
+(anonymous) @ index-CUDaz78n.js:48
+await in (anonymous)
+i @ index-CUDaz78n.js:48
+w @ index-CUDaz78n.js:48
+start @ index-CUDaz78n.js:48
+fetch @ index-CUDaz78n.js:48
+of @ index-CUDaz78n.js:48
+onSubscribe @ index-CUDaz78n.js:48
+subscribe @ index-CUDaz78n.js:48
+(anonymous) @ index-CUDaz78n.js:48
+lP @ index-CUDaz78n.js:38
+bg @ index-CUDaz78n.js:40
+od @ index-CUDaz78n.js:40
+(anonymous) @ index-CUDaz78n.js:40
+P @ index-CUDaz78n.js:25
+K @ index-CUDaz78n.js:25Understand this warning
+index-CUDaz78n.js:48 Received non-JSON response: 
+    <html>
+      <head>
+        <title>Greenlane CRM Enhanced ESM Server</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #21c983; margin-top: 0; }
+          .status { display: inline-block; background: #e6f7f1; color: #21c983; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+          pre { background: #f1f3f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Greenlane CRM - Enhanced ESM Server</h1>
+          <div class="status">Status: Running</div>
+          
+          <div style="margin-top: 20px;">
+            <p>This is the enhanced ES Module diagnostic server for Greenlane CRM.</p>
+            <p>Check <a href="/debug">the debug endpoint</a> for detailed system information.</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h2>Server Information</h2>
+            <pre>
+Time: 2025-04-25T21:18:35.763Z
+Node Version: v20.19.1
+Environment: production
+Host: 0.0.0.0
+Port: 8080
+Working Directory: /app
+            </pre>
+          </div>
+        </div>
+      </body>
+    </html>
+  
+FV @ index-CUDaz78n.js:48
+await in FV
+(anonymous) @ index-CUDaz78n.js:48
+await in (anonymous)
+i @ index-CUDaz78n.js:48
+w @ index-CUDaz78n.js:48
+start @ index-CUDaz78n.js:48
+fetch @ index-CUDaz78n.js:48
+of @ index-CUDaz78n.js:48
+onSubscribe @ index-CUDaz78n.js:48
+subscribe @ index-CUDaz78n.js:48
+(anonymous) @ index-CUDaz78n.js:48
+lP @ index-CUDaz78n.js:38
+bg @ index-CUDaz78n.js:40
+od @ index-CUDaz78n.js:40
+(anonymous) @ index-CUDaz78n.js:40
+P @ index-CUDaz78n.js:25
+K @ index-CUDaz78n.js:25Understand this warning
+lockdown-install.js:1 Removing unpermitted intrinsics
+lockdown-install.js:1 Removing unpermitted intrinsics

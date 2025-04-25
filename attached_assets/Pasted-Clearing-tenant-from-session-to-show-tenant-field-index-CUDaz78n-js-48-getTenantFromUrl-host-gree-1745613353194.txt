@@ -1,0 +1,111 @@
+Clearing tenant from session to show tenant field
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: {isTenant: true, hostname: 'greenlane.greenlanecloudsolutions.com', search: '', tenant: 'greenlane', isAppSubdomain: false, …}
+index-CUDaz78n.js:493 Legacy auto-login check - isTenant: true hasPendingCredentials: false pendingTenant: null autoLogin: null
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.Understand this warning
+index-CUDaz78n.js:493 Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'match')
+    at CK (index-CUDaz78n.js:493:126570)
+    at index-CUDaz78n.js:493:127258
+CK @ index-CUDaz78n.js:493
+(anonymous) @ index-CUDaz78n.js:493
+Promise.then
+kK @ index-CUDaz78n.js:493
+(anonymous) @ index-CUDaz78n.js:520Understand this error
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: {isTenant: true, hostname: 'greenlane.greenlanecloudsolutions.com', search: '', tenant: 'greenlane', isAppSubdomain: false, …}
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: {isTenant: true, hostname: 'greenlane.greenlanecloudsolutions.com', search: '', tenant: 'greenlane', isAppSubdomain: false, …}
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: {isTenant: true, hostname: 'greenlane.greenlanecloudsolutions.com', search: '', tenant: 'greenlane', isAppSubdomain: false, …}
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: {isTenant: true, hostname: 'greenlane.greenlanecloudsolutions.com', search: '', tenant: 'greenlane', isAppSubdomain: false, …}
+lockdown-install.js:1 Removing unpermitted intrinsics
+lockdown-install.js:1 Removing unpermitted intrinsics
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 Processing login with tenant: greenlane
+index-CUDaz78n.js:493 Performing regular login on current tenant
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 Signing in with tenant: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 Current tenant detected: greenlane
+index-CUDaz78n.js:48 Making POST request to /api/auth/login with tenant ID: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: {isTenant: true, hostname: 'greenlane.greenlanecloudsolutions.com', search: '', tenant: 'greenlane', isAppSubdomain: false, …}
+index-CUDaz78n.js:48 
+            
+            
+           POST https://greenlane.greenlanecloudsolutions.com/api/auth/login 500 (Internal Server Error)
+Ke @ index-CUDaz78n.js:48
+$g @ index-CUDaz78n.js:493
+h @ index-CUDaz78n.js:493
+(anonymous) @ index-CUDaz78n.js:493
+await in (anonymous)
+RU @ index-CUDaz78n.js:37
+MU @ index-CUDaz78n.js:37
+LU @ index-CUDaz78n.js:37
+j4 @ index-CUDaz78n.js:37
+GE @ index-CUDaz78n.js:37
+(anonymous) @ index-CUDaz78n.js:37
+Gb @ index-CUDaz78n.js:40
+xE @ index-CUDaz78n.js:37
+sy @ index-CUDaz78n.js:37
+jb @ index-CUDaz78n.js:37
+JU @ index-CUDaz78n.js:37Understand this error
+index-CUDaz78n.js:493 Login error: Error: 500: {"error":"Authentication failed","message":"The server returned an invalid response","status":200,"details":"Please check your server configuration"}
+    at N_ (index-CUDaz78n.js:48:44243)
+    at async Ke (index-CUDaz78n.js:48:44684)
+    at async $g (index-CUDaz78n.js:493:113677)
+    at async h (index-CUDaz78n.js:493:118393)
+    at async index-CUDaz78n.js:493:45844
+$g @ index-CUDaz78n.js:493
+await in $g
+h @ index-CUDaz78n.js:493
+(anonymous) @ index-CUDaz78n.js:493
+await in (anonymous)
+RU @ index-CUDaz78n.js:37
+MU @ index-CUDaz78n.js:37
+LU @ index-CUDaz78n.js:37
+j4 @ index-CUDaz78n.js:37
+GE @ index-CUDaz78n.js:37
+(anonymous) @ index-CUDaz78n.js:37
+Gb @ index-CUDaz78n.js:40
+xE @ index-CUDaz78n.js:37
+sy @ index-CUDaz78n.js:37
+jb @ index-CUDaz78n.js:37
+JU @ index-CUDaz78n.js:37Understand this error
+index-CUDaz78n.js:493 Clearing tenant from session to show tenant field
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: {isTenant: true, hostname: 'greenlane.greenlanecloudsolutions.com', search: '', tenant: 'greenlane', isAppSubdomain: false, …}
