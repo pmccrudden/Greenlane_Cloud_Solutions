@@ -1,1 +1,1 @@
-greenlane-crm-tenant-fix-mx3osic2uq-uc.a.run.app
+greenlane-crm-tenant-login-fix-mx3osic2uq-uc.a.run.app
