@@ -1,0 +1,100 @@
+/**
+ * Enhanced Cloudflare Worker for handling tenant routing and authentication
+ * This script handles traffic routing for Greenlane Cloud Solutions, including tenant subdomains
+ */
+
+// Use the Cloud Run service URL from service_hostname.txt
+// Update this with the actual hostname from your most recent deployment
+const CLOUD_RUN_URL = "greenlane-crm-tenant-fix-mx3osic2uq-uc.a.run.app"; // e.g., "greenlane-crm-tenant-login-fix-abc123-uc.a.run.app"
+const BASE_DOMAIN = "greenlanecloudsolutions.com";
+const MAIN_DOMAIN = BASE_DOMAIN;
+const APP_SUBDOMAIN = `app.${BASE_DOMAIN}`;
+
+/**
+ * Handle incoming requests and route them appropriately
+ * @param {Request} request - The incoming request
+ * @returns {Promise<Response>} - The response
+ */
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  const hostname = url.hostname;
+  
+  // Handle direct IP access to Cloudflare
+  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
+    return Response.redirect(`https://${MAIN_DOMAIN}${url.pathname}${url.search}`, 301);
+  }
+  
+  // Log request details for debugging
+  console.log("Worker processing request for:", hostname, url.pathname);
+  
+  // Determine if this is a tenant subdomain
+  const isMainDomain = hostname === MAIN_DOMAIN || hostname === `www.${MAIN_DOMAIN}`;
+  const isAppSubdomain = hostname === APP_SUBDOMAIN;
+  const isTenantSubdomain = !isMainDomain && !isAppSubdomain && 
+                           hostname.endsWith(`.${BASE_DOMAIN}`) && 
+                           !hostname.startsWith('www.') && 
+                           !hostname.startsWith('api.');
+  
+  // Get the subdomain part if applicable
+  const subdomain = isTenantSubdomain ? hostname.replace(`.${BASE_DOMAIN}`, '') : null;
+  
+  console.log("Request type:", isMainDomain ? "Main" : isAppSubdomain ? "App" : isTenantSubdomain ? `Tenant: ${subdomain}` : "Other");
+  
+  // Create new URL to proxy to Cloud Run
+  let destinationURL = `https://${CLOUD_RUN_URL}${url.pathname}${url.search}`;
+  
+  // Clone the request to modify it
+  let newRequest = new Request(destinationURL, request);
+  
+  // Extract headers
+  let headers = Object.fromEntries(request.headers);
+  
+  // Forward original host for proper routing on the server
+  headers["X-Forwarded-Host"] = hostname;
+  
+  // Always forward the original URL to help with debugging
+  headers["X-Original-URL"] = request.url;
+  
+  // Add special headers for tenant subdomains
+  if (isTenantSubdomain && subdomain) {
+    headers["X-Tenant-ID"] = subdomain;
+    console.log("Setting tenant header for:", subdomain);
+  }
+  
+  // Add a header for the main domain to trigger marketing site
+  if (isMainDomain) {
+    headers["X-Force-Marketing"] = "true";
+    console.log("Setting marketing site header");
+  }
+  
+  // App subdomain should show the login page with tenant field
+  if (isAppSubdomain) {
+    headers["X-Show-App"] = "true";
+    console.log("Setting app header");
+  }
+  
+  // Create modified request with new headers
+  newRequest = new Request(destinationURL, {
+    method: request.method,
+    headers: headers,
+    body: request.body,
+    redirect: "follow"
+  });
+  
+  try {
+    console.log("Forwarding request to:", destinationURL);
+    return await fetch(newRequest);
+  } catch (e) {
+    console.error("Worker fetch error:", e);
+    return new Response(`Worker error: ${e.message}`, { 
+      status: 500,
+      headers: {
+        "Content-Type": "text/html"
+      }
+    });
+  }
+}
+
+addEventListener("fetch", event => {
+  event.respondWith(handleRequest(event.request));
+});

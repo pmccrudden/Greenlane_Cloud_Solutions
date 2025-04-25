@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { signIn } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
-import { isTenantUrl } from '@/lib/tenant';
+import { isTenantUrl, getTenantFromUrl } from '@/lib/tenant';
 
 // Define form validation schema
 const signInSchema = z.object({
@@ -25,9 +25,36 @@ interface SignInFormProps {
 
 export default function SignInForm({ onSuccess }: SignInFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showTenantField, setShowTenantField] = useState(true);
   const { toast } = useToast();
+  
+  // Get hostname and determine if it's a tenant
+  const hostname = window.location.hostname;
   const isTenant = isTenantUrl();
-  console.log("isTenant:", isTenant, "hostname:", window.location.hostname, "search:", window.location.search);
+  const tenant = getTenantFromUrl();
+  const isAppSubdomain = hostname.startsWith('app.') || hostname.includes('app.');
+  
+  console.log("SignInForm debug:", {
+    isTenant,
+    hostname,
+    search: window.location.search,
+    tenant,
+    isAppSubdomain,
+    reservedCheck: ['www', 'app', 'api', 'admin', 'auth'].includes(hostname.split('.')[0])
+  });
+  
+  // Clear tenant data if on app subdomain
+  useEffect(() => {
+    // For app subdomain, we always want to show the tenant field
+    if (isAppSubdomain) {
+      console.log("App subdomain detected, clearing tenant data and showing tenant field");
+      sessionStorage.removeItem('current_tenant');
+      setShowTenantField(true);
+    } else {
+      // If not on app subdomain, show field if not a tenant
+      setShowTenantField(!isTenant);
+    }
+  }, [isAppSubdomain, isTenant]);
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
