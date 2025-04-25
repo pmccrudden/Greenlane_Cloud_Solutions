@@ -6,7 +6,7 @@
  */
 
 // Configuration settings
-const CLOUD_RUN_URL = "greenlane-crm-tenant-login-fix-mx3osic2uq-uc.a.run.app"; // e.g., "greenlane-crm-tenant-login-fix-abc123-uc.a.run.app"
+const CLOUD_RUN_URL = "greenlane-crm-tenant-login-fix-mx3osic2uq-uc.a.run.app"
 const BASE_DOMAIN = "greenlanecloudsolutions.com";
 const MAIN_DOMAIN = BASE_DOMAIN;
 const APP_SUBDOMAIN = `app.${BASE_DOMAIN}`;
