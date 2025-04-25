@@ -60,7 +60,7 @@ export default function SignIn() {
             
             // Redirect to dashboard
             console.log("Automatic login successful, redirecting to dashboard");
-            window.location.href = '/dashboard';
+            redirectAfterAuth('/dashboard');
           } catch (error) {
             console.log("Automatic login failed:", error);
             // Clear pending credentials on failure too
