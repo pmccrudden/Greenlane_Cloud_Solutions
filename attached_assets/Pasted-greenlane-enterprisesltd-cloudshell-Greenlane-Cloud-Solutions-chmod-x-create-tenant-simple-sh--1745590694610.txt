@@ -1,0 +1,95 @@
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions$ chmod +x create-tenant-simple.sh
+./create-tenant-simple.sh
+Service URL: greenlane-crm-tenant-login-fix-mx3osic2uq-uc.a.run.app
+Creating tenant...
+
+    <html>
+      <head>
+        <title>Greenlane CRM Enhanced ESM Server</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #21c983; margin-top: 0; }
+          .status { display: inline-block; background: #e6f7f1; color: #21c983; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+          pre { background: #f1f3f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Greenlane CRM - Enhanced ESM Server</h1>
+          <div class="status">Status: Running</div>
+          
+          <div style="margin-top: 20px;">
+            <p>This is the enhanced ES Module diagnostic server for Greenlane CRM.</p>
+            <p>Check <a href="/debug">the debug endpoint</a> for detailed system information.</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h2>Server Information</h2>
+            <pre>
+Time: 2025-04-25T13:47:18.838Z
+Node Version: v20.19.1
+Environment: production
+Host: 0.0.0.0
+Port: 8080
+Working Directory: /app
+            </pre>
+          </div>
+        </div>
+      </body>
+    </html>
+  
+Done! If successful, you can now access your tenant at:
+https://greenlane.greenlanecloudsolutions.com
+Login with: greenlane.enterprisesltd@gmail.com / SnowBomb42!?
+greenlane_enterprisesltd@cloudshell:~/Greenlane_Cloud_Solutions$ ./deploy-tenant-login-fix.sh
+=== Deploying Multi-Tenant Login Fixed Version to Cloud Run ===
+WARNING: The following filter keys were not present in any resource : status
+Your active configuration is: [cloudshell-15368]
+(unset)
+Current GCP project: 
+Switching to greenlane-cloud-solutions project...
+Updated property [core/project].
+Loading environment variables from .env.production
+Building Docker image gcr.io/greenlane-cloud-solutions/greenlane-crm-tenant-login-fix-20250425140711...
+[+] Building 44.6s (13/13) FINISHED                                                                                                                                   docker:default
+ => [internal] load build definition from Dockerfile.simple-fix                                                                                                                 0.1s
+ => => transferring dockerfile: 1.10kB                                                                                                                                          0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine                                                                                                               1.2s
+ => [internal] load .dockerignore                                                                                                                                               0.1s
+ => => transferring context: 482B                                                                                                                                               0.0s
+ => [internal] load build context                                                                                                                                               0.6s
+ => => transferring context: 7.02MB                                                                                                                                             0.6s
+ => [1/8] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                         2.9s
+ => => resolve docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f                                                         0.0s
+ => => sha256:6bf3eed75316cc1c58cc9bd678ce26260a7aacf7847462efa4a1cbf240a7c4d8 1.26MB / 1.26MB                                                                                  0.4s
+ => => sha256:c628bdc7ebc7f95b1b23249a445eb415ce68ae9def8b68364b35ee15e3065b0f 7.67kB / 7.67kB                                                                                  0.0s
+ => => sha256:b18325f01afbb59e65e32609c3337f46358ebcb13784103e6d4e41cee6180fa0 1.72kB / 1.72kB                                                                                  0.0s
+ => => sha256:0160beacba2dcf6695e3cf292ed8003aa36f538b6a6fd931878bfc4ea7914555 6.21kB / 6.21kB                                                                                  0.0s
+ => => sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870 3.64MB / 3.64MB                                                                                  0.2s
+ => => sha256:a54ab62fca2da06cf1bd0418fcd2dbb09ba6f43db517f705291fdfb723fbc642 42.95MB / 42.95MB                                                                                0.7s
+ => => extracting sha256:f18232174bc91741fdf3da96d85011092101a032a93a388b79e99e69c2d5c870                                                                                       0.2s
+ => => sha256:efb51bda5e8760a6e79d8bf56d88f21d5255ac614cb6dd14ee65a868e7aa8387 445B / 445B                                                                                      0.4s
+ => => extracting sha256:a54ab62fca2da06cf1bd0418fcd2dbb09ba6f43db517f705291fdfb723fbc642                                                                                       1.8s
+ => => extracting sha256:6bf3eed75316cc1c58cc9bd678ce26260a7aacf7847462efa4a1cbf240a7c4d8                                                                                       0.1s
+ => => extracting sha256:efb51bda5e8760a6e79d8bf56d88f21d5255ac614cb6dd14ee65a868e7aa8387                                                                                       0.0s
+ => [2/8] WORKDIR /app                                                                                                                                                          0.8s
+-cloud-solutions/locations/us/repositories/gcr.io" (or it may not exist)
+Deploying to Cloud Run with environment variables...
+Environment: NODE_ENV=production,HOST=0.0.0.0,BASE_DOMAIN=greenlanecloudsolutions.com,DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb,CLOUDFLARE_API_TOKEN=MAl51E32GDzu0TYm9LPmh9dpGAIznxRwkk3RRAvR,CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1,ENABLE_FIXED_TENANT_LOGIN=true
+ERROR: (gcloud.run.deploy) You do not currently have an active account selected.
+
+
+
+Please run:
+
+  $ gcloud auth login
+
+to obtain new credentials.
+
+If you have already logged in with a different account, run:
+
+  $ gcloud config set account ACCOUNT
+
+to select an already authenticated account to use.
+Deployment completed

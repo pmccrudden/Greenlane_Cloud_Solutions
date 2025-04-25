@@ -1,0 +1,61 @@
+greenlane_entgcloud config set project greenlane-cloud-solutions(greenlane-cloud-solutions)$ gcloud config set project greenlane-cloud-solutions
+Updated property [core/project].
+greenlane_ent./deploy-tenant-login-fix.shenlane_Cloud_Solutions (greenlane-cloud-solutions)$ ./deploy-tenant-login-fix.sh
+=== Deploying Multi-Tenant Login Fixed Version to Cloud Run ===
+WARNING: The following filter keys were not present in any resource : status
+Your active configuration is: [cloudshell-15368]
+Current GCP project: greenlane-cloud-solutions
+Loading environment variables from .env.production
+Building Docker image gcr.io/greenlane-cloud-solutions/greenlane-crm-tenant-login-fix-20250425142005...
+[+] Building 0.9s (13/13) FINISHED                               docker:default
+ => [internal] load build definition from Dockerfile.simple-fix            0.0s
+ => => transferring dockerfile: 1.10kB                                     0.0s
+ => [internal] load metadata for docker.io/library/node:20-alpine          0.7s
+ => [internal] load .dockerignore                                          0.0s
+ => => transferring context: 482B                                          0.0s
+ => [1/8] FROM docker.io/library/node:20-alpine@sha256:c628bdc7ebc7f95b1b  0.0s
+ => [internal] load build context                                          0.0s
+ => => transferring context: 26.42kB                                       0.0s
+ => CACHED [2/8] WORKDIR /app                                              0.0s
+ => CACHED [3/8] COPY package.json package-lock.json ./                    0.0s
+ => CACHED [4/8] RUN npm ci                                                0.0s
+ => CACHED [5/8] COPY . .                                                  0.0s
+ => CACHED [6/8] RUN mkdir -p ./dist/public                                0.0s
+ => CACHED [7/8] RUN npm run build &&     echo "Build complete. Listing c  0.0s
+ => CACHED [8/8] RUN if [ ! -f "./dist/public/index.html" ]; then     ech  0.0s
+ => exporting to image                                                     0.0s
+ => => exporting layers                                                    0.0s
+ => => writing image sha256:d07db0724cacdc043d3b824f500d6cfff58b66895ea26  0.0s
+ => => naming to gcr.io/greenlane-cloud-solutions/greenlane-crm-tenant-lo  0.0s
+Pushing image to Google Container Registry...
+Using default tag: latest
+The push refers to repository [gcr.io/greenlane-cloud-solutions/greenlane-crm-tenant-login-fix-20250425142005]
+52ab2322b273: Preparing 
+bb1e2c6bc3b1: Preparing 
+9db52e21a38a: Preparing 
+a90db5532d32: Preparing 
+305805c5e40c: Preparing 
+65f35be61c60: Waiting 
+60c88a0243f5: Waiting 
+b8185dcc9be5: Waiting 
+2c9cabe10289: Waiting 
+75228a052fed: Waiting 
+08000c18d16d: Waiting 
+denied: Unauthenticated request. Unauthenticated requests do not have permission "artifactregistry.repositories.uploadArtifacts" on resource "projects/greenlane-cloud-solutions/locations/us/repositories/gcr.io" (or it may not exist)
+Deploying to Cloud Run with environment variables...
+Environment: NODE_ENV=production,HOST=0.0.0.0,BASE_DOMAIN=greenlanecloudsolutions.com,DATABASE_URL=postgresql://postgres:SnowBomb4242@/greenlanecrmdb?host=/cloudsql/greenlane-cloud-solutions:us-central1:greenlanecrmdb,CLOUDFLARE_API_TOKEN=MAl51E32GDzu0TYm9LPmh9dpGAIznxRwkk3RRAvR,CLOUDFLARE_ZONE_ID=30a1e332780408a3333d208bd9c713e1,ENABLE_FIXED_TENANT_LOGIN=true
+ERROR: (gcloud.run.deploy) You do not currently have an active account selected.
+Please run:
+
+  $ gcloud auth login
+
+to obtain new credentials.
+
+If you have already logged in with a different account, run:
+
+  $ gcloud config set account ACCOUNT
+
+to select an already authenticated account to use.
+Deployment completed.
+Checking service status...
+Service not yet available. Check Cloud Run logs for details.
