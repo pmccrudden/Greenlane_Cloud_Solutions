@@ -12,11 +12,19 @@ async function tenantMiddleware(req: Request, res: Response, next: NextFunction)
   const forwardedHost = req.headers['x-forwarded-host'] as string;
   const forceMarketing = req.headers['x-force-marketing'];
   const showMarketing = req.headers['x-show-marketing'];
+  const showTenantField = req.headers['x-show-tenant-field'];
   
   // If Cloudflare Worker explicitly requests marketing, set a flag
   if (forceMarketing || showMarketing) {
     console.log('Marketing page requested via header');
     (req as any).isMarketingSite = true;
+  }
+  
+  // If this is a request that should show the tenant field, set a special flag
+  if (showTenantField) {
+    console.log('Tenant field explicitly requested via header');
+    (req as any).showTenantField = true;
+    res.setHeader('X-Show-Tenant-Field', 'true');
   }
   
   // Use forwarded host if available, otherwise use hostname
@@ -176,6 +184,11 @@ function serveStatic(app: express.Express) {
       const indexPath = join(staticPath, "index.html");
       if (fs.existsSync(indexPath)) {
         console.log('Sending regular index.html');
+        // Set the tenant field header on the response if needed
+        if ((req as any).showTenantField) {
+          console.log('Setting X-Show-Tenant-Field header on index.html response');
+          res.setHeader('X-Show-Tenant-Field', 'true');
+        }
         res.sendFile(indexPath);
       } else {
         console.log('Warning: index.html not found in static path');

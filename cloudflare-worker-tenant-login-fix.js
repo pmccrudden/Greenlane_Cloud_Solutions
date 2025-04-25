@@ -70,7 +70,8 @@ async function handleRequest(request) {
   // App subdomain should show the login page with tenant field
   if (isAppSubdomain) {
     headers["X-Show-App"] = "true";
-    console.log("Setting app header");
+    headers["X-Show-Tenant-Field"] = "true";
+    console.log("Setting app header and tenant field header");
   }
   
   // Create modified request with new headers

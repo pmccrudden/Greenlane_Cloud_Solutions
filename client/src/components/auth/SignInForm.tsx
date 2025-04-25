@@ -43,17 +43,38 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
     reservedCheck: ['www', 'app', 'api', 'admin', 'auth'].includes(hostname.split('.')[0])
   });
   
-  // Clear tenant data if on app subdomain
+  // Clear tenant data if on app subdomain and check for headers
   useEffect(() => {
-    // For app subdomain, we always want to show the tenant field
-    if (isAppSubdomain) {
-      console.log("App subdomain detected, clearing tenant data and showing tenant field");
-      sessionStorage.removeItem('current_tenant');
-      setShowTenantField(true);
-    } else {
-      // If not on app subdomain, show field if not a tenant
-      setShowTenantField(!isTenant);
-    }
+    // Check page headers for tenant field flag
+    const checkHeadersForTenantField = async () => {
+      try {
+        // Make a request to the current page to check headers
+        const response = await fetch(window.location.pathname);
+        const showTenantHeader = response.headers.get('X-Show-Tenant-Field');
+        
+        if (showTenantHeader === 'true') {
+          console.log("X-Show-Tenant-Field header detected, showing tenant field");
+          sessionStorage.removeItem('current_tenant');
+          setShowTenantField(true);
+          return;
+        }
+      } catch (err) {
+        console.error("Error checking headers:", err);
+      }
+      
+      // Fall back to hostname-based check if header check fails
+      if (isAppSubdomain) {
+        console.log("App subdomain detected, clearing tenant data and showing tenant field");
+        sessionStorage.removeItem('current_tenant');
+        setShowTenantField(true);
+      } else {
+        // If not on app subdomain, show field if not a tenant
+        setShowTenantField(!isTenant);
+      }
+    };
+    
+    // Run the header check
+    checkHeadersForTenantField();
   }, [isAppSubdomain, isTenant]);
 
   const form = useForm<SignInFormValues>({
