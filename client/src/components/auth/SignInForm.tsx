@@ -10,6 +10,7 @@ import { signIn } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { isTenantUrl, getTenantFromUrl } from '@/lib/tenant';
 import { redirectAfterAuth } from '@/lib/navigation';
+import { initiateMultiTenantLogin, completeSsoLogin, hasPendingSsoSession } from '@/lib/tenant-auth';
 
 // Define form validation schema
 const signInSchema = z.object({
@@ -91,65 +92,58 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
     setIsSubmitting(true);
     
     try {
-      // If not on tenant page and tenant name is provided, redirect to tenant URL
+      // Get tenant name from form or current URL
+      const tenantName = values.tenant?.trim().toLowerCase() || getTenantFromUrl();
+      console.log('Processing login with tenant:', tenantName);
+      
+      // If using tenant field, initiate multi-tenant SSO login
       if (!isTenant && values.tenant) {
-        const tenantName = values.tenant.trim().toLowerCase();
-        console.log('Tenant name entered:', tenantName);
-        
         if (tenantName) {
-          console.log('Redirecting to tenant URL...');
+          console.log('Initiating multi-tenant SSO login with tenant:', tenantName);
           
-          // Save credentials to sessionStorage for seamless login
-          if (values.username && values.password) {
-            console.log('Storing credentials in sessionStorage for seamless login');
-            sessionStorage.setItem('pending_username', values.username);
-            sessionStorage.setItem('pending_password', values.password);
-          }
+          // Use our new tenant auth function for SSO login
+          await initiateMultiTenantLogin(
+            values.username,
+            values.password,
+            tenantName
+          );
           
-          // For local development or Replit preview environment
-          if (window.location.hostname.includes('localhost') || 
-              window.location.hostname.includes('127.0.0.1') ||
-              window.location.hostname.includes('replit.dev') ||
-              window.location.hostname.includes('repl.co')) {
-            
-            // Store the tenant in sessionStorage
-            console.log('Storing tenant in sessionStorage:', tenantName);
-            sessionStorage.setItem('current_tenant', tenantName);
-            
-            // Refresh the page to trigger tenant detection from sessionStorage
-            console.log('Refreshing page to use tenant from sessionStorage');
-            window.location.reload();
-          } else {
-            // Redirect to tenant subdomain in production
-            const redirectUrl = `https://${tenantName}.greenlanecloudsolutions.com/signin`;
-            console.log('Production redirect to:', redirectUrl);
-            window.location.href = redirectUrl;
-          }
+          // initiateMultiTenantLogin handles the redirect, so we just show toast and return
+          toast({
+            title: "Redirecting to tenant",
+            description: `Signing you in to ${tenantName} tenant`,
+          });
+          
           return;
         }
       }
       
-      // Regular login if already on tenant URL or no tenant specified
-      const userData = await signIn(values.username, values.password);
-      
-      toast({
-        title: "Sign in successful",
-        description: "You've been successfully signed in",
-      });
-      
-      console.log("Login successful, redirecting...", userData);
-      
-      // Add a small delay to ensure the toast is shown
-      setTimeout(() => {
-        if (onSuccess) {
-          console.log("Using onSuccess callback");
-          onSuccess();
-        } else {
-          console.log("No onSuccess callback, redirecting to dashboard");
-          // Use the navigation utility for proper redirection
-          redirectAfterAuth('/dashboard');
-        }
-      }, 500);
+      // If we're already on a tenant URL, use regular login
+      if (isTenant || !values.tenant) {
+        console.log('Performing regular login on current tenant');
+        
+        // Regular login and handle success
+        const userData = await signIn(values.username, values.password);
+        
+        toast({
+          title: "Sign in successful",
+          description: "You've been successfully signed in",
+        });
+        
+        console.log("Login successful, redirecting...", userData);
+        
+        // Add a small delay to ensure the toast is shown
+        setTimeout(() => {
+          if (onSuccess) {
+            console.log("Using onSuccess callback");
+            onSuccess();
+          } else {
+            console.log("No onSuccess callback, redirecting to dashboard");
+            // Use the navigation utility for proper redirection
+            redirectAfterAuth('/dashboard');
+          }
+        }, 500);
+      }
     } catch (error) {
       toast({
         title: "Sign in failed",

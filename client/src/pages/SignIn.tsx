@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import SignInForm from '@/components/auth/SignInForm';
-import { isTenantUrl, redirectToMainDomain } from '@/lib/tenant';
+import { isTenantUrl, redirectToMainDomain, getTenantFromUrl } from '@/lib/tenant';
 
 // Import the necessary function for sign-in
 import { signIn } from '@/lib/auth';
 import { redirectAfterAuth } from '@/lib/navigation';
+import { hasPendingSsoSession, completeSsoLogin } from '@/lib/tenant-auth';
 
 export default function SignIn() {
   const [location, setLocation] = useLocation();
@@ -32,21 +33,50 @@ export default function SignIn() {
   const [isAutoLoggingIn, setIsAutoLoggingIn] = useState(false);
   
   useEffect(() => {
-    // Check for pending login credentials when in tenant context
+    // Check for pending login credentials or SSO session
     const attemptAutomaticLogin = async () => {
-      // Check for pending credentials regardless of tenant status
+      // First check for SSO session - this is the new improved method
+      if (hasPendingSsoSession()) {
+        console.log("Found pending SSO session, attempting automatic login");
+        setIsAutoLoggingIn(true);
+        
+        try {
+          // This will check tenant, attempt login, and redirect on success
+          const completed = await completeSsoLogin();
+          
+          if (!completed) {
+            console.log("SSO login could not be completed");
+            setIsAutoLoggingIn(false);
+          }
+          // If completed successfully, redirect happens automatically
+          return;
+        } catch (error) {
+          console.log("SSO login failed:", error);
+          setIsAutoLoggingIn(false);
+          
+          toast({
+            title: "Automatic Sign-in Failed",
+            description: "Please enter your credentials manually",
+            variant: "destructive",
+          });
+        }
+      }
+      
+      // Fall back to legacy method - for backward compatibility
       const pendingUsername = sessionStorage.getItem('pending_username');
       const pendingPassword = sessionStorage.getItem('pending_password');
       const pendingTenant = sessionStorage.getItem('current_tenant');
+      const autoLogin = sessionStorage.getItem('auto_login');
       
-      console.log("Auto-login check - isTenant:", isTenant, 
+      console.log("Legacy auto-login check - isTenant:", isTenant, 
                   "hasPendingCredentials:", !!(pendingUsername && pendingPassword),
-                  "pendingTenant:", pendingTenant);
+                  "pendingTenant:", pendingTenant,
+                  "autoLogin:", autoLogin);
       
       if (pendingUsername && pendingPassword) {
         // We have pending credentials
         
-        if (isTenant) {
+        if (isTenant || autoLogin === 'true') {
           // We're in tenant context, attempt login
           console.log("Found pending credentials in tenant context, attempting automatic login");
           setIsAutoLoggingIn(true);
@@ -54,9 +84,10 @@ export default function SignIn() {
           try {
             await signIn(pendingUsername, pendingPassword);
             
-            // Clear the pending credentials
+            // Clear the pending credentials and auto_login flag
             sessionStorage.removeItem('pending_username');
             sessionStorage.removeItem('pending_password');
+            sessionStorage.removeItem('auto_login');
             
             // Redirect to dashboard
             console.log("Automatic login successful, redirecting to dashboard");
@@ -66,6 +97,7 @@ export default function SignIn() {
             // Clear pending credentials on failure too
             sessionStorage.removeItem('pending_username');
             sessionStorage.removeItem('pending_password');
+            sessionStorage.removeItem('auto_login');
             setIsAutoLoggingIn(false);
             
             toast({
@@ -86,10 +118,12 @@ export default function SignIn() {
               window.location.hostname.includes('repl.co')) {
                 
             console.log("Setting tenant in sessionStorage:", pendingTenant);
+            sessionStorage.setItem('auto_login', 'true');
             // Force refresh to trigger tenant context detection
             window.location.reload();
           } else {
             // Redirect to tenant subdomain in production
+            sessionStorage.setItem('auto_login', 'true');
             const redirectUrl = `https://${pendingTenant}.greenlanecloudsolutions.com/signin`;
             console.log('Production redirect to:', redirectUrl);
             window.location.href = redirectUrl;
@@ -99,6 +133,7 @@ export default function SignIn() {
           // This is an unusual state - clear credentials to avoid confusion
           sessionStorage.removeItem('pending_username');
           sessionStorage.removeItem('pending_password');
+          sessionStorage.removeItem('auto_login');
         }
       }
     };
