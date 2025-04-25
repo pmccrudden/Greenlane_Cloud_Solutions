@@ -42,7 +42,11 @@ export function getTenantFromUrl(): string | null {
   // For production, check subdomain
   // e.g. facebook.greenlanecloudsolutions.com -> 'facebook'
   const parts = host.split('.');
-  if (parts.length >= 3 && !host.startsWith('www.')) {
+  
+  // Reserved subdomains that aren't tenants
+  const reservedSubdomains = ['www', 'app', 'api', 'admin', 'auth'];
+  
+  if (parts.length >= 3 && !reservedSubdomains.includes(parts[0])) {
     console.log('Production subdomain detected:', parts[0]);
     return parts[0];
   }
