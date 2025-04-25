@@ -6,6 +6,7 @@ import { isTenantUrl, redirectToMainDomain } from '@/lib/tenant';
 
 // Import the necessary function for sign-in
 import { signIn } from '@/lib/auth';
+import { redirectAfterAuth } from '@/lib/navigation';
 
 export default function SignIn() {
   const [location, setLocation] = useLocation();
@@ -148,8 +149,8 @@ export default function SignIn() {
   
   const handleSuccessfulSignIn = () => {
     console.log("handleSuccessfulSignIn called, redirecting to /dashboard");
-    // Redirect to dashboard using a hard redirect
-    window.location.href = '/dashboard';
+    // Use our navigation utility for proper redirection
+    redirectAfterAuth('/dashboard');
   };
   
   return (

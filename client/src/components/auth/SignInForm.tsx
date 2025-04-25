@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { signIn } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
 import { isTenantUrl, getTenantFromUrl } from '@/lib/tenant';
+import { redirectAfterAuth } from '@/lib/navigation';
 
 // Define form validation schema
 const signInSchema = z.object({
@@ -129,23 +130,26 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
       }
       
       // Regular login if already on tenant URL or no tenant specified
-      await signIn(values.username, values.password);
+      const userData = await signIn(values.username, values.password);
       
       toast({
         title: "Sign in successful",
         description: "You've been successfully signed in",
       });
       
-      console.log("Login successful, redirecting...");
+      console.log("Login successful, redirecting...", userData);
       
-      if (onSuccess) {
-        console.log("Using onSuccess callback");
-        onSuccess();
-      } else {
-        console.log("No onSuccess callback, redirecting to dashboard");
-        // Force a hard redirect to make sure we reload the page
-        window.location.href = '/dashboard';
-      }
+      // Add a small delay to ensure the toast is shown
+      setTimeout(() => {
+        if (onSuccess) {
+          console.log("Using onSuccess callback");
+          onSuccess();
+        } else {
+          console.log("No onSuccess callback, redirecting to dashboard");
+          // Use the navigation utility for proper redirection
+          redirectAfterAuth('/dashboard');
+        }
+      }, 500);
     } catch (error) {
       toast({
         title: "Sign in failed",

@@ -60,7 +60,13 @@ export async function signIn(username: string, password: string): Promise<User> 
         sessionStorage.setItem('current_tenant', data.tenant.id);
       }
       
-      return data.user;
+      // For backward compatibility
+      const user = data.user || data;
+      
+      // Store auth state in session for failsafe recognition
+      sessionStorage.setItem('auth_status', 'authenticated');
+      
+      return user;
     } catch (parseError) {
       console.error("Error parsing login response:", parseError);
       throw new Error('Invalid response from server. Please try again.');
