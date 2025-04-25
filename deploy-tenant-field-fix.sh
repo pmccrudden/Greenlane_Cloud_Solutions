@@ -54,8 +54,7 @@ gcloud config set project $PROJECT_ID
 
 # Build and deploy to Cloud Run
 echo "🔨 Building and deploying to Cloud Run..."
-gcloud builds submit --config=cloudbuild.simple.yaml \
-  --substitutions=_SERVICE_NAME=${SERVICE_NAME},_REGION=us-central1 .
+gcloud builds submit --config=cloudbuild.simple.yaml 
 
 # Wait for deployment to complete
 echo "⏳ Waiting for deployment to complete..."
