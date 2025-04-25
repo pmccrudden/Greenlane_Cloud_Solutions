@@ -1,0 +1,143 @@
+/**
+ * Enhanced Cloudflare Worker for Greenlane CRM Multi-Tenant System
+ * With JSON content-type fixes for API requests
+ * 
+ * IMPORTANT: Replace CLOUD_RUN_URL with your actual Cloud Run service URL
+ */
+
+// Configuration settings
+const CLOUD_RUN_URL = "REPLACE_WITH_YOUR_SERVICE_HOSTNAME"; // e.g., "greenlane-crm-tenant-login-fix-abc123-uc.a.run.app"
+const BASE_DOMAIN = "greenlanecloudsolutions.com";
+const MAIN_DOMAIN = BASE_DOMAIN;
+const APP_SUBDOMAIN = `app.${BASE_DOMAIN}`;
+
+/**
+ * Handle incoming requests and route them appropriately
+ * @param {Request} request - The incoming request
+ * @returns {Promise<Response>} - The response
+ */
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  const hostname = url.hostname;
+  const path = url.pathname;
+  
+  // Handle direct IP access to Cloudflare
+  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
+    return Response.redirect(`https://${MAIN_DOMAIN}${path}${url.search}`, 301);
+  }
+  
+  console.log("Worker processing request for:", hostname, path);
+  
+  // Determine request type
+  const isMainDomain = hostname === MAIN_DOMAIN || hostname === `www.${MAIN_DOMAIN}`;
+  const isAppSubdomain = hostname === APP_SUBDOMAIN;
+  const isTenantSubdomain = !isMainDomain && !isAppSubdomain && 
+                           hostname.endsWith(`.${BASE_DOMAIN}`) && 
+                           !hostname.startsWith('www.') && 
+                           !hostname.startsWith('api.');
+  
+  // Get the subdomain part if applicable
+  const subdomain = isTenantSubdomain ? hostname.replace(`.${BASE_DOMAIN}`, '') : null;
+  
+  console.log("Request type:", isMainDomain ? "Main" : isAppSubdomain ? "App" : isTenantSubdomain ? `Tenant: ${subdomain}` : "Other");
+  
+  // Check if this is an API request
+  const isApiRequest = path.startsWith('/api/');
+  console.log("API request:", isApiRequest ? "Yes" : "No");
+  
+  // Create destination URL for Cloud Run
+  let destinationURL = `https://${CLOUD_RUN_URL}${path}${url.search}`;
+  
+  // Extract and modify headers
+  let headers = Object.fromEntries(request.headers);
+  
+  // Forward original host for proper routing on the server
+  headers["X-Forwarded-Host"] = hostname;
+  headers["X-Original-URL"] = request.url;
+  
+  // Add tenant header for subdomain requests
+  if (isTenantSubdomain && subdomain) {
+    headers["X-Tenant-ID"] = subdomain;
+    console.log("Setting tenant header for:", subdomain);
+  }
+  
+  // Add marketing site header for main domain
+  if (isMainDomain) {
+    headers["X-Force-Marketing"] = "true";
+    console.log("Setting marketing site header");
+  }
+  
+  // App subdomain configuration
+  if (isAppSubdomain) {
+    headers["X-Show-App"] = "true";
+    headers["X-Show-Tenant-Field"] = "true";
+    console.log("Setting app header and tenant field header");
+  }
+  
+  // For API requests, ensure correct content type headers
+  if (isApiRequest) {
+    // For API responses, ensure proper JSON content type
+    headers["Accept"] = "application/json";
+    console.log("Setting JSON accept header for API request");
+  }
+  
+  // Create the request to forward
+  const newRequest = new Request(destinationURL, {
+    method: request.method,
+    headers: headers,
+    body: request.body,
+    redirect: "follow"
+  });
+  
+  try {
+    console.log("Forwarding request to:", destinationURL);
+    const response = await fetch(newRequest);
+    
+    // Process the response
+    let newResponse = response;
+    
+    // For API requests, ensure the content type is correct
+    if (isApiRequest && response.ok) {
+      const originalBody = await response.text();
+      let body = originalBody;
+      
+      // Try to parse the body as JSON to validate
+      try {
+        JSON.parse(body);
+        console.log("Response is valid JSON, ensuring correct content type");
+        
+        // Create a new response with the correct content type
+        newResponse = new Response(body, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: {
+            ...Object.fromEntries(response.headers),
+            "Content-Type": "application/json"
+          }
+        });
+      } catch (e) {
+        console.log("Response is not JSON, keeping original response");
+        // If not valid JSON, use the original response but with the original text body
+        newResponse = new Response(originalBody, {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers
+        });
+      }
+    }
+    
+    return newResponse;
+  } catch (e) {
+    console.error("Worker fetch error:", e);
+    return new Response(`Worker error: ${e.message}`, { 
+      status: 500,
+      headers: {
+        "Content-Type": "text/html"
+      }
+    });
+  }
+}
+
+addEventListener("fetch", event => {
+  event.respondWith(handleRequest(event.request));
+});
