@@ -1,57 +1,13 @@
-#!/bin/bash
-# API Fix deployment script
-# This script updates the Cloud Run service with Stripe key and deploys API fixes
-
-# Find the correct service to update
-SERVICE_NAME=$(gcloud run services list --platform managed --region=us-central1 --format="value(name)" | grep -E 'tenant-login-fix')
-
-if [ -z "$SERVICE_NAME" ]; then
-  echo "Error: Could not find the tenant login fix service"
-  echo "Attempting to use fixed name: greenlane-crm-tenant-login-fix"
-  SERVICE_NAME="greenlane-crm-tenant-login-fix"
-fi
-
-echo "Updating service: $SERVICE_NAME"
-
-# Get the service URL
-SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
-  --platform managed \
-  --region=us-central1 \
-  --format="value(status.url)")
-
-SERVICE_HOSTNAME=${SERVICE_URL#https://}
-
-echo "Service hostname: $SERVICE_HOSTNAME"
-
-# Update the environment variables
-gcloud run services update $SERVICE_NAME \
-  --set-env-vars="VITE_STRIPE_PUBLIC_KEY=pk_test_51OiLf5FbCnPiDQ9nlZvWyTOsyhlCBP6Vac0iyI9f5DRfpqzsDlrTEXnH1,API_BASE_URL=$SERVICE_URL" \
-  --region=us-central1
-
-if [ $? -eq 0 ]; then
-  echo "✅ Service updated successfully"
-else
-  echo "❌ Failed to update service"
-  exit 1
-fi
-
-# Save the hostname for use in Cloudflare Worker
-echo $SERVICE_HOSTNAME > service_hostname.txt
-
-echo "Done! Now update your Cloudflare Worker with the correct hostname: $SERVICE_HOSTNAME"
-
-# Create a Cloudflare Worker update script
-cat > update-cloudflare-worker.js << EOF
 /**
  * Enhanced Cloudflare Worker for Greenlane CRM Multi-Tenant System
  * API FIX VERSION - Handles all API endpoints properly
  */
 
 // Configuration settings - UPDATE THIS WITH YOUR ACTUAL HOSTNAME FROM service_hostname.txt
-const CLOUD_RUN_URL = "${SERVICE_HOSTNAME}";
+const CLOUD_RUN_URL = "greenlane-crm-tenant-login-fix-mx3osic2uq-uc.a.run.app";
 const BASE_DOMAIN = "greenlanecloudsolutions.com";
 const MAIN_DOMAIN = BASE_DOMAIN;
-const APP_SUBDOMAIN = \`app.\${BASE_DOMAIN}\`;
+const APP_SUBDOMAIN = `app.${BASE_DOMAIN}`;
 
 /**
  * Handle incoming requests and route them appropriately
@@ -65,27 +21,27 @@ async function handleRequest(request) {
   
   // Handle direct IP access to Cloudflare
   if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
-    return Response.redirect(\`https://\${APP_SUBDOMAIN}\${path}\${url.search}\`, 301);
+    return Response.redirect(`https://${APP_SUBDOMAIN}${path}${url.search}`, 301);
   }
   
   console.log("Worker processing request for:", hostname, path);
   
   // Determine request type
-  const isMainDomain = hostname === MAIN_DOMAIN || hostname === \`www.\${MAIN_DOMAIN}\`;
+  const isMainDomain = hostname === MAIN_DOMAIN || hostname === `www.${MAIN_DOMAIN}`;
   const isAppSubdomain = hostname === APP_SUBDOMAIN;
   const isTenantSubdomain = !isMainDomain && !isAppSubdomain && 
-                           hostname.endsWith(\`.\${BASE_DOMAIN}\`) && 
+                           hostname.endsWith(`.${BASE_DOMAIN}`) && 
                            !hostname.startsWith('www.') && 
                            !hostname.startsWith('api.');
   
   // SPECIAL HANDLING: Redirect main domain to app subdomain
   if (isMainDomain) {
     console.log("Redirecting main domain to app subdomain");
-    return Response.redirect(\`https://\${APP_SUBDOMAIN}\${path}\${url.search}\`, 302);
+    return Response.redirect(`https://${APP_SUBDOMAIN}${path}${url.search}`, 302);
   }
   
   // Get the subdomain part if applicable
-  const subdomain = isTenantSubdomain ? hostname.replace(\`.\${BASE_DOMAIN}\`, '') : null;
+  const subdomain = isTenantSubdomain ? hostname.replace(`.${BASE_DOMAIN}`, '') : null;
   
   // Check if this is an API request - CRITICAL PART
   const isApiRequest = path.startsWith('/api/');
@@ -105,7 +61,7 @@ async function handleRequest(request) {
   }
   
   // Create destination URL for Cloud Run
-  const destinationURL = \`https://\${CLOUD_RUN_URL}\${path}\${url.search}\`;
+  const destinationURL = `https://${CLOUD_RUN_URL}${path}${url.search}`;
   
   // Extract and modify headers
   let headers = Object.fromEntries(request.headers);
@@ -354,7 +310,7 @@ async function handleRequest(request) {
     }
     
     // For non-API requests, return an HTML error
-    return new Response(\`<html><body><h1>Error</h1><p>\${e.message}</p></body></html>\`, {
+    return new Response(`<html><body><h1>Error</h1><p>${e.message}</p></body></html>`, {
       status: 500,
       headers: { 'Content-Type': 'text/html' }
     });
@@ -364,9 +320,3 @@ async function handleRequest(request) {
 addEventListener("fetch", event => {
   event.respondWith(handleRequest(event.request));
 });
-EOF
-
-echo ""
-echo "Created Cloudflare Worker code in update-cloudflare-worker.js"
-echo "Copy the contents of this file to your Cloudflare Worker"
-echo ""
