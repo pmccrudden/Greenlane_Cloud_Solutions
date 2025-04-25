@@ -149,7 +149,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {!isTenant && (
+            {showTenantField && (
               <FormField
                 control={form.control}
                 name="tenant"
