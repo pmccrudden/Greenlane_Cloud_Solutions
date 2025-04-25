@@ -1,0 +1,85 @@
+Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: Object
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 Processing login with tenant: greenlane
+index-CUDaz78n.js:493 Performing regular login on current tenant
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 Signing in with tenant: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 Current tenant detected: greenlane
+index-CUDaz78n.js:48 Making POST request to /api/auth/login with tenant ID: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: Object
+index-CUDaz78n.js:493 Non-JSON response received: 
+    <html>
+      <head>
+        <title>Greenlane CRM Enhanced ESM Server</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 40px; background-color: #f8f9fa; }
+          .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+          h1 { color: #21c983; margin-top: 0; }
+          .status { display: inline-block; background: #e6f7f1; color: #21c983; padding: 6px 12px; border-radius: 4px; font-weight: bold; }
+          pre { background: #f1f3f5; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Greenlane CRM - Enhanced ESM Server</h1>
+          <div class="status">Status: Running</div>
+          
+          <div style="margin-top: 20px;">
+            <p>This is the enhanced ES Module diagnostic server for Greenlane CRM.</p>
+            <p>Check <a href="/debug">the debug endpoint</a> for detailed system information.</p>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <h2>Server Information</h2>
+            <pre>
+Time: 2025-04-25T16:18:31.418Z
+Node Version: v20.19.1
+Environment: production
+Host: 0.0.0.0
+Port: 8080
+Working Directory: /app
+            </pre>
+          </div>
+        </div>
+      </body>
+    </html>
+  
+lK @ index-CUDaz78n.js:493Understand this warning
+index-CUDaz78n.js:493 Error parsing login response: Error: Received HTML instead of JSON. The server might be returning an error page.
+    at lK (index-CUDaz78n.js:493:113348)
+    at async $g (index-CUDaz78n.js:493:113726)
+    at async h (index-CUDaz78n.js:493:118393)
+    at async index-CUDaz78n.js:493:45844
+$g @ index-CUDaz78n.js:493Understand this error
+index-CUDaz78n.js:493 Login error: Error: Invalid response from server. Please try again.
+    at $g (index-CUDaz78n.js:493:113992)
+    at async h (index-CUDaz78n.js:493:118393)
+    at async index-CUDaz78n.js:493:45844
+$g @ index-CUDaz78n.js:493Understand this error
+index-CUDaz78n.js:493 Clearing tenant from session to show tenant field
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: Object
+lockdown-install.js:1 Removing unpermitted intrinsics
+lockdown-install.js:1 Removing unpermitted intrinsics
+index-CUDaz78n.js:493 Clearing tenant from session to show tenant field
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:48 getTenantFromUrl - host: greenlane.greenlanecloudsolutions.com search: 
+index-CUDaz78n.js:48 Production subdomain detected: greenlane
+index-CUDaz78n.js:493 SignInForm debug: Object
